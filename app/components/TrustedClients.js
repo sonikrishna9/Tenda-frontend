@@ -138,47 +138,7 @@ export default function TrustedClientsSection() {
                     </div>
                 </motion.div>
 
-                {/* Happy Customers */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    viewport={{ once: true }}
-                    className="bg-white rounded-2xl w-full md:w-[380px] flex flex-col items-center overflow-hidden shadow-lg"
-                >
-                    <div className="bg-orange-100 text-[#F0622B] text-center font-medium py-2 w-full">
-                        Happy Customers/Partners
-                    </div>
-                    <div className="w-full h-[230px] relative">
-                        <iframe
-                            width="100%"
-                            height="230"
-                            src={customerVideos[customerIndex]}
-                            title="Happy Customers/Partners"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            className="rounded-b-2xl"
-                        ></iframe>
-                    </div>
-
-                    <div className="flex items-center justify-center gap-6 py-4">
-                        <motion.button
-                            whileHover={{ scale: 1.2 }}
-                            onClick={() => prevVideo("customer")}
-                            className="border border-[#F0622B] p-2 rounded-full text-[#F0622B] hover:bg-[#F0622B] hover:text-white transition"
-                        >
-                            <FaArrowLeft size={16} />
-                        </motion.button>
-                        <motion.button
-                            whileHover={{ scale: 1.2 }}
-                            onClick={() => nextVideo("customer")}
-                            className="border border-[#F0622B] p-2 rounded-full text-[#F0622B] hover:bg-[#F0622B] hover:text-white transition"
-                        >
-                            <FaArrowRight size={16} />
-                        </motion.button>
-                    </div>
-                </motion.div>
+               
             </div>
         </section>
     );

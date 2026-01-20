@@ -147,16 +147,6 @@ export default function Homeblog() {
         </div>
       </div>
 
-      {/* VIEW ALL BUTTON */}
-      <div className="text-center mt-10">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="border border-orange-500 text-orange-500 px-6 py-2 rounded-md font-medium hover:bg-orange-500 hover:text-white transition"
-        >
-          View All
-        </motion.button>
-      </div>
     </section>
   );
 }

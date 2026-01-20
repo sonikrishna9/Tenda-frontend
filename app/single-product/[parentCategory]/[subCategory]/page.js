@@ -550,9 +550,7 @@ export default function ProductDisplay() {
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
     fetch(
-      `${API_BASE_URL}/api/product/single-product/${decodeURIComponent(
-        parentCategory
-      )}/${decodeURIComponent(subCategory)}`
+      `https://tenda-backend.onrender.com/api/product/single-product/${decodeURIComponent(parentCategory)}/${decodeURIComponent(subCategory)}`
     )
       .then((res) => res.json())
       .then((data) => {
