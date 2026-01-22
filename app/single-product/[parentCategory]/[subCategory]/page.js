@@ -20,9 +20,10 @@ import {
 } from "react-icons/fi";
 import { useParams } from "next/navigation";
 import HaveQuestion from "../../../components/Haveaquestion";
+import ProductSupport from "./ProductSupport";
+import ProductFeature from "./ProductFeature";
+import ProductParameter from "./ProductParameter";
 
-// PARAMETER JSON
-import parametersData from "../../../../parameter.json";
 
 /* ================= UPDATED PARAMETER HELPERS ================= */
 const ParameterValue = ({ value, level = 0 }) => {
@@ -70,16 +71,16 @@ const ParameterValue = ({ value, level = 0 }) => {
   return null;
 };
 
-/* ================= BEAUTIFUL PARAMETER SECTION ================= */
-const ParameterSection = ({ data }) => {
+/* ================= BEAUTIFUL PARAMETER SECTION - UPDATED FOR API DATA ================= */
+const ParameterSection = ({ parameters }) => {
   const [expandedSections, setExpandedSections] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [copiedKey, setCopiedKey] = useState(null);
 
-  const toggleSection = (sectionKey) => {
+  const toggleSection = (sectionIndex) => {
     setExpandedSections(prev => ({
       ...prev,
-      [sectionKey]: !prev[sectionKey]
+      [sectionIndex]: !prev[sectionIndex]
     }));
   };
 
@@ -90,9 +91,9 @@ const ParameterSection = ({ data }) => {
   };
 
   const highlightMatch = (text) => {
-    if (!searchTerm) return text;
+    if (!searchTerm || !text) return text;
     const regex = new RegExp(`(${searchTerm})`, 'gi');
-    const parts = text.split(regex);
+    const parts = text.toString().split(regex);
     return parts.map((part, i) =>
       regex.test(part) ? (
         <mark key={i} className="bg-yellow-200 px-1 rounded">{part}</mark>
@@ -102,24 +103,24 @@ const ParameterSection = ({ data }) => {
     );
   };
 
-  // Filter data based on search term
-  const filteredData = Object.entries(data).reduce((acc, [sectionKey, sectionValue]) => {
-    const filteredParams = Object.entries(sectionValue).filter(([key, value]) => {
-      const searchLower = searchTerm.toLowerCase();
-      return (
-        key.toLowerCase().includes(searchLower) ||
-        JSON.stringify(value).toLowerCase().includes(searchLower)
-      );
-    });
 
-    if (filteredParams.length > 0) {
-      acc[sectionKey] = Object.fromEntries(filteredParams);
-    }
-    return acc;
-  }, {});
+  // Filter parameters based on search term
+  const filteredParameters = parameters?.filter(section => {
+    if (!searchTerm) return true;
+    const searchLower = searchTerm.toLowerCase();
 
-  const totalParams = Object.values(data).reduce((sum, section) => sum + Object.keys(section).length, 0);
-  const filteredTotal = Object.values(filteredData).reduce((sum, section) => sum + Object.keys(section).length, 0);
+    // Check section title
+    if (section.title?.toLowerCase().includes(searchLower)) return true;
+
+    // Check items
+    return section.items?.some(item =>
+      item.title?.toLowerCase().includes(searchLower) ||
+      item.subtitle?.toLowerCase().includes(searchLower)
+    );
+  }) || [];
+
+  const totalParams = parameters?.reduce((sum, section) => sum + (section.items?.length || 0), 0) || 0;
+  const filteredTotal = filteredParameters.reduce((sum, section) => sum + (section.items?.length || 0), 0);
 
   return (
     <div className="w-full mt-10">
@@ -142,7 +143,7 @@ const ParameterSection = ({ data }) => {
                   <div className="h-10 w-px bg-gray-200"></div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-blue-600">
-                      {Object.keys(data).length}
+                      {parameters?.length || 0}
                     </div>
                     <div className="text-sm text-gray-500">Categories</div>
                   </div>
@@ -186,20 +187,20 @@ const ParameterSection = ({ data }) => {
         {/* Sections */}
         <div className="px-6 pb-6">
           <AnimatePresence>
-            {Object.entries(filteredData).map(([sectionKey, sectionValue], index) => {
-              const isExpanded = expandedSections[sectionKey] !== false;
-              const paramCount = Object.keys(sectionValue).length;
+            {filteredParameters.map((section, index) => {
+              const isExpanded = expandedSections[index] !== false;
+              const paramCount = section.items?.length || 0;
 
               return (
                 <motion.div
-                  key={sectionKey}
+                  key={section._id || index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                   className="mb-4"
                 >
                   <motion.button
-                    onClick={() => toggleSection(sectionKey)}
+                    onClick={() => toggleSection(index)}
                     className="w-full group"
                     whileHover={{ scale: 1.005 }}
                     whileTap={{ scale: 0.995 }}
@@ -213,8 +214,8 @@ const ParameterSection = ({ data }) => {
                             </span>
                           </div>
                           <div className="text-left">
-                            <h3 className="text-xl font-bold text-gray-800 group-hover:text-orange-600 transition-colors capitalize">
-                              {highlightMatch(sectionKey.replace(/_/g, " "))}
+                            <h3 className="text-xl font-bold text-gray-800 group-hover:text-orange-600 transition-colors">
+                              {section.title ? highlightMatch(section.title) : "Untitled Section"}
                             </h3>
                             <div className="flex items-center gap-4 mt-1">
                               <span className="text-sm text-gray-500">
@@ -252,9 +253,9 @@ const ParameterSection = ({ data }) => {
                       >
                         <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
                           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {Object.entries(sectionValue).map(([key, value]) => (
+                            {section.items?.map((item, itemIndex) => (
                               <motion.div
-                                key={key}
+                                key={item._id || itemIndex}
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: 0.05 }}
@@ -266,14 +267,14 @@ const ParameterSection = ({ data }) => {
                                     <div className="flex items-center gap-2 mb-2">
                                       <div className="w-3 h-3 rounded-full bg-gradient-to-r from-orange-400 to-amber-500"></div>
                                       <h4 className="font-bold text-gray-800 text-lg capitalize group-hover:text-orange-600 transition-colors">
-                                        {highlightMatch(key.replace(/_/g, " "))}
+                                        {item.title ? highlightMatch(item.title) : "Untitled Parameter"}
                                       </h4>
                                     </div>
                                     <button
-                                      onClick={() => copyToClipboard(JSON.stringify(value), `${sectionKey}_${key}`)}
+                                      onClick={() => copyToClipboard(item.subtitle, `${index}_${itemIndex}`)}
                                       className="text-xs text-gray-500 hover:text-orange-600 transition-colors flex items-center gap-1"
                                     >
-                                      {copiedKey === `${sectionKey}_${key}` ? (
+                                      {copiedKey === `${index}_${itemIndex}` ? (
                                         <>
                                           <FiCheckCircle className="w-3 h-3 text-green-500" />
                                           Copied!
@@ -288,7 +289,9 @@ const ParameterSection = ({ data }) => {
                                   </div>
                                 </div>
                                 <div className="pl-5">
-                                  <ParameterValue value={value} />
+                                  <span className="text-gray-700">
+                                    {highlightMatch(item.subtitle)}
+                                  </span>
                                 </div>
                               </motion.div>
                             ))}
@@ -303,7 +306,7 @@ const ParameterSection = ({ data }) => {
           </AnimatePresence>
 
           {/* No Results */}
-          {Object.keys(filteredData).length === 0 && searchTerm && (
+          {filteredParameters.length === 0 && searchTerm && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -344,98 +347,106 @@ const ParameterSection = ({ data }) => {
   );
 };
 
-/* ================= SUPPORT COMPONENTS WITH CLICK HANDLERS ================= */
-const VideoCard = ({ title, description, thumbnail, duration, uploadDate, views, onClick }) => (
-  <motion.div
-    whileHover={{ y: -5 }}
-    className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:border-orange-300 hover:shadow-xl transition-all duration-300 cursor-pointer group"
-    onClick={onClick}
-  >
-    <div className="relative">
-      <div className="w-full h-48 bg-gradient-to-r from-orange-400 to-amber-500 relative overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-              <FiPlay className="w-8 h-8 text-orange-600 ml-1" />
+/* ================= UPDATED SUPPORT COMPONENTS WITH REAL DATA ================= */
+const VideoCard = ({ video, onClick }) => {
+  // Extract filename from URL for display
+  const getFileName = (url) => {
+    if (!url) return "Untitled Video";
+    const parts = url.split('/');
+    const filename = parts[parts.length - 1];
+    // Remove timestamp prefix if exists
+    return filename.replace(/^\d+-/, '').replace(/%20/g, ' ').replace(/\.mp4$/, '');
+  };
+
+  return (
+    <motion.div
+      whileHover={{ y: -5 }}
+      className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:border-orange-300 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+      onClick={onClick}
+    >
+      <div className="relative">
+        <div className="w-full h-48 bg-gradient-to-r from-orange-400 to-amber-500 relative overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                <FiPlay className="w-8 h-8 text-orange-600 ml-1" />
+              </div>
             </div>
           </div>
         </div>
-        <div className="absolute bottom-3 right-3 bg-black/80 text-white text-xs px-3 py-1.5 rounded-lg">
-          {duration}
-        </div>
-      </div>
-    </div>
-
-    <div className="p-6">
-      <div className="flex items-start justify-between mb-4">
-        <h3 className="font-bold text-xl text-gray-800 line-clamp-2 group-hover:text-orange-600 transition-colors">
-          {title}
-        </h3>
-        <span className="bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-xs font-semibold px-3 py-1 rounded-full ml-2 whitespace-nowrap flex-shrink-0">
-          Tutorial
-        </span>
       </div>
 
-      <p className="text-gray-600 mb-5 line-clamp-2">{description}</p>
-
-      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-        <div className="flex items-center">
-          <FiCalendar className="w-4 h-4 mr-2" />
-          {uploadDate}
-        </div>
-        <div className="flex items-center">
-          <FiEye className="w-4 h-4 mr-2" />
-          {views}
-        </div>
-      </div>
-
-      <div className="px-4 py-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg text-center text-orange-700 font-medium">
-        Click to watch
-      </div>
-    </div>
-  </motion.div>
-);
-
-const PDFCard = ({ title, description, size, pages, downloadCount, onClick }) => (
-  <motion.div
-    whileHover={{ y: -5 }}
-    className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:border-orange-300 hover:shadow-xl transition-all duration-300 cursor-pointer group"
-    onClick={onClick}
-  >
-    <div className="p-6">
-      <div className="flex items-start gap-5 mb-5">
-        <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
-          <FiFileText className="w-8 h-8 text-white" />
-        </div>
-        <div className="flex-1">
-          <h3 className="font-bold text-xl text-gray-800 mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors">
-            {title}
+      <div className="p-6">
+        <div className="flex items-start justify-between mb-4">
+          <h3 className="font-bold text-xl text-gray-800 line-clamp-2 group-hover:text-orange-600 transition-colors">
+            {getFileName(video.url)}
           </h3>
-          <p className="text-gray-600 line-clamp-2">{description}</p>
+          <span className="bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 text-xs font-semibold px-3 py-1 rounded-full ml-2 whitespace-nowrap flex-shrink-0">
+            Tutorial
+          </span>
         </div>
-      </div>
 
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-3 rounded-lg text-center">
-          <div className="text-orange-600 font-bold text-sm">Size</div>
-          <div className="text-gray-800 font-semibold">{size}</div>
-        </div>
-        <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-3 rounded-lg text-center">
-          <div className="text-orange-600 font-bold text-sm">Pages</div>
-          <div className="text-gray-800 font-semibold">{pages}</div>
-        </div>
-        <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-3 rounded-lg text-center">
-          <div className="text-orange-600 font-bold text-sm">Downloads</div>
-          <div className="text-gray-800 font-semibold">{downloadCount}</div>
-        </div>
-      </div>
+        <p className="text-gray-600 mb-5 line-clamp-2">
+          Click to watch this tutorial video
+        </p>
 
-      <div className="px-4 py-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg text-center text-orange-700 font-medium">
-        Click to download or preview
+        <div className="px-4 py-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg text-center text-orange-700 font-medium">
+          Click to watch
+        </div>
       </div>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
+
+const PDFCard = ({ pdf, type = "download", onClick }) => {
+  // Extract filename from URL for display
+  const getFileName = (url) => {
+    if (!url) return "Untitled Document";
+    const parts = url.split('/');
+    const filename = parts[parts.length - 1];
+    // Remove timestamp prefix if exists
+    return filename.replace(/^\d+-/, '').replace(/%20/g, ' ').replace(/\.pdf$/, '');
+  };
+
+  return (
+    <motion.div
+      whileHover={{ y: -5 }}
+      className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:border-orange-300 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+      onClick={onClick}
+    >
+      <div className="p-6">
+        <div className="flex items-start gap-5 mb-5">
+          <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+            <FiFileText className="w-8 h-8 text-white" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-bold text-xl text-gray-800 mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors">
+              {getFileName(pdf.url)}
+            </h3>
+            <p className="text-gray-600 line-clamp-2">
+              {type === "quickstart" ? "Quick Start Guide" : "Downloadable Document"}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-3 rounded-lg text-center">
+            <div className="text-orange-600 font-bold text-sm">Type</div>
+            <div className="text-gray-800 font-semibold">{type === "quickstart" ? "Quick Start" : "Download"}</div>
+          </div>
+          <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-3 rounded-lg text-center">
+            <div className="text-orange-600 font-bold text-sm">Format</div>
+            <div className="text-gray-800 font-semibold">PDF</div>
+          </div>
+        </div>
+
+        <div className="px-4 py-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg text-center text-orange-700 font-medium">
+          Click to download or preview
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 export default function ProductDisplay() {
   const { parentCategory, subCategory } = useParams();
@@ -452,102 +463,33 @@ export default function ProductDisplay() {
     { id: "support", label: "Support" },
   ];
 
-  // Dummy data for support section
-  const supportVideos = [
-    {
-      id: 1,
-      title: "Product Installation Guide",
-      description: "Step-by-step tutorial on how to properly install and set up your device",
-      duration: "15:42",
-      uploadDate: "Jan 15, 2024",
-      views: "2.4K views"
-    },
-    {
-      id: 2,
-      title: "Advanced Configuration Setup",
-      description: "Learn advanced settings and optimization techniques for maximum performance",
-      duration: "22:18",
-      uploadDate: "Feb 03, 2024",
-      views: "1.8K views"
-    },
-    {
-      id: 3,
-      title: "Troubleshooting Common Issues",
-      description: "Quick solutions for the most common problems users encounter",
-      duration: "18:30",
-      uploadDate: "Dec 20, 2023",
-      views: "3.1K views"
-    },
-    {
-      id: 4,
-      title: "Product Features Overview",
-      description: "Complete walkthrough of all features and capabilities",
-      duration: "12:45",
-      uploadDate: "Jan 28, 2024",
-      views: "1.2K views"
-    }
-  ];
-
-  const supportPDFs = [
-    {
-      id: 1,
-      title: "User Manual - Complete Guide",
-      description: "Detailed user manual covering all aspects of product operation and maintenance",
-      size: "4.2 MB",
-      pages: "56 pages",
-      downloadCount: "1,245 downloads"
-    },
-    {
-      id: 2,
-      title: "Technical Specifications Sheet",
-      description: "Complete technical specifications and hardware details",
-      size: "1.8 MB",
-      pages: "12 pages",
-      downloadCount: "892 downloads"
-    },
-    {
-      id: 3,
-      title: "Safety & Compliance Guide",
-      description: "Important safety information and regulatory compliance documents",
-      size: "2.1 MB",
-      pages: "24 pages",
-      downloadCount: "567 downloads"
-    },
-    {
-      id: 4,
-      title: "Warranty & Service Manual",
-      description: "Warranty terms, service procedures, and support contacts",
-      size: "3.5 MB",
-      pages: "32 pages",
-      downloadCount: "723 downloads"
-    }
-  ];
-
   // Handle video click
-  const handleVideoClick = (videoTitle) => {
+  const handleVideoClick = (video) => {
     setShowMessage({
       type: 'video',
-      title: videoTitle,
-      message: 'This is a dummy video which will be available shortly. Actual content coming soon!'
+      title: 'Video Content',
+      message: `Opening: ${video.url.split('/').pop()}`
     });
+    // Open video in new tab
+    window.open(video.url, '_blank');
     setTimeout(() => setShowMessage({ type: null, title: null }), 3000);
   };
 
   // Handle PDF click
-  const handlePDFClick = (pdfTitle) => {
+  const handlePDFClick = (pdf) => {
     setShowMessage({
       type: 'pdf',
-      title: pdfTitle,
-      message: 'This is a dummy PDF which will be available shortly. Actual document coming soon!'
+      title: 'PDF Document',
+      message: `Opening: ${pdf.url.split('/').pop()}`
     });
+    // Open PDF in new tab
+    window.open(pdf.url, '_blank');
     setTimeout(() => setShowMessage({ type: null, title: null }), 3000);
   };
 
   /* ---------------- FETCH PRODUCT ---------------- */
   useEffect(() => {
     if (!parentCategory || !subCategory) return;
-
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
     fetch(
       `https://tenda-backend.onrender.com/api/product/single-product/${decodeURIComponent(parentCategory)}/${decodeURIComponent(subCategory)}`
@@ -557,6 +499,9 @@ export default function ProductDisplay() {
         if (data.success) {
           setProduct(data.category);
         }
+      })
+      .catch((error) => {
+        console.error("Error fetching product:", error);
       });
   }, [parentCategory, subCategory]);
 
@@ -569,6 +514,11 @@ export default function ProductDisplay() {
   }
 
   const images = product.images?.map((img) => img.url) || [];
+  const featurePictures = product.featurePictures || [];
+  const parameters = product.parameters || [];
+  const videos = product.videos || [];
+  const quickstartpdfs = product.pdf?.quickstartpdfs || [];
+  const downloadpdfs = product.pdf?.downloadpdfs || [];
 
   const handlePrev = () => {
     setCurrentIndex((prev) =>
@@ -647,7 +597,7 @@ export default function ProductDisplay() {
                     : "hover:scale-105"
                     }`}
                 >
-                  <img src={img} className="w-full h-full object-cover" />
+                  <img src={img} className="w-full h-full object-cover" alt={`Thumbnail ${i + 1}`} />
                 </div>
               ))}
             </div>
@@ -716,143 +666,26 @@ export default function ProductDisplay() {
         ))}
       </div>
 
-      {/* ================= TAB CONTENT ================= */}
       {activetab === "parameter" && (
-        <ParameterSection data={parametersData} />
+        <ProductParameter parameters={parameters} />
       )}
 
       {activetab === "feature" && (
-        <div className="bg-[#0A0907] rounded-b-[2rem] pb-10">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-xl md:text-2xl font-bold text-center pt-14"
-          >
-            <span className="bg-linear-to-r from-[#7DD8D0] to-[#F0622B] bg-clip-text text-transparent">
-              Enjoy blazing-fast Wi-Fi7 BE5100 <br /> throughout your home
-            </span>
-          </motion.h2>
-
-          <img
-            src="/images/products/whocanapply/mainbgbanner.png"
-            className="h-[55%] w-4/5 mx-auto"
-          />
-
-          {!viewDetailsOpen && (
-            <div
-              className="flex justify-center"
-              onClick={() => setViewDetailsOpen(true)}
-            >
-              <button
-                className="text-white px-6 py-3 rounded-md"
-                style={{
-                  background:
-                    "linear-gradient(90deg, #612F1B 0%, rgba(254,129,81,0.8) 51.92%, #612F1B 100%)",
-                }}
-              >
-                View Details
-              </button>
-            </div>
-          )}
-
-          {viewDetailsOpen && (
-            <div className="view-details-open-tab">
-              {["4", "5", "6", "7", "8", "9"].map((img) => (
-                <img
-                  key={img}
-                  src={`/images/featuretab/${img}.png`}
-                  className="w-4/5 mx-auto"
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        <ProductFeature
+          title={product.title}
+          featurePictures={product.featurePictures}
+        />
       )}
 
       {activetab === "support" && (
-        <div className="py-10 px-5 md:px-10">
-          <div className="max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                  Product Support & Resources
-                </span>
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Find tutorials, documentation, and resources to get the most out of your product
-              </p>
-            </div>
-
-            {/* Video Tutorials Section */}
-            <div className="mb-16">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-800 flex items-center">
-                    <div className="w-3 h-8 bg-gradient-to-b from-orange-500 to-amber-500 rounded-full mr-3"></div>
-                    Video Tutorials
-                  </h3>
-                  <p className="text-gray-600 mt-1">Click on any video to watch</p>
-                </div>
-                <div className="bg-gradient-to-r from-orange-50 to-amber-50 px-4 py-2 rounded-lg">
-                  <span className="text-orange-600 font-medium">{supportVideos.length} videos</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {supportVideos.map((video) => (
-                  <VideoCard
-                    key={video.id}
-                    {...video}
-                    onClick={() => handleVideoClick(video.title)}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Documentation Section */}
-            <div>
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-800 flex items-center">
-                    <div className="w-3 h-8 bg-gradient-to-b from-orange-500 to-amber-500 rounded-full mr-3"></div>
-                    Documentation & Manuals
-                  </h3>
-                  <p className="text-gray-600 mt-1">Click on any document to download or preview</p>
-                </div>
-                <div className="bg-gradient-to-r from-orange-50 to-amber-50 px-4 py-2 rounded-lg">
-                  <span className="text-orange-600 font-medium">{supportPDFs.length} documents</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {supportPDFs.map((pdf) => (
-                  <PDFCard
-                    key={pdf.id}
-                    {...pdf}
-                    onClick={() => handlePDFClick(pdf.title)}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Support Contact */}
-            <div className="mt-16 bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl p-8 border border-orange-100">
-              <div className="flex flex-col md:flex-row items-center justify-between">
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-800 mb-2">Need Additional Help?</h3>
-                  <p className="text-gray-600">Contact our support team for personalized assistance</p>
-                </div>
-                <button className="mt-4 md:mt-0 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-medium px-8 py-3 rounded-lg flex items-center gap-2 transition-all duration-300">
-                  <FiMessageCircle /> Contact Support
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ProductSupport
+          videos={videos}
+          quickstartpdfs={quickstartpdfs}
+          downloadpdfs={downloadpdfs}
+          onVideoClick={handleVideoClick}
+          onPdfClick={handlePDFClick}
+        />
       )}
-
       <HaveQuestion />
     </>
   );

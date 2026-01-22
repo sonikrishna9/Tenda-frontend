@@ -68,7 +68,7 @@ export default function Homeproducts() {
     const handleResize = () => {
       setItemsCount(getItemsCount());
     };
-    
+
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -88,7 +88,7 @@ export default function Homeproducts() {
 
   const prevProducts = () => {
     if (products.length <= itemsCount) return;
-    setCurrentProductIndex((prev) => 
+    setCurrentProductIndex((prev) =>
       prev === 0 ? (products.length - itemsCount) : prev - 1
     );
   };
@@ -100,7 +100,7 @@ export default function Homeproducts() {
 
   const prevCategories = () => {
     if (sections.length <= itemsCount) return;
-    setCurrentCategoryIndex((prev) => 
+    setCurrentCategoryIndex((prev) =>
       prev === 0 ? (sections.length - itemsCount) : prev - 1
     );
   };
@@ -110,19 +110,19 @@ export default function Homeproducts() {
   const visibleCategories = sections.slice(currentCategoryIndex, currentCategoryIndex + itemsCount);
 
   /* ------------------ CLICK HANDLERS ------------------ */
-  const handleViewProducts = () => {
-    router.push("/all-products");
+  const handleViewProducts = (category) => {
+    router.push(`/all-product?category=${encodeURIComponent(category)}`);
   };
 
+
   const handleProductClick = () => {
-    router.push("/all-products");
+    router.push("/all-product");
   };
 
   /* ------------------ SKELETON LOADER ------------------ */
   const SkeletonCard = ({ isCategory = false }) => (
-    <div className={`bg-white rounded-2xl shadow-lg border overflow-hidden animate-pulse ${
-      isCategory ? 'h-[280px]' : 'h-[320px]'
-    }`}>
+    <div className={`bg-white rounded-2xl shadow-lg border overflow-hidden animate-pulse ${isCategory ? 'h-[280px]' : 'h-[320px]'
+      }`}>
       <div className="h-3/5 bg-gray-200" />
       <div className="p-6">
         <div className="h-4 bg-gray-200 rounded w-2/3 mb-2" />
@@ -173,7 +173,7 @@ export default function Homeproducts() {
             )}
 
             {/* Slider Content */}
-            <div 
+            <div
               ref={sliderRef}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-transform duration-300 ease-out"
             >
@@ -185,7 +185,7 @@ export default function Homeproducts() {
                 visibleCategories.map((cat, index) => (
                   <div
                     key={cat._id || index}
-                    onClick={handleViewProducts}
+                    onClick={() => handleViewProducts(cat.categoryname)}
                     className="group bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl hover:border-orange-200 transition-all duration-300 overflow-hidden cursor-pointer transform hover:-translate-y-1"
                   >
                     {/* Image Container */}
@@ -220,11 +220,10 @@ export default function Homeproducts() {
                   <button
                     key={i}
                     onClick={() => setCurrentCategoryIndex(i * itemsCount)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      Math.floor(currentCategoryIndex / itemsCount) === i
-                        ? "w-6 bg-gradient-to-r from-orange-500 to-amber-500"
-                        : "bg-gray-300 hover:bg-gray-400"
-                    }`}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${Math.floor(currentCategoryIndex / itemsCount) === i
+                      ? "w-6 bg-gradient-to-r from-orange-500 to-amber-500"
+                      : "bg-gray-300 hover:bg-gray-400"
+                      }`}
                     aria-label={`Go to slide ${i + 1}`}
                   />
                 ))}
@@ -308,7 +307,7 @@ export default function Homeproducts() {
                         {product.category || "Networking"}
                       </span>
                     </div>
-                    
+
                     <h3 className="font-bold text-gray-900 text-lg mb-3 line-clamp-2">
                       {product.name}
                     </h3>
@@ -327,10 +326,10 @@ export default function Homeproducts() {
           {products.length > itemsCount && (
             <div className="mt-10 flex items-center justify-center">
               <div className="w-full max-w-md bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-gradient-to-r from-orange-500 to-amber-500 rounded-full transition-all duration-500"
-                  style={{ 
-                    width: `${((currentProductIndex + itemsCount) * 100) / products.length}%` 
+                  style={{
+                    width: `${((currentProductIndex + itemsCount) * 100) / products.length}%`
                   }}
                 />
               </div>
