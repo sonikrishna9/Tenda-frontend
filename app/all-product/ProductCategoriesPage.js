@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 import Image from "next/image";
 import { FaChevronDown, FaChevronUp, FaSearch, FaFire, FaTags, FaBoxOpen, FaStar, FaAngleRight } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
