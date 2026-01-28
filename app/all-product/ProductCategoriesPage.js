@@ -4,8 +4,19 @@ import { FaChevronDown, FaChevronUp, FaSearch, FaFire, FaTags, FaBoxOpen, FaStar
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+
 
 export default function ProductCategoriesPage() {
+
+  const searchParams = useSearchParams();
+  const selectedCategory = searchParams.get("category");
+  const decodedCategory = selectedCategory
+    ? decodeURIComponent(selectedCategory)
+    : null;
+
+
+
   const [openCat, setOpenCat] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sections, setSections] = useState([]);
@@ -14,6 +25,14 @@ export default function ProductCategoriesPage() {
 
   const sidebarRef = useRef(null);
   const router = useRouter();
+
+  const displaySections = selectedCategory
+    ? sections.filter(
+      (section) =>
+        section.title.toLowerCase() === decodedCategory?.toLowerCase()
+    )
+    : sections;
+
 
   /* ---------------- FETCH PRODUCTS ---------------- */
   useEffect(() => {
@@ -25,7 +44,7 @@ export default function ProductCategoriesPage() {
         const res = await fetch(
           "https://tenda-backend.onrender.com/api/product/allproducts"
         );
-        
+
         const data = await res.json();
         if (!data.success) return;
 
@@ -55,6 +74,44 @@ export default function ProductCategoriesPage() {
 
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    if (!decodedCategory || sections.length === 0) return;
+
+    const matched = sections.find(
+      (section) =>
+        section.title.toLowerCase() === decodedCategory.toLowerCase()
+    );
+
+    if (matched) {
+      // open sidebar accordion
+      setOpenCat(matched.title);
+
+      // highlight category
+      setActiveSection(matched.title);
+
+      // auto scroll to right-side section
+      setTimeout(() => {
+        const el = document.getElementById(
+          `section-${matched.title.replace(/\s+/g, "-")}`
+        );
+        if (el) {
+          window.scrollTo({
+            top: el.offsetTop - 120,
+            behavior: "smooth",
+          });
+        }
+      }, 300);
+    }
+  }, [decodedCategory, sections]);
+
+  const handleProductClick = (parent, sub) => {
+    router.push(
+      `/single-product/${encodeURIComponent(parent)}/${encodeURIComponent(sub)}`
+    );
+  };
+
+
 
   /* ---------------- ACTIVE SECTION OBSERVER ---------------- */
   useEffect(() => {
@@ -109,12 +166,7 @@ export default function ProductCategoriesPage() {
     }
   };
 
-  /* ---------------- ROUTE TO PRODUCT ---------------- */
-  const handleProductClick = (parent, sub) => {
-    router.push(
-      `/single-product/${encodeURIComponent(parent)}/${encodeURIComponent(sub)}`
-    );
-  };
+
 
   /* ---------------- LOADER ---------------- */
   if (loading) {
@@ -198,7 +250,7 @@ export default function ProductCategoriesPage() {
           <aside
             ref={sidebarRef}
             className="lg:col-span-1 bg-white rounded-3xl border border-orange-100 shadow-xl
-            lg:sticky lg:top-24 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto"
+            sticky top-24 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto"
           >
             {/* Header with Gradient */}
             <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white p-6 rounded-t-3xl relative overflow-hidden">
@@ -295,7 +347,15 @@ export default function ProductCategoriesPage() {
                                   initial={{ opacity: 0, x: -10 }}
                                   animate={{ opacity: 1, x: 0 }}
                                   transition={{ delay: index * 0.05 }}
-                                  onClick={() => handleProductClick(cat.title, p.name)}
+                                  onClick={() => {
+                                    setOpenCat(openCat === cat.title ? null : cat.title);
+                                    scrollToCategory(cat.title);
+
+                                    router.push(
+                                      `/all-product?category=${encodeURIComponent(cat.title)}`,
+                                      { scroll: false }
+                                    );
+                                  }}
                                   className="w-full text-left py-3 px-4 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200 group flex items-center justify-between"
                                 >
                                   <div className="flex items-center space-x-3">
@@ -322,7 +382,7 @@ export default function ProductCategoriesPage() {
 
           {/* ================= PRODUCTS ================= */}
           <div className="lg:col-span-3">
-            {sections.length === 0 ? (
+            {displaySections.length === 0 ? (
               <div className="text-center py-20">
                 <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-orange-50 to-amber-50 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
                   <div className="relative">
@@ -344,7 +404,7 @@ export default function ProductCategoriesPage() {
                 </button>
               </div>
             ) : (
-              sections.map((section) => (
+              displaySections.map((section) => (
                 <section
                   key={section.title}
                   id={`section-${section.title.replace(/\s+/g, "-")}`}

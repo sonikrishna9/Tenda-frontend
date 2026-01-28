@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Image from "next/image";
 
@@ -43,8 +43,6 @@ export default function Herobanner() {
 
   /* ---------------- AUTO SLIDER ---------------- */
   useEffect(() => {
-    if (!slides.length) return;
-
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
     }, 6000);
@@ -63,63 +61,77 @@ export default function Herobanner() {
     );
   }, [slides.length]);
 
-  if (!slides.length) return null;
-
   return (
-    <div className="relative w-full h-[70vh] md:h-[80vh] xl:h-[90vh] overflow-hidden">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={slides[current].id}
-          className="absolute inset-0"
-          initial={{ opacity: 0, scale: 1.03 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.97 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          {/* ✅ FIXED IMAGE */}
-          <Image
-            src={slides[current].img}
-            alt={slides[current].title1}
-            fill
-            priority={current === 0}   // preload only first slide
-            sizes="100vw"
-            className="object-cover"
-          />
+    <section
+      className="
+        relative w-full overflow-hidden
+        min-h-[560px]
+        h-[70dvh]
+        max-h-[900px]
+      "
+      style={{ contain: "layout paint" }} // 🔒 isolates layout
+    >
+      {/* SLIDE */}
+      <motion.div
+        key={current} // stable key (index-based)
+        className="absolute inset-0"
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <Image
+          src={slides[current].img}
+          alt={slides[current].title1}
+          fill
+          priority={current === 0}
+          sizes="100vw"
+          className="object-cover"
+        />
 
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-center px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="max-w-3xl"
-            >
-            </motion.div>
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center px-4 sm:px-6">
+          <div className="max-w-3xl w-full text-center">
+            {/* text intentionally unchanged */}
           </div>
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      </motion.div>
 
-      {/* NAVIGATION */}
+      {/* PREV */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-3 rounded-full"
+        className="
+          absolute left-3 sm:left-4 top-1/2 -translate-y-1/2
+          w-9 h-9 sm:w-11 sm:h-11
+          flex items-center justify-center
+          bg-black/50 text-white
+          rounded-full
+          hover:bg-black/70 transition
+          z-20
+        "
       >
         <FaArrowLeft />
       </button>
 
+      {/* NEXT */}
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-3 rounded-full"
+        className="
+          absolute right-3 sm:right-4 top-1/2 -translate-y-1/2
+          w-9 h-9 sm:w-11 sm:h-11
+          flex items-center justify-center
+          bg-black/50 text-white
+          rounded-full
+          hover:bg-black/70 transition
+          z-20
+        "
       >
         <FaArrowRight />
       </button>
 
       {/* INDICATORS */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3">
+      <div className="absolute bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20">
         {slides.map((_, idx) => (
           <button
             key={idx}
             onClick={() => setCurrent(idx)}
-            className={`w-3 h-3 rounded-full transition ${
+            className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all ${
               current === idx
                 ? "bg-orange-400 scale-110"
                 : "bg-white/50"
@@ -127,6 +139,6 @@ export default function Herobanner() {
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 }

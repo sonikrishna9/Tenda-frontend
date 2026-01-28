@@ -35,12 +35,14 @@ export default function Homeproducts() {
       const res = await fetch(`${API_BASE_URL}api/product/featuredproducts`);
       const data = await res.json();
 
+      console.log(data)
       if (data?.success && Array.isArray(data.featuredProducts)) {
         setProducts(
           data.featuredProducts.map((item) => ({
             name: item.title,
             img: item.images?.[0]?.url || "/images/placeholder.png",
-            category: item.subCategory || "",
+            category: item.parentCategory || "",
+            subcategory: item.subCategory || "",
             link: "/all-product",
           }))
         );
@@ -111,13 +113,20 @@ export default function Homeproducts() {
 
   /* ------------------ CLICK HANDLERS ------------------ */
   const handleViewProducts = (category) => {
-    router.push(`/all-product?category=${encodeURIComponent(category)}`);
-  };
-
-
-  const handleProductClick = () => {
     router.push("/all-product");
   };
+
+
+  const handleProductClick = (parent, sub) => {
+    // if (!parent || !sub) return;
+
+    router.push(
+      `/single-product/${encodeURIComponent(parent)}/${encodeURIComponent(sub)}`
+    );
+  };
+
+
+
 
   /* ------------------ SKELETON LOADER ------------------ */
   const SkeletonCard = ({ isCategory = false }) => (
@@ -151,8 +160,7 @@ export default function Homeproducts() {
           </div>
 
           {/* Slider Container */}
-          <div className="relative">
-            {/* Navigation Buttons */}
+          <div className="relative overflow-hidden">            {/* Navigation Buttons */}
             {sections.length > itemsCount && (
               <>
                 <button
@@ -278,9 +286,10 @@ export default function Homeproducts() {
               ))
             ) : (
               visibleProducts.map((product, index) => (
+
                 <div
                   key={index}
-                  onClick={handleProductClick}
+                  onClick={() => handleProductClick(product.category, product.subcategory)}
                   className="group bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl hover:border-orange-200 transition-all duration-300 overflow-hidden cursor-pointer transform hover:-translate-y-1"
                 >
                   {/* Featured Badge */}

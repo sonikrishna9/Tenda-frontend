@@ -20,7 +20,7 @@ export default function TrustedClientsSection() {
     const videoUrl = "https://www.youtube.com/embed/dQw4w9WgXcQ";
 
     return (
-        <section className="bg-gradient-to-b from-white to-orange-50 pt-10 pb-2">
+        <section className="bg-gradient-to-b from-white to-orange-50 pt-10 pb-2 overflow-hidden">
             {/* Section Title - Orange Theme */}
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -47,7 +47,7 @@ export default function TrustedClientsSection() {
 
                 {/* Subheading */}
                 <p className="text-gray-600 text-xl max-w-3xl mx-auto mb-10 leading-relaxed">
-                    Join <span className="font-bold text-orange-600">5,000+</span> successful companies 
+                    Join <span className="font-bold text-orange-600">5,000+</span> successful companies
                     who rely on our solutions to drive their business forward
                 </p>
 
@@ -61,7 +61,7 @@ export default function TrustedClientsSection() {
             <div className="mb-20 relative">
                 {/* Background Glow */}
                 <div className="absolute inset-0 bg-gradient-to-b from-orange-50/50 to-transparent"></div>
-                
+
                 <div className="relative z-10">
                     <Marquee
                         gradient={false}
@@ -78,7 +78,7 @@ export default function TrustedClientsSection() {
                                 <div className="group relative">
                                     {/* Glow Effect */}
                                     <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-orange-600/20 blur-xl rounded-full group-hover:blur-2xl transition-all duration-300"></div>
-                                    
+
                                     {/* Logo Card */}
                                     <div className="relative bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:shadow-orange-200 border border-orange-100">
                                         <img
@@ -117,7 +117,7 @@ export default function TrustedClientsSection() {
                             <span>WATCH OUR PRODUCT DEMO</span>
                             <FaStar className="text-yellow-300" />
                         </div>
-                        
+
                         <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                             See <span className="text-orange-600">Transformation</span> in Action
                         </h3>
@@ -129,14 +129,14 @@ export default function TrustedClientsSection() {
                     {/* Full Width Video Container */}
                     <div className="relative w-full bg-gradient-to-r from-orange-50 to-orange-100 py-4">
                         {/* Decorative Elements */}
-               
-                        
+
+
                         <div className="relative max-w-7xl mx-auto px-4">
                             {/* Video Frame */}
                             <div className="relative overflow-hidden rounded-2xl shadow-2xl group">
                                 {/* Glow Effect */}
                                 <div className="absolute inset-0 bg-gradient-to-r from-orange-500/30 to-orange-600/30 blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                                
+
                                 {/* Video */}
                                 <div className="relative w-full aspect-video bg-black">
                                     <iframe
@@ -156,7 +156,7 @@ export default function TrustedClientsSection() {
                 </motion.div>
             </div>
 
-           
+
         </section>
     );
 }

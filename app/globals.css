@@ -41,3 +41,10 @@ body {
     --app-vh: 100dvh;
   }
 }
+
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}

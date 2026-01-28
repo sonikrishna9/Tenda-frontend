@@ -1,7 +1,8 @@
 
 import Herobanner from "./components/Herobanner";
 import Homeblog from "./components/Homeblog";
-import HomeFaq from "./components/Homefaq";
+import HomeCategoriesSlider from "./components/HomeCategoriesSlider";
+import HomeFeaturedProducts from "./components/HomeFeaturedProducts";
 import HomePartnerProgram from "./components/HomePartnerProgram";
 
 import Homeproducts from "./components/Homeproducts";
@@ -11,11 +12,12 @@ export default function Home() {
   return (
     <>
       <Herobanner />
-      <Homeproducts />
+      {/* <Homeproducts /> */}
+      <HomeCategoriesSlider />
+      <HomeFeaturedProducts />
       <HomePartnerProgram />
       <TrustedClientsSection />
       <Homeblog />
-      {/* <HomeFaq slug={"homepage"} /> */}
     </>
   );
 }

@@ -101,7 +101,7 @@ export default function HomePartnerProgram() {
 
   /* -------------------- JSX -------------------- */
   return (
-    <div className="relative w-full max-w-6xl mx-auto px-4 py-12">
+    <div className="relative w-full max-w-6xl mx-auto px-4 py-12 overflow-hidden">
       {/* Floating orbs */}
       <motion.div
         variants={floatingVariants}

@@ -12,7 +12,7 @@ export default function ProductsPage() {
     <>
       <Productbanner />
       <ProductCategoriesPage />
-      <ProductSwiper />
+      {/* <ProductSwiper /> */}
       <ProductContent />
       <ProductFAQ />
     </>
