@@ -16,7 +16,7 @@ import { MdOutlineAttachMoney, MdOutlineBusiness } from "react-icons/md";
 import Steps from "../steps";
 import VideoShowcaseSection from "../VideoCard";
 import Solutions from "../Solutions";
-import SipartnerSlider from "./sipartnerslider";
+import SipartnerSlider from "./SipartnerSlider";
 
 
 export default function SiPartnerPage() {
