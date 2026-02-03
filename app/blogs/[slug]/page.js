@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 
-const API_URL = process.env.VITE_LOCAL_API || "http://localhost:8080/api";
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
 
 export default function BlogDetail() {
   const { slug } = useParams();
@@ -19,7 +20,7 @@ export default function BlogDetail() {
         setLoading(true);
         setError(null);
         
-        const res = await fetch(`${API_URL}/blog/single/${slug}`);
+        const res = await fetch(`${API_URL}api/blog/single/${slug}`);
         
         if (!res.ok) {
           throw new Error(`Failed to fetch blog: ${res.status}`);
@@ -66,15 +67,15 @@ export default function BlogDetail() {
             {error || "The blog post you're looking for doesn't exist."}
           </p>
         </div>
-        <a
-          href="/blog"
+        <Link
+          to={"/blogs"}
           className="inline-flex items-center text-orange-600 hover:text-orange-800 font-medium border border-orange-200 hover:border-orange-300 px-4 py-2 rounded-lg transition-colors"
         >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
           Back to all blogs
-        </a>
+        </Link>
       </section>
     );
   }
@@ -232,15 +233,15 @@ export default function BlogDetail() {
       {/* Navigation Footer */}
       <div className="max-w-3xl mx-auto px-6 py-8 border-t border-orange-200 mt-8">
         <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-          <a
-            href="/blog"
+          <Link
+            href="/blogs"
             className="inline-flex items-center text-orange-600 hover:text-orange-800 font-medium px-4 py-2 rounded-lg border border-orange-200 hover:border-orange-300 hover:bg-orange-50 transition-all"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Back to Blogs
-          </a>
+          </Link>
           
           <div className="flex items-center space-x-4">
             <button

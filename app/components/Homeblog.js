@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
 
-const API_URL = process.env.VITE_LOCAL_API || "http://localhost:8080/api";
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
 
 /* ================= RESPONSIVE ITEMS COUNT ================= */
 const getItemsToShow = () => {
@@ -27,7 +27,7 @@ export default function Homeblog() {
   const getblog = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/blog/get-all`);
+      const res = await fetch(`${API_URL}api/blog/get-all`);
       const data = await res.json();
 
       if (data?.success) {
