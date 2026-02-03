@@ -1,28 +1,14 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import {
   FaQuestionCircle,
   FaHandshake,
-  FaUsers,
-  FaBuilding,
-  FaGlobe,
-  FaChartLine,
-  FaTools,
-  FaShieldAlt,
-  FaLightbulb,
-  FaHeadset,
-  FaRocket,
-  FaArrowRight,
-  FaStar,
-  FaCheckCircle,
   FaPhone,
-  FaFileAlt,
-  FaRegCheckCircle,
 } from 'react-icons/fa';
 import PartnerSlider from '../components/PartnerSlider';
 import WhoCanApply from '../components/ProductPages/Whocanapply';
-
+import AnimatedPartnerButton from "../components/AnimatedPartnerButton";
+import PartnerQuickActions from '../components/PartnerQuickActions';
 /* -------------------- DATA -------------------- */
 
 const faqItems = [
@@ -43,56 +29,7 @@ const faqItems = [
   },
 ];
 
-const programSteps = [
-  {
-    step: '1',
-    title: 'Fill Registration Form',
-    description: 'Submit your business and contact details online',
-    icon: <FaFileAlt className="w-5 h-5" />,
-    color: 'from-orange-500 to-amber-400',
-  },
-  {
-    step: '2',
-    title: 'Document Verification',
-    description: 'Our team verifies your business documents',
-    icon: <FaShieldAlt className="w-5 h-5" />,
-    color: 'from-orange-500 to-orange-600',
-  },
-  {
-    step: '3',
-    title: 'Approval & Start Business',
-    description: 'Get approved and start selling TENDA products',
-    icon: <FaRocket className="w-5 h-5" />,
-    color: 'from-orange-600 to-red-500',
-  },
-];
 
-const partnerTypes = [
-  {
-    title: 'Dealers & Distributors',
-    icon: <FaChartLine className="w-7 h-7" />,
-    description: 'Sell TENDA products through your distribution network',
-    features: ['Volume discounts', 'Marketing materials', 'Priority support'],
-  },
-  {
-    title: 'System Integrators',
-    icon: <FaTools className="w-7 h-7" />,
-    description: 'Deploy TENDA solutions in client projects',
-    features: ['Technical training', 'Solution design', 'Certification'],
-  },
-  {
-    title: 'ISPs',
-    icon: <FaGlobe className="w-7 h-7" />,
-    description: 'Enhance broadband & networking offerings',
-    features: ['Bulk pricing', 'Custom solutions', 'Tech collaboration'],
-  },
-  {
-    title: 'IT Companies',
-    icon: <FaShieldAlt className="w-7 h-7" />,
-    description: 'Expand your service portfolio',
-    features: ['Partner portal', 'Sales enablement', 'Joint marketing'],
-  },
-];
 
 /* -------------------- PAGE -------------------- */
 
@@ -121,38 +58,6 @@ export default function Page() {
 
       {/* Who Can Apply */}
       <WhoCanApply />
-      {/* <section className="py-16 px-4 bg-orange-50">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-center text-4xl font-bold mb-12 text-gray-900">
-            Who Can Apply
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {partnerTypes.map((type, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ y: -6 }}
-                className="bg-white p-6 rounded-2xl shadow-lg border border-orange-100 hover:shadow-xl transition"
-              >
-                <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-5 text-orange-600">
-                  {type.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-3">{type.title}</h3>
-                <p className="text-gray-600 mb-4">{type.description}</p>
-                <ul className="space-y-2">
-                  {type.features.map((f, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-sm text-gray-700">
-                      <FaRegCheckCircle className="text-green-500 w-4 h-4" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-       */}
 
       {/* FAQ */}
       <section className="py-20 px-4 bg-gray-50">
@@ -187,6 +92,8 @@ export default function Page() {
           </div>
         </div>
       </section>
+      <PartnerQuickActions />
+
     </div>
   );
 }

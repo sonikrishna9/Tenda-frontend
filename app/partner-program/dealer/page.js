@@ -8,8 +8,9 @@ import {
 } from "react-icons/fa";
 import { MdOutlineAttachMoney, MdOutlineInventory } from "react-icons/md";
 import Steps from "../steps";
-import Testimonial from "../Testimonial";
+// import Testimonial from "../Testimonial";
 import Solutions from "../Solutions";
+import VideoShowcaseSection from "../VideoCard";
 
 export default function DealerPage() {
     const benefits = [
@@ -103,7 +104,7 @@ export default function DealerPage() {
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                         Become an Authorized <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">
-                            TENDA Dealer
+                            TENDA Dealer/Distributor
                         </span>
                     </h1>
 
@@ -134,7 +135,7 @@ export default function DealerPage() {
                         className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20"
                     >
                         {[
-                            { value: "5000+", label: "Active Dealers" },
+                            { value: "5000+", label: "Active Dealers/Distrbutors" },
                             { value: "95%", label: "Satisfaction Rate" },
                             { value: "48H", label: "Avg. Support Time" },
                             { value: "₹50L+", label: "Annual Revenue Potential" }
@@ -192,10 +193,7 @@ export default function DealerPage() {
             {/* -------- Process Section -------- */}
             <Steps />
 
-            {/* Testimonail */}
-
-            <Testimonial />
-
+            <VideoShowcaseSection />
             {/* Solutions */}
             <Solutions />
 

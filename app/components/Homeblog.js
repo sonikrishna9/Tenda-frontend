@@ -3,86 +3,87 @@
 import { motion } from "framer-motion";
 import { FaArrowRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
+import { toast } from "react-hot-toast";
+import Link from "next/link";
+
+const API_URL = process.env.VITE_LOCAL_API || "http://localhost:8080/api";
 
 /* ================= RESPONSIVE ITEMS COUNT ================= */
 const getItemsToShow = () => {
   if (typeof window === "undefined") return 3;
-  if (window.innerWidth >= 1024) return 3; // desktop
-  if (window.innerWidth >= 640) return 2;  // tablet
-  return 1;                                // mobile
+  if (window.innerWidth >= 1024) return 3;
+  if (window.innerWidth >= 640) return 2;
+  return 1;
 };
 
 export default function Homeblog() {
-  const newsItems = [
-    {
-      date: "Feb 13, 2025",
-      title:
-        "Nexus IO strengthens its presence in the security solutions sector at Business Expo",
-      image: "/images/carousel/sliderp4.jpeg",
-    },
-    {
-      date: "Mar 25, 2025",
-      title:
-        "Nexus IO Debuts TV Spot with an iconic advertisement trending all over social media…",
-      image: "/images/carousel/sliderp2.jpeg",
-    },
-    {
-      date: "Feb 13, 2025",
-      title:
-        "Nexus IO Premieres Star-Studded TV Ad Campaign at National Level",
-      image: "/images/carousel/sliderp1.jpg",
-    },
-    {
-      date: "Feb 13, 2025",
-      title:
-        "Nexus IO Premieres Star-Studded TV Ad Campaign at National Level",
-      image: "/images/carousel/c1.webp",
-    },
-    {
-      date: "Feb 13, 2025",
-      title:
-        "Nexus IO Premieres Star-Studded TV Ad Campaign at National Level",
-      image: "/images/carousel/sliderp3.jpeg",
-    },
-  ];
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsToShow, setItemsToShow] = useState(3);
+  const [blogdata, setBlogdata] = useState([]);
+  const [loading, setLoading] = useState(false);
   const intervalRef = useRef(null);
+
+  /* ================= FETCH BLOGS ================= */
+  const getblog = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${API_URL}/blog/get-all`);
+      const data = await res.json();
+
+      if (data?.success) {
+        setBlogdata(data.data);
+      } else {
+        toast.error("Failed to load blogs");
+      }
+    } catch (error) {
+      toast.error("Error while fetching blogs");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getblog();
+  }, []);
 
   /* ================= AUTO SLIDE ================= */
   useEffect(() => {
+    if (!blogdata.length) return;
+
     intervalRef.current = setInterval(() => {
       nextSlide();
     }, 3500);
 
     return () => clearInterval(intervalRef.current);
-  }, []);
+  }, [blogdata, itemsToShow]);
 
-  /* ================= RESPONSIVE HANDLER ================= */
+  /* ================= RESPONSIVE ================= */
   useEffect(() => {
     const handleResize = () => {
       setItemsToShow(getItemsToShow());
     };
-
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  /* ================= SLIDER LOGIC ================= */
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % newsItems.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex(
-      (prev) => (prev - 1 + newsItems.length) % newsItems.length
+    setCurrentIndex((prev) =>
+      (prev + itemsToShow) % blogdata.length
     );
   };
 
-  const visibleItems = Array.from({ length: itemsToShow }, (_, i) => {
-    return newsItems[(currentIndex + i) % newsItems.length];
-  });
+  const prevSlide = () => {
+    setCurrentIndex((prev) =>
+      (prev - itemsToShow + blogdata.length) % blogdata.length
+    );
+  };
+
+  const visibleItems = blogdata.slice(
+    currentIndex,
+    currentIndex + itemsToShow
+  );
 
   return (
     <section className="w-full bg-white py-16 px-6 md:px-12">
@@ -102,64 +103,72 @@ export default function Homeblog() {
         {/* PREV */}
         <button
           onClick={prevSlide}
-          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2
+          className="absolute left-2 top-1/2 -translate-y-1/2
                      w-10 h-10 flex items-center justify-center
-                     rounded-full bg-white border border-gray-200
-                     shadow-md hover:bg-gray-100 transition z-20"
+                     rounded-full bg-white border shadow z-20"
         >
-          <FaChevronLeft className="text-gray-700 text-sm" />
+          <FaChevronLeft />
         </button>
 
         {/* NEXT */}
         <button
           onClick={nextSlide}
-          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2
+          className="absolute right-2 top-1/2 -translate-y-1/2
                      w-10 h-10 flex items-center justify-center
-                     rounded-full bg-white border border-gray-200
-                     shadow-md hover:bg-gray-100 transition z-20"
+                     rounded-full bg-white border shadow z-20"
         >
-          <FaChevronRight className="text-gray-700 text-sm" />
+          <FaChevronRight />
         </button>
 
         {/* CARDS */}
-        <motion.div
-          className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 px-2 sm:px-4 md:px-8"
-          animate={{ x: 0 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
-        >
-          {visibleItems.map((item, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl border border-gray-200 shadow-sm p-3"
-            >
-              <img
-                src={item.image}
-                alt={item.title}
-                className="w-full h-48 object-cover rounded-lg"
-              />
+        {loading ? (
+          <p className="text-center text-gray-500">Loading blogs...</p>
+        ) : (
+          <motion.div
+            className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 px-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            {visibleItems.map((item) => (
+              <div
+                key={item._id}
+                className="bg-white rounded-xl border shadow-sm p-3"
+              >
+                <img
+                  src={item.featuredImage?.url}
+                  alt={item.title}
+                  className="w-full h-48 object-cover rounded-lg"
+                />
 
-              <div className="mt-4 px-2 pb-4">
-                <p className="text-sm text-gray-400 mb-1">{item.date}</p>
-                <h3 className="text-gray-800 font-medium text-lg mb-3">
-                  {item.title}
-                </h3>
-                <button className="flex items-center gap-2 bg-orange-500 text-white text-sm px-4 py-2 rounded-md hover:bg-orange-600 transition">
-                  Read More <FaArrowRight size={12} />
-                </button>
+                <div className="mt-4 px-2 pb-4">
+                  <p className="text-sm text-gray-400 mb-1">
+                    {item.author?.name}
+                  </p>
+                  <h3 className="text-gray-800 font-medium text-lg mb-3">
+                    {item.title}
+                  </h3>
+
+                  <Link href={`/blogs/${item.slug}`}>
+                    <button className="flex items-center gap-2 bg-orange-500 text-white text-sm px-4 py-2 rounded-md hover:bg-orange-600">
+                      Read More <FaArrowRight size={12} />
+                    </button>
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
-        </motion.div>
+            ))}
+          </motion.div>
+        )}
 
         {/* DOTS */}
         <div className="flex justify-center mt-8 space-x-2">
-          {newsItems.map((_, index) => (
+          {blogdata.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`w-3 h-3 rounded-full transition ${
-                index === currentIndex ? "bg-orange-500" : "bg-gray-300"
-              }`}
+              className={`w-3 h-3 rounded-full ${index === currentIndex
+                  ? "bg-orange-500"
+                  : "bg-gray-300"
+                }`}
             />
           ))}
         </div>

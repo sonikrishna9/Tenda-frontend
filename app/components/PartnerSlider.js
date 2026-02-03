@@ -109,23 +109,17 @@ export default function PartnerSlider() {
     {
       image:
         'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=2000&q=80',
-      title: 'Partner Program',
-      subtitle: 'Grow Your Business With TENDA',
-      icon: <FaHandshake className="w-14 h-14" />,
+    
     },
     {
       image:
         'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=2000&q=80',
-      title: 'Enterprise Solutions',
-      subtitle: 'Complete Networking Portfolio',
-      icon: <FaNetworkWired className="w-14 h-14" />,
+     
     },
     {
       image:
         'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=2000&q=80',
-      title: 'Technical Support',
-      subtitle: '24/7 Professional Assistance',
-      icon: <FaHeadset className="w-14 h-14" />,
+     
     },
   ];
 
@@ -178,38 +172,7 @@ export default function PartnerSlider() {
                     {slide.icon}
                   </div>
                 </div>
-
-                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                  {slide.title}
-                </h1>
-
-                <p className="text-lg md:text-xl lg:text-2xl text-gray-200 mb-10">
-                  {slide.subtitle}
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                  <Link href={"/partner-program/distributor"}>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-4 rounded-full text-base md:text-lg font-semibold flex items-center gap-3 shadow-lg"
-                    >
-                      To Become Distributor
-                      <FaArrowRight />
-                    </motion.button>
-                  </Link>
-
-                  <Link href={"/partner-program/dealer"}>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-4 rounded-full text-base md:text-lg font-semibold flex items-center gap-3 shadow-lg"
-                    >
-                      To Become a Dealer
-                      <FaArrowRight />
-                    </motion.button>
-                  </Link>
-                </div>
+               
 
               </div>
             </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import DistributorSlider from "./DistributorSlider";
 import {
     FaChartLine,
     FaHeadset,
@@ -15,10 +14,12 @@ import {
 } from "react-icons/fa";
 import { MdOutlineAttachMoney, MdOutlineBusiness } from "react-icons/md";
 import Steps from "../steps";
-import Testimonial from "../Testimonial";
+import VideoShowcaseSection from "../VideoCard";
 import Solutions from "../Solutions";
+import SipartnerSlider from "./sipartnerslider";
 
-export default function DistrubutorPage() {
+
+export default function SiPartnerPage() {
     const benefits = [
         {
             icon: <FaNetworkWired className="text-3xl" />,
@@ -79,8 +80,7 @@ export default function DistrubutorPage() {
 
     return (
         <>
-            {/* Slider */}
-            <DistributorSlider />
+            <SipartnerSlider />
 
             {/* -------- Hero Section -------- */}
             <motion.div
@@ -116,19 +116,6 @@ export default function DistrubutorPage() {
                         with TENDA’s enterprise-grade portfolio and expert support.
                     </p>
 
-                    {/* <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <button className="bg-gradient-to-r from-orange-600 to-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl hover:shadow-orange-200 transition-all duration-300 hover:-translate-y-1">
-              Apply as SI / ISP
-            </button>
-            <button className="bg-white text-gray-800 px-8 py-4 rounded-lg font-semibold text-lg border-2 border-gray-200 hover:border-orange-400 hover:bg-orange-50 transition-all duration-300">
-              Download Portfolio
-            </button>
-          </motion.div> */}
 
                     {/* Stats */}
                     <motion.div
@@ -200,10 +187,9 @@ export default function DistrubutorPage() {
             {/* -------- Process Section -------- */}
             <Steps />
 
-            {/* Testimonial */}
-            <Testimonial />
+            <VideoShowcaseSection />
 
-            {/* Solutions */}
+
             <Solutions />
 
             {/* -------- FAQ Section -------- */}

@@ -12,7 +12,7 @@ import {
   FaArrowRight,
 } from 'react-icons/fa';
 
-export default function DistributorSlider() {
+export default function SipartnerSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
@@ -84,37 +84,7 @@ export default function DistributorSlider() {
             />
             <div className="absolute inset-0 bg-black/60" />
 
-            {/* -------- Distributor Content (ADDED) -------- */}
-            {/* <div className="relative h-full flex items-center justify-center px-4 md:px-8">
-              <div className="text-center max-w-4xl mx-auto text-white">
-                <div className="flex justify-center mb-8">
-                  <div className="bg-white/20 p-4 rounded-full backdrop-blur">
-                    {slide.icon}
-                  </div>
-                </div>
-
-                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                  {slide.title}
-                </h1>
-
-                <p className="text-lg md:text-xl lg:text-2xl text-gray-200 mb-10">
-                  {slide.subtitle}
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                  <Link href="/contactus">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="bg-gradient-to-r from-orange-500 to-red-500 px-8 py-4 rounded-full text-base md:text-lg font-semibold flex items-center gap-3 shadow-lg"
-                    >
-                      Become a Distributor
-                      <FaArrowRight />
-                    </motion.button>
-                  </Link>
-                </div>
-              </div>
-            </div> */}
+           
           </motion.div>
         ))}
 

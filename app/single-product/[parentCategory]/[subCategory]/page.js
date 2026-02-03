@@ -17,6 +17,7 @@ import {
   FiCheckCircle,
   FiAlertCircle,
   FiInfo,
+  FiLoader,
 } from "react-icons/fi";
 import { useParams } from "next/navigation";
 import HaveQuestion from "../../../components/Haveaquestion";
@@ -24,6 +25,110 @@ import ProductSupport from "./ProductSupport";
 import ProductFeature from "./ProductFeature";
 import ProductParameter from "./ProductParameter";
 
+/* ================= LOADING COMPONENT ================= */
+const LoadingState = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 pt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Loading skeleton for the top section */}
+        <div className="w-full flex flex-col md:flex-row gap-10 p-5 md:p-10 animate-pulse">
+          {/* Left - Image skeleton */}
+          <div className="w-full md:w-1/2 flex flex-col items-center">
+            <div className="w-3/4 h-[400px] bg-gradient-to-r from-gray-200 to-gray-300 rounded-xl shadow-md"></div>
+            <div className="flex items-center gap-3 mt-5">
+              <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+              <div className="flex gap-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="w-16 h-16 bg-gradient-to-r from-gray-200 to-gray-300 rounded-md"
+                  ></div>
+                ))}
+              </div>
+              <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+            </div>
+          </div>
+
+          {/* Right - Content skeleton */}
+          <div className="w-full md:w-1/2">
+            <div className="w-24 h-6 bg-gradient-to-r from-gray-200 to-gray-300 rounded mb-4"></div>
+            <div className="w-3/4 h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded mb-3"></div>
+            <div className="w-full h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded mb-2"></div>
+            <div className="w-4/5 h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded mb-2"></div>
+            <div className="w-full space-y-2 mt-5">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="w-2/3 h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded"></div>
+              ))}
+            </div>
+            <div className="w-full h-16 bg-gradient-to-r from-gray-200 to-gray-300 rounded mt-5"></div>
+            <div className="flex gap-4 mt-6">
+              <div className="w-32 h-10 bg-gradient-to-r from-orange-200 to-amber-200 rounded-md"></div>
+              <div className="w-32 h-10 bg-gradient-to-r from-gray-200 to-gray-300 rounded-md"></div>
+              <div className="w-28 h-10 bg-gradient-to-r from-gray-200 to-gray-300 rounded-md"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Loading indicator with animation */}
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="text-center"
+          >
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 1,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+              className="w-20 h-20 mx-auto mb-6"
+            >
+              <div className="w-full h-full rounded-full bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 flex items-center justify-center">
+                <FiLoader className="w-10 h-10 text-white animate-spin" />
+              </div>
+            </motion.div>
+            
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">
+              Loading Product Details
+            </h3>
+            <p className="text-gray-600 max-w-md mx-auto">
+              Fetching the latest specifications and information...
+            </p>
+            
+            {/* Progress bar */}
+            <div className="mt-8 w-64 mx-auto">
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-orange-500 to-amber-500"
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+              </div>
+            </div>
+            
+            {/* Stats skeleton */}
+            <div className="mt-10 grid grid-cols-3 gap-6 max-w-md mx-auto">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                  <div className="w-8 h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded-lg mx-auto mb-2"></div>
+                  <div className="w-16 h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded mx-auto"></div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 /* ================= UPDATED PARAMETER HELPERS ================= */
 const ParameterValue = ({ value, level = 0 }) => {
@@ -456,6 +561,7 @@ export default function ProductDisplay() {
   const [activetab, setactivetab] = useState("feature");
   const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
   const [showMessage, setShowMessage] = useState({ type: null, title: null });
+  const [loading, setLoading] = useState(true); // Add loading state
 
   const tabs = [
     { id: "parameter", label: "Parameter" },
@@ -491,24 +597,51 @@ export default function ProductDisplay() {
   useEffect(() => {
     if (!parentCategory || !subCategory) return;
 
+    setLoading(true); // Start loading
+    
     fetch(
       `https://tenda-backend.onrender.com/api/product/single-product/${decodeURIComponent(parentCategory)}/${decodeURIComponent(subCategory)}`
     )
       .then((res) => res.json())
       .then((data) => {
+        console.log("API RESPONSE 👉", data); // 🔥 VERY IMPORTANT
+
         if (data.success) {
-          setProduct(data.category);
+          setProduct(data.product);
         }
       })
       .catch((error) => {
         console.error("Error fetching product:", error);
+      })
+      .finally(() => {
+        setLoading(false); // Stop loading regardless of success/error
       });
   }, [parentCategory, subCategory]);
 
+  // Show loading state
+  if (loading) {
+    return <LoadingState />;
+  }
+
+  // Show error state if no product after loading
   if (!product) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        Loading...
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50">
+        <div className="text-center">
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-r from-red-100 to-red-50 flex items-center justify-center">
+            <FiAlertCircle className="w-12 h-12 text-red-500" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-2">Product Not Found</h3>
+          <p className="text-gray-600 max-w-md mx-auto mb-6">
+            Unable to load product information. Please check the URL or try again later.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-medium rounded-xl flex items-center gap-2 transition-all duration-300 mx-auto"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }

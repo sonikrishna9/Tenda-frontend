@@ -61,27 +61,27 @@ const data = [
   {
     title: "IT & Networking Product Resellers",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-    img: "/images/products/whocanapply/apply1.jpg",
+    img: "/images/products/whocanapply/it.jpg",
   },
   {
     title: "Distributors & Wholesalers",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-    img: "/images/products/whocanapply/apply2.png",
+    img: "/images/products/whocanapply/distributor.jpg",
   },
   {
     title: "System Integrators",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-    img: "/images/products/whocanapply/apply3.jpg",
+    img: "/images/products/whocanapply/systemintegrators.jpg",
   },
   {
     title: "Networking Solutions Providers",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-    img: "/images/products/whocanapply/apply4.jpg",
+    img: "/images/products/whocanapply/networksolutionpartner.jpg",
   },
   {
     title: "E-Commerce & Retail Partners",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-    img: "/images/products/whocanapply/apply4.jpg",
+    img: "/images/products/whocanapply/ecomretailpartner.jpg",
   },
 ];
 
