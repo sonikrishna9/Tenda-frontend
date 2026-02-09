@@ -103,14 +103,18 @@ export default function HomeCategoriesSlider() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* HEADER */}
-                <div className="text-center mb-14">
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-                        Browse Our <span className="text-orange-500">Categories</span>
-                    </h2>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
-                        Explore TENDA's comprehensive range of networking solutions
-                    </p>
-                    <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full mx-auto mt-4" />
+                <div className="flex justify-between items-center mb-12">
+                    <div>
+                        <h2 className="text-3xl md:text-4xl font-bold">
+                           Product <span className="text-orange-500">Categories</span>
+                        </h2>
+                        <h4 className="text-gray-700 text-xl">
+                           Explore Our Networking Solutions
+                        </h4>
+                        <p className="text-gray-600 ">
+                           Discover a complete range of networking products designed for homes, SMBs, enterprises, and outdoor deployments.
+                        </p>
+                    </div>
                 </div>
 
                 {/* SLIDER */}
@@ -161,7 +165,7 @@ export default function HomeCategoriesSlider() {
                                     key={cat._id}
                                     onClick={() =>
                                         router.push(
-                                            `/all-product?category=${encodeURIComponent(cat.categoryname)}`
+                                            `/all-product?subcategory=${encodeURIComponent(cat.categoryname)}`
                                         )
                                     }
                                     className="group relative bg-white rounded-2xl border

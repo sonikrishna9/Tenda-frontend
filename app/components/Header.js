@@ -2,7 +2,12 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiMenu, FiX, FiChevronDown } from "react-icons/fi";
+import {
+  FiMenu,
+  FiX,
+  FiChevronDown,
+  FiChevronRight,
+} from "react-icons/fi";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -10,23 +15,22 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [showProducts, setShowProducts] = useState(false);
 
-  // 🔥 NEW STATES
   const [allProducts, setAllProducts] = useState([]);
   const [activeCategory, setActiveCategory] = useState("");
+  const [mobileActiveCategory, setMobileActiveCategory] = useState(null);
 
   const pathname = usePathname();
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  /* ================= NAV ORDER ================= */
+  /* ================= NAV ================= */
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "About Us", href: "/about" },
-    { label: "Products", href: "/all-product", isMega: true }, // 3rd
+    { label: "Products", href: "/all-product", isMega: true },
     { label: "Partner Program", href: "/partner-program" },
     { label: "Blogs", href: "/blogs" },
   ];
 
-  /* ================= ACTIVE LINK ================= */
   const isActive = (href) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
@@ -38,7 +42,7 @@ export default function Header() {
 
       if (data?.success && Array.isArray(data.allproducts)) {
         setAllProducts(data.allproducts);
-        setActiveCategory(data.allproducts[0]?.parentCategory);
+        setActiveCategory(data.allproducts[0]?.parentCategory || "");
       }
     } catch (err) {
       console.error("Failed to fetch products", err);
@@ -58,7 +62,16 @@ export default function Header() {
 
   const parentCategories = Object.keys(groupedProducts);
 
-  /* ================= LOCK BODY SCROLL (MOBILE) ================= */
+  /* ================= SUBCATEGORY COUNT ================= */
+  const getSubCategoryCounts = (category) => {
+    const items = groupedProducts[category] || [];
+    return items.reduce((acc, item) => {
+      acc[item.subCategory] = (acc[item.subCategory] || 0) + 1;
+      return acc;
+    }, {});
+  };
+
+  /* ================= BODY SCROLL LOCK ================= */
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
     return () => (document.body.style.overflow = "auto");
@@ -68,8 +81,7 @@ export default function Header() {
     <nav className="fixed top-0 left-0 w-full bg-white shadow-sm z-50">
       {/* ================= TOP BAR ================= */}
       <div className="h-[72px] max-w-[1600px] mx-auto flex items-center justify-between px-6">
-        {/* LOGO */}
-        <Link href="/" className="shrink-0">
+        <Link href="/">
           <img src="/logo.png" alt="Logo" className="h-9" />
         </Link>
 
@@ -77,91 +89,105 @@ export default function Header() {
         <ul className="hidden md:flex items-center gap-8 font-medium text-gray-800">
           {navLinks.map((nav) =>
             nav.isMega ? (
-              /* ================= PRODUCTS (MEGA MENU) ================= */
-              <li
-                key={nav.label}
-                className="relative"
-                onMouseEnter={() => setShowProducts(true)}
-                onMouseLeave={() => setShowProducts(false)}
-              >
+              <li key={nav.label} className="relative">
                 <button
-                  className={`flex items-center gap-1 transition ${
-                    isActive(nav.href)
+                  onMouseEnter={() => setShowProducts(true)}
+                  className={`flex items-center gap-1 ${isActive(nav.href)
                       ? "text-orange-500 font-semibold"
                       : "hover:text-orange-500"
-                  }`}
+                    }`}
                 >
                   {nav.label}
-                  <motion.span
-                    animate={{ rotate: showProducts ? 180 : 0 }}
-                    transition={{ duration: 0.25 }}
-                  >
-                    <FiChevronDown />
-                  </motion.span>
+                  <FiChevronDown
+                    className={`transition ${showProducts ? "rotate-180" : ""
+                      }`}
+                  />
                 </button>
 
-                {/* ================= FULL WIDTH MEGA MENU ================= */}
+                {/* ================= DESKTOP DROPDOWN ================= */}
                 <AnimatePresence>
                   {showProducts && (
                     <motion.div
-                      initial={{ opacity: 0, y: 15 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 15 }}
-                      transition={{ duration: 0.25 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      transition={{ duration: 0.2 }}
+                      onMouseLeave={() => setShowProducts(false)}
                       className="
-                        fixed
-                        left-0
-                        top-[72px]
-                        w-screen
+                        absolute
+                        left-1/2
+                        -translate-x-1/2
+                        top-[48px]
+                        w-[560px]
                         bg-white
-                        border-t
-                        shadow-2xl
+                        border
+                        shadow-xl
                         z-40
+                        overflow-visible
                       "
                     >
-                      <div className="max-h-[70vh] overflow-hidden px-8 py-8">
-                        <div className="flex">
-
-                          {/* LEFT – PARENT CATEGORIES */}
-                          <div className="w-[260px] border-r">
-                            {parentCategories.map((cat) => (
-                              <div
-                                key={cat}
-                                onMouseEnter={() => setActiveCategory(cat)}
-                                className={`
-                                  px-5 py-3 text-sm cursor-pointer border-b
-                                  ${
-                                    activeCategory === cat
-                                      ? "text-orange-500 font-semibold border-l-4 border-orange-500 bg-orange-50"
-                                      : "hover:bg-gray-50"
-                                  }
-                                `}
+                      <div className="relative flex">
+                        {/* LEFT CATEGORY PANEL */}
+                        <div className="w-[300px] max-h-[453px] overflow-y-auto border-r">
+                          {parentCategories.map((cat) => (
+                            <div
+                              key={cat}
+                              onMouseEnter={() => setActiveCategory(cat)}
+                              className="relative flex items-center justify-between px-6 py-3 border-b cursor-pointer text-sm"
+                            >
+                              <span
+                                className={
+                                  activeCategory === cat
+                                    ? "font-semibold text-gray-900"
+                                    : "text-gray-700"
+                                }
                               >
                                 {cat}
-                              </div>
+                              </span>
+                              <FiChevronRight className="text-gray-400" />
+
+                              {activeCategory === cat && (
+                                <span className="absolute right-0 top-0 h-full w-[3px] bg-orange-500" />
+                              )}
+                            </div>
+                          ))}
+                          <div className="border-t p-3 bg-white">
+                            <Link
+                              href="/all-product"
+                              className="block w-full text-center px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-md hover:bg-orange-600 transition"
+                            >
+                              Show All Products
+                            </Link>
+                          </div>
+                        </div>
+
+                        {/* RIGHT SUBCATEGORY PANEL */}
+                        {activeCategory && (
+                          <div className="w-[260px] max-h-[453px] overflow-y-auto bg-white">
+                            <div className="px-5 py-3 text-sm font-semibold border-b">
+                              {activeCategory}
+                            </div>
+
+                            {Object.entries(
+                              getSubCategoryCounts(activeCategory)
+                            ).map(([subCategory, count]) => (
+                              <Link
+                                key={subCategory}
+                                href={`/all-product?category=${encodeURIComponent(
+                                  activeCategory
+                                )}&subcategory=${encodeURIComponent(
+                                  subCategory
+                                )}`}
+                                className="flex justify-between px-5 py-2 text-sm text-gray-700 border-b hover:text-orange-500"
+                              >
+                                <span>{subCategory}</span>
+                                <span className="text-xs text-gray-400">
+                                  ({count})
+                                </span>
+                              </Link>
                             ))}
                           </div>
-
-                          {/* RIGHT – PRODUCTS */}
-                          <div className="flex-1 px-10 max-h-[60vh] overflow-y-auto">
-                            <div className="grid grid-cols-3 gap-x-14 gap-y-4">
-                              {groupedProducts[activeCategory]?.map((item) => (
-                                <Link
-                                  key={item._id}
-                                  href={`/all-product?category=${encodeURIComponent(
-                                    item.parentCategory
-                                  )}&product=${encodeURIComponent(
-                                    item.subCategory
-                                  )}`}
-                                  className="text-sm text-gray-700 hover:text-orange-500 border-b pb-1"
-                                >
-                                  {item.subCategory}
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-
-                        </div>
+                        )}
                       </div>
                     </motion.div>
                   )}
@@ -171,11 +197,11 @@ export default function Header() {
               <li key={nav.href}>
                 <Link
                   href={nav.href}
-                  className={`transition ${
+                  className={
                     isActive(nav.href)
                       ? "text-orange-500 font-semibold"
                       : "hover:text-orange-500"
-                  }`}
+                  }
                 >
                   {nav.label}
                 </Link>
@@ -183,11 +209,10 @@ export default function Header() {
             )
           )}
 
-          {/* CONTACT */}
           <li>
             <Link
               href="/contactus"
-              className="px-5 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition"
+              className="px-5 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600"
             >
               Contact Us
             </Link>
@@ -197,41 +222,66 @@ export default function Header() {
         {/* ================= MOBILE TOGGLE ================= */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-3xl text-gray-700"
+          className="md:hidden text-3xl"
         >
           {isOpen ? <FiX /> : <FiMenu />}
         </button>
       </div>
 
-      {/* ================= MOBILE MENU ================= */}
+      {/* ================= MOBILE PRODUCTS MENU ================= */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ y: "-100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "-100%" }}
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
             transition={{ duration: 0.3 }}
-            className="md:hidden fixed top-[72px] left-0 w-full h-[calc(100vh-72px)] bg-white z-40"
+            className="md:hidden fixed top-[72px] left-0 w-full max-h-[calc(100vh-72px)] bg-white z-40 overflow-y-auto"
           >
-            <ul className="flex flex-col items-center gap-6 py-10 text-lg font-medium">
-              {navLinks.map((nav) => (
-                <Link
-                  key={nav.label}
-                  href={nav.href}
-                  onClick={() => setIsOpen(false)}
-                  className="hover:text-orange-500"
+            <div className="px-4 py-4 text-sm font-semibold border-b">
+              All Solutions
+            </div>
+
+            {parentCategories.map((cat) => (
+              <div key={cat} className="border-b">
+                <button
+                  onClick={() =>
+                    setMobileActiveCategory(
+                      mobileActiveCategory === cat ? null : cat
+                    )
+                  }
+                  className="w-full flex items-center justify-between px-4 py-3 text-left text-sm"
                 >
-                  {nav.label}
-                </Link>
-              ))}
-              <Link
-                href="/contactus"
-                onClick={() => setIsOpen(false)}
-                className="px-8 py-3 rounded-lg bg-orange-500 text-white hover:bg-orange-600"
-              >
-                Contact Us
-              </Link>
-            </ul>
+                  <span className="font-medium">{cat}</span>
+                  <FiChevronRight
+                    className={`transition ${mobileActiveCategory === cat ? "rotate-90" : ""
+                      }`}
+                  />
+                </button>
+
+                {mobileActiveCategory === cat && (
+                  <div className="bg-gray-50">
+                    {Object.entries(getSubCategoryCounts(cat)).map(
+                      ([subCategory, count]) => (
+                        <Link
+                          key={subCategory}
+                          href={`/all-product?category=${encodeURIComponent(
+                            cat
+                          )}&subcategory=${encodeURIComponent(subCategory)}`}
+                          onClick={() => setIsOpen(false)}
+                          className="flex justify-between px-6 py-2 text-sm border-t"
+                        >
+                          <span>{subCategory}</span>
+                          <span className="text-xs text-gray-400">
+                            ({count})
+                          </span>
+                        </Link>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
           </motion.div>
         )}
       </AnimatePresence>

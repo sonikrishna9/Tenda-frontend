@@ -90,14 +90,14 @@ const LoadingState = () => {
                 <FiLoader className="w-10 h-10 text-white animate-spin" />
               </div>
             </motion.div>
-            
+
             <h3 className="text-2xl font-bold text-gray-800 mb-2">
               Loading Product Details
             </h3>
             <p className="text-gray-600 max-w-md mx-auto">
               Fetching the latest specifications and information...
             </p>
-            
+
             {/* Progress bar */}
             <div className="mt-8 w-64 mx-auto">
               <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -113,7 +113,7 @@ const LoadingState = () => {
                 />
               </div>
             </div>
-            
+
             {/* Stats skeleton */}
             <div className="mt-10 grid grid-cols-3 gap-6 max-w-md mx-auto">
               {[1, 2, 3].map((i) => (
@@ -554,7 +554,8 @@ const PDFCard = ({ pdf, type = "download", onClick }) => {
 };
 
 export default function ProductDisplay() {
-  const { parentCategory, subCategory } = useParams();
+  const { parentCategory, productTitle } = useParams();
+
 
   const [product, setProduct] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -595,28 +596,29 @@ export default function ProductDisplay() {
 
   /* ---------------- FETCH PRODUCT ---------------- */
   useEffect(() => {
-    if (!parentCategory || !subCategory) return;
+    if (!parentCategory || !productTitle) return;
 
-    setLoading(true); // Start loading
-    
+    setLoading(true);
+
+    const pc = decodeURIComponent(parentCategory);
+    const pt = decodeURIComponent(productTitle);
+
     fetch(
-      `https://tenda-backend.onrender.com/api/product/single-product/${decodeURIComponent(parentCategory)}/${decodeURIComponent(subCategory)}`
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}api/product/single-product/${pc}/${pt}`
     )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("API RESPONSE 👉", data); // 🔥 VERY IMPORTANT
-
+      .then(res => res.json())
+      .then(data => {
+        console.log("API RESPONSE 👉", data);
         if (data.success) {
           setProduct(data.product);
         }
       })
-      .catch((error) => {
-        console.error("Error fetching product:", error);
+      .catch(err => {
+        console.error("Fetch error:", err);
       })
-      .finally(() => {
-        setLoading(false); // Stop loading regardless of success/error
-      });
-  }, [parentCategory, subCategory]);
+      .finally(() => setLoading(false));
+  }, [parentCategory, productTitle]);
+
 
   // Show loading state
   if (loading) {

@@ -1,73 +1,73 @@
 "use client";
 export const dynamic = "force-dynamic";
-import Image from "next/image";
-import { FaChevronDown, FaChevronUp, FaSearch, FaFire, FaTags, FaBoxOpen, FaStar, FaAngleRight } from "react-icons/fa";
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 
+import Image from "next/image";
+import { useEffect, useMemo, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaSearch,
+  FaHome,
+  FaAngleRight,
+  FaFolderOpen,
+  FaFolder,
+  FaLayerGroup
+} from "react-icons/fa";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ProductCategoriesPage() {
-
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedCategory = searchParams.get("category");
-  const decodedCategory = selectedCategory
-    ? decodeURIComponent(selectedCategory)
+
+  const categoryParam = searchParams.get("category");
+  const subcategoryParam = searchParams.get("subcategory");
+
+  const category = categoryParam ? decodeURIComponent(categoryParam) : null;
+  const subcategory = subcategoryParam
+    ? decodeURIComponent(subcategoryParam)
     : null;
 
-
-
-  const [openCat, setOpenCat] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sections, setSections] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState("");
 
+  const [openParent, setOpenParent] = useState(null);
+  const [openSub, setOpenSub] = useState(null);
+  const [search, setSearch] = useState("");
+
+  const subcategoryRefs = useRef({});
+  const productsGridRef = useRef(null);
   const sidebarRef = useRef(null);
-  const router = useRouter();
 
-  const displaySections = selectedCategory
-    ? sections.filter(
-      (section) =>
-        section.title.toLowerCase() === decodedCategory?.toLowerCase()
-    )
-    : sections;
-
-
-  /* ---------------- FETCH PRODUCTS ---------------- */
+  /* ================= FETCH ================= */
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        setLoading(true);
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
         const res = await fetch(
-          "https://tenda-backend.onrender.com/api/product/allproducts"
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}api/product/allproducts`
         );
 
-        const data = await res.json();
-        if (!data.success) return;
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
 
-        const grouped = {};
-        data.allproducts.forEach((item) => {
-          if (!grouped[item.parentCategory]) {
-            grouped[item.parentCategory] = [];
-          }
-          grouped[item.parentCategory].push({
-            name: item.subCategory,
-            img: item.images?.[0]?.url || "/placeholder-product.png",
-          });
-        });
+        const text = await res.text();
 
-        setSections(
-          Object.keys(grouped).map((cat) => ({
-            title: cat,
-            products: grouped[cat],
-          }))
-        );
-      } catch (err) {
-        console.error(err);
+        // 🔥 IMPORTANT: Empty response guard
+        if (!text) {
+          throw new Error("Empty response from API");
+        }
+
+        const data = JSON.parse(text);
+
+        if (data?.success && Array.isArray(data.allproducts)) {
+          setProducts(data.allproducts);
+        } else {
+          console.error("Invalid API structure:", data);
+        }
+
+      } catch (error) {
+        console.error("❌ Product fetch failed:", error);
       } finally {
         setLoading(false);
       }
@@ -76,431 +76,579 @@ export default function ProductCategoriesPage() {
     fetchProducts();
   }, []);
 
+
+  // Initialize open states based on URL params
   useEffect(() => {
-    if (!decodedCategory || sections.length === 0) return;
-
-    const matched = sections.find(
-      (section) =>
-        section.title.toLowerCase() === decodedCategory.toLowerCase()
-    );
-
-    if (matched) {
-      // open sidebar accordion
-      setOpenCat(matched.title);
-
-      // highlight category
-      setActiveSection(matched.title);
-
-      // auto scroll to right-side section
-      setTimeout(() => {
-        const el = document.getElementById(
-          `section-${matched.title.replace(/\s+/g, "-")}`
-        );
-        if (el) {
-          window.scrollTo({
-            top: el.offsetTop - 120,
-            behavior: "smooth",
-          });
-        }
-      }, 300);
+    if (category) {
+      setOpenParent(category);
+      if (subcategory) {
+        setOpenSub(subcategory);
+        // Scroll to subcategory after render
+        setTimeout(() => {
+          const element = subcategoryRefs.current[subcategory];
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      }
     }
-  }, [decodedCategory, sections]);
+  }, [category, subcategory]);
 
-  const handleProductClick = (parent, sub) => {
-    router.push(
-      `/single-product/${encodeURIComponent(parent)}/${encodeURIComponent(sub)}`
-    );
-  };
+  /* ================= GROUP DATA ================= */
+  const grouped = useMemo(() => {
+    const map = {};
+    products.forEach((p) => {
+      if (!map[p.parentCategory]) map[p.parentCategory] = {};
+      if (!map[p.parentCategory][p.subCategory])
+        map[p.parentCategory][p.subCategory] = [];
+      map[p.parentCategory][p.subCategory].push(p);
+    });
+    return map;
+  }, [products]);
 
-
-
-  /* ---------------- ACTIVE SECTION OBSERVER ---------------- */
   useEffect(() => {
-    const observerOptions = {
-      root: null,
-      rootMargin: "-100px 0px -80% 0px",
-      threshold: 0.1,
+    // Case: subcategory exists but category is missing
+    if (subcategory && !category && products.length > 0) {
+      const matchedProduct = products.find(
+        (p) => p.subCategory === subcategory
+      );
+
+      if (matchedProduct) {
+        const parent = matchedProduct.parentCategory;
+
+        // Open correct parent & subcategory
+        setOpenParent(parent);
+        setOpenSub(subcategory);
+
+        // Update URL to keep it consistent
+        router.replace(
+          `/all-product?category=${encodeURIComponent(parent)}&subcategory=${encodeURIComponent(subcategory)}`,
+          { scroll: false }
+        );
+
+        // Scroll subcategory into view
+        setTimeout(() => {
+          const element = subcategoryRefs.current[subcategory];
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }, 100);
+      }
+    }
+  }, [subcategory, category, products, router]);
+
+
+  /* ================= RIGHT SIDE FILTER ================= */
+  const visibleProducts = useMemo(() => {
+    if (!category && !subcategory) return products;
+
+    if (category && !subcategory) {
+      return products.filter((p) => p.parentCategory === category);
+    }
+
+    return products.filter(
+      (p) =>
+        p.parentCategory === category &&
+        p.subCategory === subcategory
+    );
+  }, [products, category, subcategory]);
+
+  /* ================= ENHANCED BREADCRUMB ================= */
+  const Breadcrumb = () => {
+    const handleHomeClick = () => {
+      router.push("/all-product");
+      setOpenParent(null);
+      setOpenSub(null);
+      // Scroll to top when going to all products
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id.replace("section-", ""));
-        }
-      });
-    }, observerOptions);
-
-    sections.forEach((section) => {
-      const element = document.getElementById(
-        `section-${section.title.replace(/\s+/g, "-")}`
-      );
-      if (element) observer.observe(element);
-    });
-
-    return () => observer.disconnect();
-  }, [sections]);
-
-  /* ---------------- SEARCH FILTER ---------------- */
-  const filteredCategories = sections.filter((section) => {
-    const parentMatch = section.title
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-
-    const subMatch = section.products.some((p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    return parentMatch || subMatch;
-  });
-
-  /* ---------------- SCROLL TO CATEGORY ---------------- */
-  const scrollToCategory = (category) => {
-    const el = document.getElementById(
-      `section-${category.replace(/\s+/g, "-")}`
-    );
-    if (el) {
-      setActiveSection(category);
-      window.scrollTo({
-        top: el.offsetTop - 120,
-        behavior: "smooth",
-      });
-    }
-  };
-
-
-
-  /* ---------------- LOADER ---------------- */
-  if (loading) {
     return (
-      <>
-        <div className="min-h-[60vh] flex flex-col items-center justify-center">
-          <div className="relative">
-            <div className="w-20 h-20 border-4 border-orange-100 rounded-full"></div>
-            <div className="w-20 h-20 border-4 border-t-orange-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin absolute top-0 left-0"></div>
-          </div>
-          <p className="mt-6 text-lg font-semibold text-gray-700">
-            Loading <span className="text-orange-500">Premium Products</span>...
-          </p>
-          <p className="text-gray-400 mt-2 text-sm">Just a moment please</p>
-        </div>
-      </>
-    );
-  }
+      <nav className="mb-8">
+        <div className="flex flex-col gap-4">
+          <div>
+            <ol className="flex flex-wrap items-center gap-2 text-sm">
+              <li className="flex items-center gap-2">
+                <button
+                  onClick={handleHomeClick}
+                  className="flex items-center gap-2 text-gray-700 hover:text-orange-600 transition-colors duration-300"
+                >
+                  <div className="p-2 bg-gray-50 rounded-lg">
+                    <FaHome className="text-orange-500" />
+                  </div>
+                  <span className="font-medium">All Products</span>
+                </button>
+              </li>
 
-  return (
-    <>
+              {category && (
+                <>
+                  <FaAngleRight className="text-gray-400" />
+                  <li>
+                    <button
+                      onClick={() => {
+                        router.push(`/all-product?category=${encodeURIComponent(category)}`);
+                        setOpenParent(category);
+                        setOpenSub(null);
+                        // Scroll to top
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className="flex items-center gap-2 text-gray-700 hover:text-orange-600 transition-colors duration-300"
+                    >
+                      <div className="p-2 bg-gray-50 rounded-lg">
+                        <FaLayerGroup className="text-gray-600" />
+                      </div>
+                      <span className="font-medium">{category}</span>
+                    </button>
+                  </li>
+                </>
+              )}
 
-      <div className="w-full p-4 md:p-6 mt-[4.5rem] max-w-7xl mx-auto">
-        {/* Stats Bar */}
-        <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl p-6 mb-8 border border-orange-100">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center space-x-4">
-              <div className="bg-white p-3 rounded-xl shadow-sm">
-                <FaFire className="text-2xl text-orange-500" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-800">Premium Collection</h3>
-                <p className="text-sm text-gray-600">Explore our curated product categories</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">{sections.length}</div>
-                <div className="text-xs text-gray-500">Categories</div>
-              </div>
-              <div className="h-8 w-px bg-orange-200"></div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">
-                  {sections.reduce((acc, section) => acc + section.products.length, 0)}
-                </div>
-                <div className="text-xs text-gray-500">Total Products</div>
-              </div>
-            </div>
-          </div>
-        </div>
+              {subcategory && (
+                <>
+                  <FaAngleRight className="text-gray-400" />
+                  <li>
+                    <button
+                      onClick={() => {
+                        router.push(
+                          `/all-product?category=${encodeURIComponent(
+                            category
+                          )}&subcategory=${encodeURIComponent(subcategory)}`
+                        );
+                        setOpenParent(category);
+                        setOpenSub(subcategory);
+                        // Scroll to top
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className="flex items-center gap-2 text-gray-700 hover:text-orange-600 transition-colors duration-300"
+                    >
+                      <div className="p-2 bg-gray-50 rounded-lg">
+                        <FaFolderOpen className="text-orange-500" />
+                      </div>
+                      <span className="font-medium">{subcategory}</span>
+                    </button>
+                  </li>
+                </>
+              )}
+            </ol>
 
-        {/* Search Bar for Mobile */}
-        <div className="md:hidden mb-6">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-amber-400 rounded-2xl blur-sm"></div>
-            <div className="relative bg-white rounded-2xl p-1">
-              <div className="flex items-center">
-                <FaSearch className="absolute left-5 text-orange-400 text-lg" />
-                <input
-                  type="search"
-                  placeholder="Search categories or products..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-transparent focus:outline-none text-gray-700 placeholder-gray-400"
-                />
-                {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm("")}
-                    className="absolute right-4 text-gray-400 hover:text-orange-500"
-                  >
-                    ×
-                  </button>
+            {/* Page Title */}
+            <div className="mt-4">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                {subcategory ? subcategory : category ? category : "All Products"}
+              </h1>
+              <div className="flex items-center gap-3 mt-2">
+                <p className="text-gray-600">
+                  {subcategory
+                    ? `${subcategory} products`
+                    : category
+                      ? `${category} collection`
+                      : "Explore our product catalog"
+                  }
+                </p>
+                {visibleProducts.length > 0 && (
+                  <span className="px-3 py-1 bg-orange-500 text-white text-sm font-medium rounded-full">
+                    {visibleProducts.length} {visibleProducts.length === 1 ? "Product" : "Products"}
+                  </span>
                 )}
               </div>
             </div>
           </div>
         </div>
+      </nav>
+    );
+  };
+
+  /* ================= HANDLE SUBCATEGORY CLICK ================= */
+  const handleSubcategoryClick = (parent, sub) => {
+    // If clicking the same subcategory that's already open, close it
+    if (openSub === sub) {
+      setOpenSub(null);
+      router.push(`/all-product?category=${encodeURIComponent(parent)}`);
+    } else {
+      // Open this subcategory and scroll to it
+      setOpenSub(sub);
+      router.push(
+        `/all-product?category=${encodeURIComponent(
+          parent
+        )}&subcategory=${encodeURIComponent(sub)}`
+      );
+
+      // Scroll to the subcategory element
+      setTimeout(() => {
+        const element = subcategoryRefs.current[sub];
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 50);
+    }
+
+    // Scroll products grid to top
+    if (productsGridRef.current) {
+      productsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  /* ================= HANDLE PRODUCT CLICK ================= */
+  const handleProductClick = (product) => {
+    router.push(
+      `/single-product/${encodeURIComponent(
+        product.parentCategory
+      )}/${encodeURIComponent(product.title)}`
+    );
+
+    // Scroll to top before navigating
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="w-20 h-20 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin mx-auto mb-6"></div>
+          <p className="text-gray-600 font-medium">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 mt-[4.5rem]">
+        <Breadcrumb />
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-          {/* ================= SIDEBAR ================= */}
-          <aside
-            ref={sidebarRef}
-            className="lg:col-span-1 bg-white rounded-3xl border border-orange-100 shadow-xl
-            sticky top-24 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto"
-          >
-            {/* Header with Gradient */}
-            <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white p-6 rounded-t-3xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8"></div>
-              <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-8 -translate-x-8"></div>
-              <div className="relative z-10">
-                <div className="flex items-center space-x-3 mb-2">
-                  <FaTags className="text-2xl" />
-                  <h2 className="text-xl font-bold">Product Categories</h2>
-                </div>
-                <p className="text-orange-100 text-sm">Browse our premium collection</p>
-              </div>
-            </div>
+          {/* ================= LEFT SIDEBAR ================= */}
+          <aside className="lg:col-span-1">
+            <div
+              ref={sidebarRef}
+              className="sticky top-24 bg-white rounded-xl shadow-sm border border-gray-200 
+             overflow-hidden overflow-x-hidden"
+              style={{ maxHeight: "calc(100vh - 6rem)" }}
+            >
 
-            <div className="p-5">
-              {/* Desktop Search */}
-              <div className="hidden md:block mb-6">
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-amber-400 rounded-xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
-                  <div className="relative bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-2">
-                    <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-orange-400" />
-                    <input
-                      type="search"
-                      placeholder="Search categories..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-11 pr-4 py-3 bg-transparent focus:outline-none text-gray-700 placeholder-orange-300"
-                    />
+              {/* HEADER */}
+              <div className="p-4 border-b border-gray-100 bg-orange-50">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-white rounded-lg">
+                    <FaFolderOpen className="text-orange-500 text-lg" />
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-gray-900">PRODUCT CATEGORIES</h2>
+                    <p className="text-xs text-gray-600">Browse product categories</p>
                   </div>
                 </div>
+
+                {/* SEARCH */}
+                <div className="relative">
+                  <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+                  <input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search categories..."
+                    className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                  />
+                </div>
               </div>
 
-              {/* Categories List */}
-              <div className="space-y-3">
-                <AnimatePresence>
-                  {filteredCategories.map((cat) => (
-                    <motion.div
-                      key={cat.title}
-                      layout
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      className={`rounded-xl overflow-hidden transition-all duration-300 ${activeSection === cat.title
-                        ? 'ring-2 ring-orange-400 ring-opacity-50 shadow-md'
-                        : 'hover:shadow-md'
-                        }`}
-                    >
-                      <button
-                        onClick={() => {
-                          setOpenCat(openCat === cat.title ? null : cat.title);
-                          scrollToCategory(cat.title);
-                        }}
-                        className={`w-full flex justify-between items-center px-5 py-4 font-medium text-left transition-all duration-300 ${activeSection === cat.title
-                          ? 'bg-gradient-to-r from-orange-50 to-amber-50 text-orange-700 border-l-4 border-orange-500'
-                          : 'bg-white hover:bg-orange-50 text-gray-800 border-l-4 border-transparent'
-                          }`}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div className={`p-2 rounded-lg ${activeSection === cat.title
-                            ? 'bg-orange-100 text-orange-600'
-                            : 'bg-gray-100 text-gray-600'
-                            }`}>
-                            <FaBoxOpen />
+              {/* CATEGORIES LIST */}
+              <div className="p-4 overflow-y-auto  overflow-x-hidden" style={{ maxHeight: 'calc(100vh - 18rem)' }}>
+                <div className="space-y-1">
+                  {Object.entries(grouped)
+                    .filter(([parent, subs]) => {
+                      if (!search) return true;
+
+                      const s = search.toLowerCase();
+
+                      // parent match
+                      if (parent.toLowerCase().includes(s)) return true;
+
+                      // subcategory OR product match
+                      return Object.entries(subs).some(([sub, items]) => {
+                        if (sub.toLowerCase().includes(s)) return true;
+
+                        return items.some(p =>
+                          p.title.toLowerCase().includes(s)
+                        );
+                      });
+                    })
+                    .map(([parent, subs]) => (
+                      <div key={parent} className="mb-1">
+
+                        {/* PARENT CATEGORY BUTTON */}
+                        <button
+                          onClick={() => {
+                            if (openParent === parent) {
+                              setOpenParent(null);
+                              setOpenSub(null);
+                              router.push("/all-product");
+                            } else {
+                              setOpenParent(parent);
+                              setOpenSub(null);
+                              router.push(`/all-product?category=${encodeURIComponent(parent)}`);
+                            }
+                            // Scroll to top
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className={`w-full flex justify-between items-center px-3 py-3 text-sm font-medium rounded-lg transition-all ${openParent === parent
+                            ? "bg-orange-500 text-white"
+                            : "hover:bg-gray-50 text-gray-700 border border-gray-100"
+                            }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            {openParent === parent ? (
+                              <FaFolderOpen className="text-white" />
+                            ) : (
+                              <FaFolder className="text-gray-400" />
+                            )}
+                            <span className="truncate text-left">{parent}</span>
                           </div>
-                          <span className="font-semibold truncate">{cat.title}</span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <span className={`text-xs px-2.5 py-1 rounded-full ${activeSection === cat.title
-                            ? 'bg-orange-500 text-white'
-                            : 'bg-orange-100 text-orange-600'
-                            }`}>
-                            {cat.products.length}
-                          </span>
-                          {openCat === cat.title ? (
-                            <FaChevronUp className="text-orange-500" />
-                          ) : (
-                            <FaChevronDown className="text-gray-400" />
-                          )}
-                        </div>
-                      </button>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${openParent === parent
+                              ? "bg-white/20 text-white"
+                              : "bg-gray-100 text-gray-600"
+                              }`}>
+                              {Object.values(grouped[parent]).flat().length}
+                            </span>
+                            {openParent === parent ? (
+                              <FaChevronUp className="text-xs" />
+                            ) : (
+                              <FaChevronDown className="text-gray-400 text-xs" />
+                            )}
+                          </div>
+                        </button>
 
-                      <AnimatePresence>
-                        {openCat === cat.title && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="bg-gradient-to-b from-orange-50/50 to-transparent border-t border-orange-100"
-                          >
-                            <div className="p-4 space-y-2">
-                              {cat.products.map((p, index) => (
-                                <motion.button
-                                  key={p.name}
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: index * 0.05 }}
-                                  onClick={() => {
-                                    setOpenCat(openCat === cat.title ? null : cat.title);
-                                    scrollToCategory(cat.title);
+                        {/* SUBCATEGORIES DROPDOWN */}
+                        <AnimatePresence>
+                          {openParent === parent && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0, y: -10 }}
+                              animate={{ height: "auto", opacity: 1, y: 0 }}
+                              exit={{ height: 0, opacity: 0, y: -10 }}
+                              transition={{ duration: 0.2 }}
+                              className="mt-2 ml-3 pl-3 border-l-2 border-orange-200"
+                            >
+                              {Object.entries(grouped[parent]).map(
+                                ([sub, items]) => (
+                                  <div
+                                    key={sub}
+                                    className="mb-2"
+                                    ref={(el) => subcategoryRefs.current[sub] = el}
+                                  >
+                                    {/* SUBCATEGORY HEADER */}
+                                    <button
+                                      onClick={() => handleSubcategoryClick(parent, sub)}
+                                      className={`w-full flex justify-between items-center px-4 py-2.5 text-sm rounded-lg transition-all border ${openSub === sub
+                                        ? "bg-orange-50 border-orange-200 text-orange-700"
+                                        : "hover:bg-gray-50 border-gray-100 text-gray-700"
+                                        }`}
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        <FaFolder className={`text-xs ${openSub === sub
+                                          ? "text-orange-600"
+                                          : "text-gray-400"
+                                          }`} />
+                                        <span className="truncate text-left">{sub}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span className={`text-xs px-2 py-0.5 rounded-full ${openSub === sub
+                                          ? "bg-orange-100 text-orange-700"
+                                          : "bg-gray-100 text-gray-600"
+                                          }`}>
+                                          {items.length}
+                                        </span>
+                                        <FaChevronDown className={`text-xs transition-transform ${openSub === sub ? "rotate-180" : ""
+                                          }`} />
+                                      </div>
+                                    </button>
 
-                                    router.push(
-                                      `/all-product?category=${encodeURIComponent(cat.title)}`,
-                                      { scroll: false }
-                                    );
-                                  }}
-                                  className="w-full text-left py-3 px-4 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200 group flex items-center justify-between"
-                                >
-                                  <div className="flex items-center space-x-3">
-                                    <div className="w-2 h-2 bg-orange-400 rounded-full group-hover:scale-125 transition-transform duration-200"></div>
-                                    <span className="text-sm font-medium text-gray-700 group-hover:text-orange-600">
-                                      {p.name}
-                                    </span>
+                                    {/* PRODUCT LIST DROPDOWN */}
+                                    <AnimatePresence>
+                                      {openSub === sub && (
+                                        <motion.div
+                                          initial={{ height: 0, opacity: 0 }}
+                                          animate={{ height: "auto", opacity: 1 }}
+                                          exit={{ height: 0, opacity: 0 }}
+                                          transition={{ duration: 0.15 }}
+                                          className="mt-2 ml-4 pl-3 border-l border-gray-200"
+                                        >
+                                          <div className="space-y-1 pb-2">
+                                            {items.map((p) => (
+                                              <motion.div
+                                                key={p._id}
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ duration: 0.1 }}
+                                              >
+                                                <button
+                                                  onClick={() => handleProductClick(p)}
+                                                  className="block w-full text-left text-sm py-2 px-3 rounded hover:bg-orange-50 hover:text-orange-600 text-gray-600 transition-all group"
+                                                >
+                                                  <div className="flex items-center justify-between">
+                                                    <span className="truncate pr-2">{p.title}</span>
+                                                    <FaAngleRight className="text-orange-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                                                  </div>
+                                                </button>
+                                              </motion.div>
+                                            ))}
+                                          </div>
+
+                                          {/* View All Button */}
+                                          {items.length > 3 && (
+                                            <div className="mt-2 mb-2 px-3">
+                                              <button
+                                                onClick={() => handleSubcategoryClick(parent, sub)}
+                                                className="w-full text-center text-xs text-orange-600 font-medium py-2 hover:bg-orange-50 rounded-lg transition-colors"
+                                              >
+                                                View all {items.length} products →
+                                              </button>
+                                            </div>
+                                          )}
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
                                   </div>
-                                  <span className="text-xs text-gray-400 group-hover:text-orange-500 group-hover:translate-x-1 transition-all duration-200">
-                                    →
-                                  </span>
-                                </motion.button>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+                                )
+                              )}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    ))}
+
+                  {/* No Results State */}
+                  {Object.keys(grouped).filter((parent) =>
+                    parent.toLowerCase().includes(search.toLowerCase())
+                  ).length === 0 && (
+                      <div className="text-center py-8 px-4">
+                        <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
+                          <FaSearch className="text-xl text-gray-400" />
+                        </div>
+                        <h3 className="font-medium text-gray-900 mb-1">No categories found</h3>
+                        <p className="text-sm text-gray-500">Try a different search term</p>
+                      </div>
+                    )}
+                </div>
               </div>
             </div>
           </aside>
 
-          {/* ================= PRODUCTS ================= */}
-          <div className="lg:col-span-3">
-            {displaySections.length === 0 ? (
-              <div className="text-center py-20">
-                <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-orange-50 to-amber-50 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
-                  <div className="relative">
-                    <FaSearch className="text-4xl text-orange-400" />
-                    <div className="absolute -inset-4 bg-orange-200/20 rounded-full blur-xl"></div>
-                  </div>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-3">
-                  No Products Found
-                </h3>
-                <p className="text-gray-600 max-w-md mx-auto mb-8">
-                  We couldn't find any products matching your search. Try different keywords or browse all categories.
-                </p>
-                <button
-                  onClick={() => setSearchTerm("")}
-                  className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-orange-200 transition-all duration-300"
-                >
-                  View All Products
-                </button>
-              </div>
-            ) : (
-              displaySections.map((section) => (
-                <section
-                  key={section.title}
-                  id={`section-${section.title.replace(/\s+/g, "-")}`}
-                  className="mb-16 scroll-mt-32"
-                >
+          {/* ================= RIGHT PRODUCTS ================= */}
+          <section ref={productsGridRef} className="lg:col-span-3">
+            {/* Products Grid */}
+            {visibleProducts.length > 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {visibleProducts.map((p) => (
                   <motion.div
+                    key={p._id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="relative mb-10"
+                    transition={{ duration: 0.3 }}
+                    whileHover={{
+                      y: -4
+                    }}
+                    className="group cursor-pointer"
+                    onClick={() => handleProductClick(p)}
                   >
-                    <div className="absolute left-0 top-0 w-2 h-full bg-gradient-to-b from-orange-400 to-amber-400 rounded-full"></div>
-                    <div className="ml-8">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-3xl font-bold text-gray-900">
-                          {section.title}
-                        </h3>
-                        <span className="px-4 py-1.5 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 rounded-full text-sm font-semibold">
-                          {section.products.length} Products
-                        </span>
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden transition-all duration-300 hover:border-orange-300 hover:shadow-lg">
+                      {/* Image Container */}
+                      <div className="h-56 sm:h-60 relative overflow-hidden bg-gray-50">
+                        {/* Category Badge */}
+                        <div className="absolute top-3 right-3 z-10">
+                          <span className="px-3 py-1 bg-white text-gray-700 text-xs font-medium rounded-full border border-gray-200">
+                            {p.parentCategory}
+                          </span>
+                        </div>
+
+                        {/* Main Image */}
+                        <div className="absolute inset-0 flex items-center justify-center p-6">
+                          <div className="relative w-full h-full">
+                            <Image
+                              src={p.images?.[0]?.url || "/placeholder-product.png"}
+                              alt={p.title}
+                              fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              className="object-contain transition-transform duration-500 group-hover:scale-105"
+                              priority={false}
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-gray-600">
-                        Discover our premium collection of {section.title.toLowerCase()}
-                      </p>
+
+                      {/* Content */}
+                      <div className="p-5">
+                        <div className="mb-3">
+                          <span className="inline-block px-3 py-1 bg-orange-50 text-orange-700 text-xs font-medium rounded-full">
+                            {p.subCategory}
+                          </span>
+                        </div>
+
+                        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-orange-600 transition-colors duration-300">
+                          {p.title}
+                        </h3>
+
+                        {p.subtitle && (
+                          <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                            {p.subtitle}
+                          </p>
+                        )}
+
+                        {/* View Product Button */}
+                        <div className="pt-4 border-t border-gray-100">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-gray-700">View Details</span>
+                            <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center group-hover:bg-orange-100 transition-all duration-300">
+                              <FaAngleRight className="text-orange-500 group-hover:text-orange-600 transition-colors duration-300" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </motion.div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {section.products.map((product, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                        onClick={() =>
-                          handleProductClick(section.title, product.name)
-                        }
-                        whileHover={{ y: -8, scale: 1.03 }}
-                        className="group relative cursor-pointer"
-                      >
-                        {/* Card Background Effect */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-amber-500/5 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
-
-                        {/* Main Card */}
-                        <div className="relative bg-white rounded-3xl border-2 border-orange-100 p-6 hover:border-orange-200 transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-orange-100">
-                          {/* Image Container */}
-                          <div className="relative mb-6">
-                            <div className="w-full h-56 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center p-4 overflow-hidden">
-                              <Image
-                                src={product.img}
-                                alt={product.name}
-                                width={220}
-                                height={180}
-                                className="object-contain group-hover:scale-110 transition-transform duration-500"
-                                onError={(e) => {
-                                  e.target.src = "/placeholder-product.png";
-                                }}
-                              />
-                            </div>
-                            {/* Decorative Corner */}
-                            <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-bl-3xl rounded-tr-3xl flex items-center justify-center">
-                              <FaStar className="text-white text-sm" />
-                            </div>
-                          </div>
-
-                          {/* Product Info */}
-                          <div className="text-center">
-                            <h4 className="text-lg font-bold text-gray-900 group-hover:text-orange-700 transition-colors duration-300 mb-2 line-clamp-2">
-                              {product.name}
-                            </h4>
-                            <p className="text-sm text-gray-500 mb-4">
-                              Premium quality products
-                            </p>
-
-                            {/* Action Button */}
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full blur opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
-                              <button className="relative w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-orange-200 transition-all duration-300 transform group-hover:-translate-y-1">
-                                Explore Products
-                                <span className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">→</span>
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* Hover Effect Border */}
-                          <div className="absolute inset-0 rounded-3xl border-2 border-transparent group-hover:border-orange-300 transition-all duration-300 pointer-events-none"></div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </section>
-              ))
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="bg-white rounded-xl border border-gray-200 p-12 text-center"
+              >
+                <div className="w-20 h-20 mx-auto mb-6 bg-orange-50 rounded-full flex items-center justify-center">
+                  <FaSearch className="text-3xl text-orange-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  No products found
+                </h3>
+                <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                  {category || subcategory
+                    ? `No products available in "${subcategory || category}".`
+                    : "No products are currently available."
+                  }
+                </p>
+                <button
+                  onClick={() => {
+                    router.push("/all-product");
+                    setOpenParent(null);
+                    setOpenSub(null);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="inline-flex items-center gap-3 px-6 py-3 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-all duration-300"
+                >
+                  <FaHome />
+                  View All Products
+                </button>
+              </motion.div>
             )}
-          </div>
+          </section>
         </div>
       </div>
-    </>
+    </div>
   );
 }

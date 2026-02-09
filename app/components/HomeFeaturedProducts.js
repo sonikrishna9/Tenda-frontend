@@ -58,8 +58,11 @@ export default function HomeFeaturedProducts() {
             <h2 className="text-3xl md:text-4xl font-bold">
               Featured <span className="text-orange-500">Products</span>
             </h2>
-            <p className="text-gray-600">
-              Discover our most popular networking solutions
+            <h4 className="text-gray-700 text-xl">
+              India’s Most Trusted Networking Devices
+            </h4>
+            <p className="text-gray-600 ">
+              Our best-selling products are chosen by professionals and consumers alike for their performance, durability, and ease of use.
             </p>
           </div>
         </div>
@@ -73,7 +76,7 @@ export default function HomeFeaturedProducts() {
                 <div
                   key={i}
                   onClick={() =>
-                    router.push(`/single-product/${p.parentCategory}/${p.subCategory}`)
+                    router.push(`/single-product/${p.parentCategory}/${p.title}`)
                   }
                   className="group bg-white rounded-2xl shadow-lg border hover:shadow-xl transition cursor-pointer"
                 >

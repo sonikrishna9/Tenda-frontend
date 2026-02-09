@@ -59,28 +59,28 @@ const cardVariant = {
 
 const data = [
   {
-    title: "IT & Networking Product Resellers",
-    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    title: "Distributors",
+    desc: "Expand reach by distributing Tenda products across regions.",
     img: "/images/products/whocanapply/it.jpg",
   },
   {
-    title: "Distributors & Wholesalers",
-    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    title: "IT Resellers",
+    desc: " Sell Tenda routers, switches, and other solutions through retail or online channels.",
     img: "/images/products/whocanapply/distributor.jpg",
   },
   {
     title: "System Integrators",
-    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    desc: "Offer complete networking solutions to enterprise & commercial clients.",
     img: "/images/products/whocanapply/systemintegrators.jpg",
   },
   {
-    title: "Networking Solutions Providers",
-    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    title: "Retailers & Local Stores",
+    desc: "Stock high-demand networking products for local customers.",
     img: "/images/products/whocanapply/networksolutionpartner.jpg",
   },
   {
-    title: "E-Commerce & Retail Partners",
-    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    title: "Installation & Technical Service Providers",
+    desc: "Leverage Tenda products for connectivity projects and services.",
     img: "/images/products/whocanapply/ecomretailpartner.jpg",
   },
 ];
@@ -270,11 +270,11 @@ export default function WhoCanApply() {
         {/* UPDATED HEADING -- EXACTLY LIKE SECOND IMAGE */}
         <div className="mb-8 ml-[8%]">
           <h2 className="fw-bold text-[28px] text-[#2d2d2d] mb-2">
-            Who Can Apply ?
+            Who Can Partner With Us?
           </h2>
 
           <p className="text-[#6f6f6f] max-w-[420px] leading-[1.6] mb-3">
-            Designed for partners ready to deliver trusted security solutions.
+            Tenda India collaborates with a wide range of channel partners, including:
           </p>
 
           <div
@@ -345,9 +345,14 @@ export default function WhoCanApply() {
                     {item.desc}
                   </p>
                 </motion.div>
+
               </motion.div>
             );
           })}
+            <p className="text-[#6f6f6f] max-w-[600px] leading-[1.6] mb-3">
+              Our partner ecosystem is designed to support both established businesses and emerging channel partners across India.
+            </p>
+          
         </div>
       </div>
 

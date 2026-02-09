@@ -157,7 +157,7 @@ export default function Footer() {
 
                   <div>
                     <p className="text-xs text-gray-400 font-medium tracking-wider">
-                      GLOBAL NETWORKING SOLUTIONS
+                      Tenda India
                     </p>
                   </div>
                 </div>
@@ -165,9 +165,7 @@ export default function Footer() {
 
               {/* Tagline */}
               <p className="text-gray-400 leading-relaxed max-w-md text-sm">
-                Empowering global connectivity through innovative networking
-                solutions. Trusted by millions worldwide for reliable, high-performance
-                network infrastructure.
+                Delivering high-quality networking solutions designed for Indian homes and businesses. From everyday connectivity to enterprise networking, Tenda helps India stay connected.
               </p>
 
               {/* Contact Info */}

@@ -6,15 +6,12 @@ import { FaCrown, FaPlay, FaStar, FaCheckCircle } from "react-icons/fa";
 
 export default function TrustedClientsSection() {
     const logos = [
-        "https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_TV_2015.png",
-        "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg",
-        "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
-        "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
-        "https://1000logos.net/wp-content/uploads/2016/10/Amazon-Logo-500x313.png",
-        "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
-        "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
-        "https://cdn.iconscout.com/icon/free/png-256/free-twitter-213-569318.png",
-        "https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg",
+        "https://www.fortunehotels.in/images/logo.png",
+        "https://s3-ap-southeast-1.amazonaws.com/bsy/iportal/images/airtel-logo-red-text-horizontal.jpg",
+        "https://www.actcorp.in/themes/custom/actcorp/logo.svg",
+        "https://upload.wikimedia.org/wikipedia/commons/d/d6/GTPL_LOGO_HIGH_RESOLUTION.png",
+        "https://www.hathway.com/home_images/logo.svg",
+        "https://upload.wikimedia.org/wikipedia/commons/e/e5/L%26T.png"
     ];
 
     const videoUrl = "https://www.youtube.com/embed/dQw4w9WgXcQ";
@@ -30,25 +27,24 @@ export default function TrustedClientsSection() {
                 className="text-center mb-16 px-4 sm:px-6 lg:px-8"
             >
                 {/* Badge */}
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-lg">
+                {/* <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-lg">
                     <FaCrown className="text-yellow-300" />
                     <span>TRUSTED BY INDUSTRY LEADERS</span>
                     <FaCrown className="text-yellow-300" />
-                </div>
+                </div> */}
 
                 {/* Main Heading */}
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                     <span className="bg-gradient-to-r from-orange-500 to-orange-700 bg-clip-text text-transparent">
-                        Trusted Worldwide
+                        Trusted Across India
                     </span>
                     <br />
-                    <span className="text-gray-800">By Leading Brands</span>
+                    <span className="text-gray-800">Powering Connectivity Nationwide</span>
                 </h2>
 
                 {/* Subheading */}
                 <p className="text-gray-600 text-xl max-w-3xl mx-auto mb-10 leading-relaxed">
-                    Join <span className="font-bold text-orange-600">5,000+</span> successful companies
-                    who rely on our solutions to drive their business forward
+                    Tenda <span className="font-bold text-orange-600">networking solutions</span> are trusted by thousands of partners, installers, and businesses across India. Our products are deployed in homes, offices, campuses, warehouses, and outdoor environments — delivering reliable connectivity every day.
                 </p>
 
                 {/* Decorative Line */}

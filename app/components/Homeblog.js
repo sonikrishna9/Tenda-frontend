@@ -93,7 +93,7 @@ export default function Homeblog() {
           In The News
         </h2>
         <p className="text-gray-500 mt-2">
-          Nexus IO delivers smart & innovative security solutions
+         Stay updated with the latest from Tenda India:
         </p>
         <div className="h-[2px] w-16 bg-gradient-to-r from-orange-400 to-teal-400 mt-3 mx-auto md:mx-0" />
       </div>

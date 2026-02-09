@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   FaRocket,
@@ -30,10 +31,15 @@ import {
 import { IoIosRocket, IoMdGlobe, IoMdTrendingUp } from "react-icons/io";
 
 export default function AboutBanner() {
+
+  const router = useRouter();
+
+
   const [aboutData, setAboutData] = useState(null);
   const [htmlContent, setHtmlContent] = useState("");
   const [activeMilestone, setActiveMilestone] = useState(2);
   const [play, setPlay] = useState(false);
+
 
 
   useEffect(() => {
@@ -162,14 +168,14 @@ export default function AboutBanner() {
             className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-20"
           >
             <div className="max-w-xl sm:max-w-2xl">
-             
+
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-white text-2xl my-4 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-6"
+                className="text-white text-xl my-4 sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight mb-6"
               >
-                Connecting the <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500">World</span> Through Innovation
+                INDIA’S <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500">ADVANCED</span> NETWORKING SOLUTIONS
               </motion.h1>
 
               <motion.p
@@ -178,9 +184,7 @@ export default function AboutBanner() {
                 transition={{ delay: 0.4 }}
                 className="mt-6 text-gray-300 text-base sm:text-lg md:text-xl leading-relaxed max-w-xl sm:max-w-2xl"
               >
-                For over a decade, TENDA has been at the forefront of networking technology,
-                delivering reliable, high-performance solutions that power businesses,
-                connect communities, and enable digital transformation worldwide.
+                Empowering India’s digital connectivity with reliable, high-performance networking products designed for modern homes, businesses, and enterprises. Tenda India delivers innovative and easy-to-use solutions that help individuals, professionals, and organisations stay connected with confidence.
               </motion.p>
 
               <motion.div
@@ -189,10 +193,14 @@ export default function AboutBanner() {
                 transition={{ delay: 0.5 }}
                 className="flex flex-wrap gap-4 mt-10"
               >
-                <button className="group px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-full hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 flex items-center gap-2">
+                <button
+                  onClick={() => router.push("/all-product")}
+                  className="group px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-full hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 flex items-center gap-2"
+                >
                   <span>Explore Our Products</span>
                   <FaChevronRight className="group-hover:translate-x-1 transition-transform" />
                 </button>
+
 
               </motion.div>
             </div>
@@ -218,25 +226,15 @@ export default function AboutBanner() {
             {/* LEFT CONTENT */}
             <div className="lg:col-span-2">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 leading-snug mb-6">
-                One Of The Leading Brands In Industry Since Last 20 Years <br />
-                In The Field Of Security Products
+                OUR IDENTITY
               </h2>
 
               <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-4">
-                Secureye has been revolutionizing security and surveillance for 20 years,
-                providing top-quality CCTV Cameras and security solutions that meet the
-                highest standards of innovation and reliability.
+                Tenda India is part of the global Tenda Technology family — a trusted networking brand since 1999. We bring world-class networking expertise to the Indian market with products that deliver performance, stability, affordability, and ease of setup.
               </p>
 
               <p className="text-gray-600 text-sm md:text-base leading-relaxed">
-                Our offerings include a wide range of advanced products, from high-definition
-                CCTV cameras to biometric attendance machines and access control systems.
-                With pioneering achievements such as introducing the AHD camera in India
-                and launching the PHOENIX &amp; PELICAN series, Secureye remains at the cutting
-                edge of technology. Our ISO9001 certification and global recognition highlight
-                our commitment to quality. Trusted by elite clients including the Indian Army,
-                Banks and major hospitals, Secureye delivers unmatched security solutions
-                tailored to your needs. Choose Secureye for a secure future.
+                As India’s connectivity needs evolve, Tenda continues to innovate with solutions that support faster Wi-Fi, better coverage, and intelligent network control — all backed by a nationwide distribution and support framework.
               </p>
             </div>
 
@@ -260,9 +258,10 @@ export default function AboutBanner() {
           {/* TEXT */}
           <div className="text-center mb-10">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-medium text-gray-600 leading-relaxed">
-              Atmanirbhar Bharat is a call for self reliance
-              <br className="hidden sm:block" />
-              for both national and global good
+              WHY INDIA TRUSTS TENDA
+
+              {/* <br className="hidden sm:block" />
+              for both national and global good */}
             </h2>
           </div>
 
@@ -312,30 +311,30 @@ export default function AboutBanner() {
             {/* LEFT CONTENT */}
             <div>
               <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-6">
-                Advancing Security, Ensuring Future Safety
+                Tenda India stands out for
               </h2>
 
               <div className="mb-6">
                 <h3 className="text-base font-semibold text-gray-900 mb-2">
-                  Mission
+                  Indian-oriented design and performance that supports local broadband and usage patterns.
                 </h3>
-                <p className="text-gray-600 text-sm md:text-base leading-relaxed">
-                  Our mission is to engage and retain customers by providing exceptional
-                  security solutions that build trust and loyalty. We are dedicated to
-                  delivering high-quality, reliable products and services.
-                </p>
+
+              </div>
+              <div className="mb-6">
+                <h3 className="text-base font-semibold text-gray-900 mb-2">
+                  Simple setup and intuitive management for users of all technical levels.
+                </h3>
               </div>
 
               <div>
                 <h3 className="text-base font-semibold text-gray-900 mb-2">
-                  Vision
+                  Strong partner & support network across key cities and regions nationwide.
                 </h3>
-                <p className="text-gray-600 text-sm md:text-base leading-relaxed">
-                  To be the industry standard for security solutions, admired for our
-                  innovation, sustainability, and business performance. Secureye is
-                  committed to making a positive impact through advanced technology
-                  and responsible practices.
-                </p>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-gray-900 mb-2">
+                  Affordable solutions without compromising quality.
+                </h3>
               </div>
             </div>
 
@@ -366,12 +365,13 @@ export default function AboutBanner() {
           {/* Header */}
           <div className="text-center text-white max-w-3xl mx-auto mb-14">
             <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-              20 Years Of Excellence
+              INDIA MARKET PRESENCE
             </h2>
             <p className="text-white/90 text-sm md:text-base">
-              With 20 years of expertise, Secureye delivers top-tier security solutions
-              including advanced CCTV cameras, biometric attendance systems, Smart Locks,
-              and access controls for comprehensive safety.
+              With the support of dedicated Indian partners and authorised nationwide distribution through Fortune Marketing Pvt. Ltd., Tenda products are easily accessible across the country — backed by genuine warranties, professional logistics, and local customer care.
+            </p>
+            <p className="text-white/90 text-sm md:text-base">
+              Tenda’s solutions are trusted in homes, offices, retail environments, education campuses, and outdoor wireless networks — helping India stay connected in an increasingly digital world.
             </p>
           </div>
 
@@ -444,10 +444,10 @@ export default function AboutBanner() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="text-gray-900">Certifications</span>
+              <span className="text-gray-900">CERTIFICATIONS & QUALITY</span>
             </h2>
             <p className="text-gray-600 text-lg">
-              ISO, BIS, ROHS, CE, and FCC certified for top security solutions.
+              Tenda India adheres to international standards and certifications to deliver consistent quality you can rely on:
             </p>
             <div className="w-28 h-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full mx-auto mt-6" />
           </motion.div>
