@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 import Image from "next/image";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useParams } from "next/navigation";
 import {
   FaChevronDown,
   FaChevronUp,
@@ -14,19 +15,43 @@ import {
   FaFolder,
   FaLayerGroup
 } from "react-icons/fa";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function ProductCategoriesPage() {
+
+  const slugify = (s = "") => encodeURIComponent(s.trim());
+
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const params = useParams();
 
-  const categoryParam = searchParams.get("category");
-  const subcategoryParam = searchParams.get("subcategory");
+  const slug = Array.isArray(params?.slug)
+    ? params.slug
+    : params?.slug
+      ? [params.slug]
+      : [];
 
-  const category = categoryParam ? decodeURIComponent(categoryParam) : null;
-  const subcategory = subcategoryParam
-    ? decodeURIComponent(subcategoryParam)
-    : null;
+  const formatName = (s) => decodeURIComponent(s || "");
+
+
+  const capitalizeWords = (s = "") =>
+    s.replace(/\b\w/g, (c) => c.toUpperCase());
+
+
+
+  const category = slug[0] ? formatName(slug[0]) : null;
+  const subcategory = slug[1] ? formatName(slug[1]) : null;
+
+
+
+  // const searchParams = useSearchParams();
+
+  // const categoryParam = searchParams.get("category");
+  // const subcategoryParam = searchParams.get("subcategory");
+
+  // const category = categoryParam ? decodeURIComponent(categoryParam) : null;
+  // const subcategory = subcategoryParam
+  //   ? decodeURIComponent(subcategoryParam)
+  //   : null;
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +62,8 @@ export default function ProductCategoriesPage() {
 
   const subcategoryRefs = useRef({});
   const productsGridRef = useRef(null);
+  const sidebarScrollRef = useRef(null);
+
   const sidebarRef = useRef(null);
 
   /* ================= FETCH ================= */
@@ -79,20 +106,33 @@ export default function ProductCategoriesPage() {
 
   // Initialize open states based on URL params
   useEffect(() => {
-    if (category) {
-      setOpenParent(category);
-      if (subcategory) {
-        setOpenSub(subcategory);
-        // Scroll to subcategory after render
-        setTimeout(() => {
-          const element = subcategoryRefs.current[subcategory];
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        }, 100);
+    if (!products.length) return;
+
+    let realParent = null;
+    let realSub = null;
+
+    // find matching parent from products
+    for (const p of products) {
+      if (
+        category &&
+        p.parentCategory.toLowerCase() === category.toLowerCase()
+      ) {
+        realParent = p.parentCategory;
+      }
+
+      if (
+        subcategory &&
+        p.subCategory.toLowerCase() === subcategory.toLowerCase()
+      ) {
+        realSub = p.subCategory;
+        realParent = p.parentCategory;
       }
     }
-  }, [category, subcategory]);
+
+    if (realParent) setOpenParent(realParent);
+    if (realSub) setOpenSub(realSub);
+
+  }, [category, subcategory, products]);
 
   /* ================= GROUP DATA ================= */
   const grouped = useMemo(() => {
@@ -121,10 +161,7 @@ export default function ProductCategoriesPage() {
         setOpenSub(subcategory);
 
         // Update URL to keep it consistent
-        router.replace(
-          `/all-product?category=${encodeURIComponent(parent)}&subcategory=${encodeURIComponent(subcategory)}`,
-          { scroll: false }
-        );
+        router.replace(`/products/${slugify(parent)}/${slugify(subcategory)}`, { scroll: false })
 
         // Scroll subcategory into view
         setTimeout(() => {
@@ -137,37 +174,57 @@ export default function ProductCategoriesPage() {
     }
   }, [subcategory, category, products, router]);
 
+  useEffect(() => {
+    const sidebar = sidebarScrollRef.current;
+    if (!sidebar) return;
+
+    const saved = sessionStorage.getItem("sidebarScroll");
+    if (saved) sidebar.scrollTop = Number(saved);
+
+    const handleScroll = () => {
+      sessionStorage.setItem("sidebarScroll", sidebar.scrollTop);
+    };
+
+    sidebar.addEventListener("scroll", handleScroll);
+    return () => sidebar.removeEventListener("scroll", handleScroll);
+  }, []);
+
+
 
   /* ================= RIGHT SIDE FILTER ================= */
   const visibleProducts = useMemo(() => {
     if (!category && !subcategory) return products;
 
     if (category && !subcategory) {
-      return products.filter((p) => p.parentCategory === category);
+      return products.filter(
+        (p) =>
+          p.parentCategory.toLowerCase() === category.toLowerCase()
+      );
     }
 
     return products.filter(
       (p) =>
-        p.parentCategory === category &&
-        p.subCategory === subcategory
+        p.parentCategory.toLowerCase() === category.toLowerCase() &&
+        p.subCategory.toLowerCase() === subcategory.toLowerCase()
     );
   }, [products, category, subcategory]);
+
 
   /* ================= ENHANCED BREADCRUMB ================= */
   const Breadcrumb = () => {
     const handleHomeClick = () => {
-      router.push("/all-product");
+      router.push("/products", { scroll: false });
       setOpenParent(null);
       setOpenSub(null);
       // Scroll to top when going to all products
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+
     };
 
     return (
       <nav className="mb-8">
         <div className="flex flex-col gap-4">
           <div>
-            <ol className="flex flex-wrap items-center gap-2 text-sm">
+            <ol className="flex flex-wrap items-center gap-3 text-base md:text-lg font-medium">
               <li className="flex items-center gap-2">
                 <button
                   onClick={handleHomeClick}
@@ -186,18 +243,20 @@ export default function ProductCategoriesPage() {
                   <li>
                     <button
                       onClick={() => {
-                        router.push(`/all-product?category=${encodeURIComponent(category)}`);
+                        router.push(`/products/${slugify(category)}`, { scroll: false });
                         setOpenParent(category);
                         setOpenSub(null);
                         // Scroll to top
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+
                       }}
                       className="flex items-center gap-2 text-gray-700 hover:text-orange-600 transition-colors duration-300"
                     >
                       <div className="p-2 bg-gray-50 rounded-lg">
                         <FaLayerGroup className="text-gray-600" />
                       </div>
-                      <span className="font-medium">{category}</span>
+                      <span className="font-semibold">
+                        {capitalizeWords(category)}
+                      </span>
                     </button>
                   </li>
                 </>
@@ -209,22 +268,20 @@ export default function ProductCategoriesPage() {
                   <li>
                     <button
                       onClick={() => {
-                        router.push(
-                          `/all-product?category=${encodeURIComponent(
-                            category
-                          )}&subcategory=${encodeURIComponent(subcategory)}`
-                        );
+                        router.push(`/products/${slugify(category)}/${slugify(subcategory)}`, { scroll: false });
                         setOpenParent(category);
                         setOpenSub(subcategory);
                         // Scroll to top
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+
                       }}
                       className="flex items-center gap-2 text-gray-700 hover:text-orange-600 transition-colors duration-300"
                     >
                       <div className="p-2 bg-gray-50 rounded-lg">
                         <FaFolderOpen className="text-orange-500" />
                       </div>
-                      <span className="font-medium">{subcategory}</span>
+                      <span className="font-semibold">
+                        {capitalizeWords(subcategory)}
+                      </span>
                     </button>
                   </li>
                 </>
@@ -233,8 +290,12 @@ export default function ProductCategoriesPage() {
 
             {/* Page Title */}
             <div className="mt-4">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-                {subcategory ? subcategory : category ? category : "All Products"}
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">
+                {subcategory
+                  ? capitalizeWords(subcategory)
+                  : category
+                    ? capitalizeWords(category)
+                    : "All Products"}
               </h1>
               <div className="flex items-center gap-3 mt-2">
                 <p className="text-gray-600">
@@ -260,47 +321,28 @@ export default function ProductCategoriesPage() {
 
   /* ================= HANDLE SUBCATEGORY CLICK ================= */
   const handleSubcategoryClick = (parent, sub) => {
-    // If clicking the same subcategory that's already open, close it
-    if (openSub === sub) {
-      setOpenSub(null);
-      router.push(`/all-product?category=${encodeURIComponent(parent)}`);
-    } else {
-      // Open this subcategory and scroll to it
-      setOpenSub(sub);
-      router.push(
-        `/all-product?category=${encodeURIComponent(
-          parent
-        )}&subcategory=${encodeURIComponent(sub)}`
-      );
+    setOpenParent(parent);   // ensure parent stays open
+    setOpenSub(sub);         // ALWAYS select subcategory
+    setTimeout(() => {
+      const el = subcategoryRefs.current[sub];
+      if (el) el.scrollIntoView({ block: "center", behavior: "smooth" });
+    }, 100);
 
-      // Scroll to the subcategory element
-      setTimeout(() => {
-        const element = subcategoryRefs.current[sub];
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 50);
-    }
-
-    // Scroll products grid to top
-    if (productsGridRef.current) {
-      productsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    router.push(`/products/${slugify(parent)}/${slugify(sub)}`, { scroll: false });
   };
+
 
   /* ================= HANDLE PRODUCT CLICK ================= */
   const handleProductClick = (product) => {
+    if (!product?.parentCategory || !product?.title) return;
+
     router.push(
-      `/single-product/${encodeURIComponent(
-        product.parentCategory
-      )}/${encodeURIComponent(product.title)}`
+      `/product/${slugify(product.parentCategory)}/${slugify(product.title)}`,
+      { scroll: false }
     );
 
-    // Scroll to top before navigating
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
 
   if (loading) {
     return (
@@ -324,7 +366,7 @@ export default function ProductCategoriesPage() {
             <div
               ref={sidebarRef}
               className="sticky top-24 bg-white rounded-xl shadow-sm border border-gray-200 
-             overflow-hidden overflow-x-hidden"
+              overflow-hidden overflow-x-hidden"
               style={{ maxHeight: "calc(100vh - 6rem)" }}
             >
 
@@ -353,7 +395,10 @@ export default function ProductCategoriesPage() {
               </div>
 
               {/* CATEGORIES LIST */}
-              <div className="p-4 overflow-y-auto  overflow-x-hidden" style={{ maxHeight: 'calc(100vh - 18rem)' }}>
+              <div
+                ref={sidebarScrollRef}
+                className="p-4 overflow-y-auto overflow-x-hidden"
+                style={{ maxHeight: 'calc(100vh - 18rem)' }}>
                 <div className="space-y-1">
                   {Object.entries(grouped)
                     .filter(([parent, subs]) => {
@@ -379,17 +424,9 @@ export default function ProductCategoriesPage() {
                         {/* PARENT CATEGORY BUTTON */}
                         <button
                           onClick={() => {
-                            if (openParent === parent) {
-                              setOpenParent(null);
-                              setOpenSub(null);
-                              router.push("/all-product");
-                            } else {
-                              setOpenParent(parent);
-                              setOpenSub(null);
-                              router.push(`/all-product?category=${encodeURIComponent(parent)}`);
-                            }
-                            // Scroll to top
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            setOpenParent(parent);
+                            setOpenSub(null);
+                            router.push(`/products/${slugify(parent)}`, { scroll: false });
                           }}
                           className={`w-full flex justify-between items-center px-3 py-3 text-sm font-medium rounded-lg transition-all ${openParent === parent
                             ? "bg-orange-500 text-white"
@@ -464,48 +501,16 @@ export default function ProductCategoriesPage() {
                                     </button>
 
                                     {/* PRODUCT LIST DROPDOWN */}
+                                    {/* PRODUCT LIST REMOVED — only keep spacing for animation */}
                                     <AnimatePresence>
                                       {openSub === sub && (
                                         <motion.div
                                           initial={{ height: 0, opacity: 0 }}
-                                          animate={{ height: "auto", opacity: 1 }}
+                                          animate={{ height: 8, opacity: 1 }}
                                           exit={{ height: 0, opacity: 0 }}
                                           transition={{ duration: 0.15 }}
-                                          className="mt-2 ml-4 pl-3 border-l border-gray-200"
-                                        >
-                                          <div className="space-y-1 pb-2">
-                                            {items.map((p) => (
-                                              <motion.div
-                                                key={p._id}
-                                                initial={{ opacity: 0, x: -10 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ duration: 0.1 }}
-                                              >
-                                                <button
-                                                  onClick={() => handleProductClick(p)}
-                                                  className="block w-full text-left text-sm py-2 px-3 rounded hover:bg-orange-50 hover:text-orange-600 text-gray-600 transition-all group"
-                                                >
-                                                  <div className="flex items-center justify-between">
-                                                    <span className="truncate pr-2">{p.title}</span>
-                                                    <FaAngleRight className="text-orange-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                                                  </div>
-                                                </button>
-                                              </motion.div>
-                                            ))}
-                                          </div>
-
-                                          {/* View All Button */}
-                                          {items.length > 3 && (
-                                            <div className="mt-2 mb-2 px-3">
-                                              <button
-                                                onClick={() => handleSubcategoryClick(parent, sub)}
-                                                className="w-full text-center text-xs text-orange-600 font-medium py-2 hover:bg-orange-50 rounded-lg transition-colors"
-                                              >
-                                                View all {items.length} products →
-                                              </button>
-                                            </div>
-                                          )}
-                                        </motion.div>
+                                          className="mt-1 ml-4 pl-3 border-l border-gray-200"
+                                        />
                                       )}
                                     </AnimatePresence>
                                   </div>
@@ -634,10 +639,9 @@ export default function ProductCategoriesPage() {
                 </p>
                 <button
                   onClick={() => {
-                    router.push("/all-product");
+                    router.push("/products", { scroll: false });
                     setOpenParent(null);
                     setOpenSub(null);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   className="inline-flex items-center gap-3 px-6 py-3 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-all duration-300"
                 >

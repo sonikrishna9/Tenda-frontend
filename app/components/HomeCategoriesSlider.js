@@ -15,6 +15,10 @@ const getItemsCount = () => {
 };
 
 export default function HomeCategoriesSlider() {
+
+    const slugify = (s) => s?.toLowerCase().trim().replace(/\s+/g, "-");
+
+
     const router = useRouter();
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -106,13 +110,13 @@ export default function HomeCategoriesSlider() {
                 <div className="flex justify-between items-center mb-12">
                     <div>
                         <h2 className="text-3xl md:text-4xl font-bold">
-                           Product <span className="text-orange-500">Categories</span>
+                            Product <span className="text-orange-500">Categories</span>
                         </h2>
                         <h4 className="text-gray-700 text-xl">
-                           Explore Our Networking Solutions
+                            Explore Our Networking Solutions
                         </h4>
                         <p className="text-gray-600 ">
-                           Discover a complete range of networking products designed for homes, SMBs, enterprises, and outdoor deployments.
+                            Discover a complete range of networking products designed for homes, SMBs, enterprises, and outdoor deployments.
                         </p>
                     </div>
                 </div>
@@ -164,9 +168,7 @@ export default function HomeCategoriesSlider() {
                                 <div
                                     key={cat._id}
                                     onClick={() =>
-                                        router.push(
-                                            `/all-product?subcategory=${encodeURIComponent(cat.categoryname)}`
-                                        )
+                                        router.push(`/products/${slugify(cat.categoryname)}`)
                                     }
                                     className="group relative bg-white rounded-2xl border
                                shadow-md hover:shadow-2xl hover:border-orange-200

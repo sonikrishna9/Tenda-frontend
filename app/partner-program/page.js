@@ -58,10 +58,10 @@ export default function Page() {
           </div>
 
           <p className="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto mb-10">
-           Grow your business by joining the Tenda India Partner Program — a nationwide channel initiative built for distributors, system integrators, IT resellers, retailers, and technology partners who want to expand with reliable, high-performance networking products.
+            Grow your business by joining the Tenda India Partner Program — a nationwide channel initiative built for distributors, system integrators, IT resellers, retailers, and technology partners who want to expand with reliable, high-performance networking products.
           </p>
           <p className="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto mb-10">
-         Tenda India offers strong product demand, competitive margins, dedicated support, and collaborative growth opportunities for partners of all sizes.
+            Tenda India offers strong product demand, competitive margins, dedicated support, and collaborative growth opportunities for partners of all sizes.
           </p>
 
           {/* ================= BEAUTIFUL BUTTONS ================= */}
@@ -89,12 +89,14 @@ export default function Page() {
             <button
               onClick={() => router.push("/partner-program/sipartner")}
               className="
-          relative px-10 py-4 rounded-full
-          border-2 border-orange-500
-          text-orange-600 font-semibold text-lg
-          hover:bg-orange-500 hover:text-white
+           relative px-10 py-4 rounded-full 
+          bg-gradient-to-r from-orange-500 to-orange-600
+          text-white font-semibold text-lg
+          shadow-lg shadow-orange-200
+          hover:shadow-orange-300
           hover:scale-105
           transition-all duration-300
+          group
         "
             >
               SI Partner

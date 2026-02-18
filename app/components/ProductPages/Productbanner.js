@@ -2,42 +2,26 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import Link from "next/link";
+
 
 const slides = [
   {
     id: 1,
-    title1: "SMART",
-    title2: "NETWORKING",
-    title3: "FORTIFIED",
-    title4: "SECURITY",
-    description:
-      "Experience the command of truly blazing-fast Wi-Fi and proactive, AI-powered protection, seamlessly integrated and effortlessly managed from a single, intuitive app on your smartphone.",
     img: "/images/carousel/c1.webp",
   },
   {
     id: 2,
-    title1: "INTELLIGENT",
-    title2: "SOLUTIONS",
-    title3: "CONNECTED",
-    title4: "LIFESTYLE",
-    description:
-      "Discover the power of smart technology that brings your devices together for a seamless, connected experience — designed for convenience and security.",
     img: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80",
   },
   {
     id: 3,
-    title1: "INNOVATIVE",
-    title2: "TECHNOLOGY",
-    title3: "ADVANCED",
-    title4: "PERFORMANCE",
-    description:
-      "Empower your business with next-gen solutions that ensure speed, safety, and reliability — built for the future of digital innovation.",
     img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1600&q=80",
   },
 ];
 
 export default function Productbanner() {
-    
+
   const [current, setCurrent] = useState(0);
 
   // Auto slide every 6 seconds
@@ -93,20 +77,16 @@ export default function Productbanner() {
               </p>
 
               {/* Buttons */}
-              <div className="flex gap-4 mt-6 justify-center">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  className="bg-gradient-to-r from-teal-400 to-orange-400 text-white px-6 py-2 rounded-full font-medium hover:opacity-90 transition"
-                >
-                  Contact Us
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  className="border border-white text-white px-6 py-2 rounded-full font-medium hover:bg-white hover:text-black transition"
-                >
-                  Know More
-                </motion.button>
-              </div>
+              {/* <div className="flex gap-4 mt-6 justify-center">
+                <Link href="/contactus">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-gradient-to-r from-teal-400 to-orange-400 text-white px-6 py-2 rounded-full font-medium hover:opacity-90 transition"
+                  >
+                    Contact Us
+                  </motion.button>
+                </Link>
+              </div> */}
             </motion.div>
           </div>
         </motion.div>

@@ -554,7 +554,17 @@ const PDFCard = ({ pdf, type = "download", onClick }) => {
 };
 
 export default function ProductDisplay() {
-  const { parentCategory, productTitle } = useParams();
+
+  const deslugify = (s = "") =>
+    s
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, c => c.toUpperCase());
+
+
+
+  const params = useParams();
+  const parentCategory = params?.parentCategory;
+  const productTitle = params?.productTitle;
 
 
   const [product, setProduct] = useState(null);
@@ -596,12 +606,20 @@ export default function ProductDisplay() {
 
   /* ---------------- FETCH PRODUCT ---------------- */
   useEffect(() => {
-    if (!parentCategory || !productTitle) return;
+
+    if (!parentCategory || !productTitle) {
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
 
+    const deslugify = (s = "") =>
+      s.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
     const pc = decodeURIComponent(parentCategory);
     const pt = decodeURIComponent(productTitle);
+
 
     fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}api/product/single-product/${pc}/${pt}`
@@ -611,13 +629,17 @@ export default function ProductDisplay() {
         console.log("API RESPONSE 👉", data);
         if (data.success) {
           setProduct(data.product);
+          window.scrollTo({ top: 0, behavior: "smooth" });
         }
       })
       .catch(err => {
         console.error("Fetch error:", err);
       })
       .finally(() => setLoading(false));
+
   }, [parentCategory, productTitle]);
+
+
 
 
   // Show loading state
@@ -656,12 +678,15 @@ export default function ProductDisplay() {
   const downloadpdfs = product.pdf?.downloadpdfs || [];
 
   const handlePrev = () => {
+    if (!images.length) return;
     setCurrentIndex((prev) =>
       prev === 0 ? images.length - 1 : prev - 1
     );
   };
 
+
   const handleNext = () => {
+    if (!images.length) return;
     setCurrentIndex((prev) =>
       prev === images.length - 1 ? 0 : prev + 1
     );
@@ -709,7 +734,7 @@ export default function ProductDisplay() {
         <div className="w-full md:w-1/2 flex flex-col items-center">
           <motion.img
             key={currentIndex}
-            src={images[currentIndex]}
+            src={images[currentIndex] ?? "/images/placeholder.png"}
             alt={product.title}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}

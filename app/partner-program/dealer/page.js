@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import DealerSlider from "./DealerSlider";
+import Link from "next/link";
 import {
     FaCheckCircle, FaChartLine, FaHeadset, FaShieldAlt, FaTruck, FaUsers, FaQuestionCircle,
     FaPhone
@@ -223,10 +224,13 @@ export default function DealerPage() {
                                 Our team is ready to help you get started.
                             </p>
                         </div>
-                        <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-semibold flex items-center gap-2">
-                            <FaPhone />
-                            Contact Us
-                        </button>
+
+                        <Link href="/contactus">
+                            <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-semibold flex items-center gap-2">
+                                <FaPhone />
+                                Contact Us
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </section>

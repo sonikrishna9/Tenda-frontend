@@ -163,7 +163,7 @@ export default function WhoCanApply() {
   };
 
   const handleViewProducts = () => {
-    router.push("/all-product");
+    router.push("/products");
   };
 
   const visibleCategories = sections.slice(
@@ -190,7 +190,7 @@ export default function WhoCanApply() {
       <div className="py-14 px-4 md:px-12 lg:px-16 text-center">
 
         {/* TITLE */}
-        <motion.h2
+        {/* <motion.h2
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
@@ -204,10 +204,10 @@ export default function WhoCanApply() {
         >
           Enjoy blazing–fast Wi-Fi7 BE5100<br />
           throughout your home
-        </motion.h2>
+        </motion.h2> */}
 
         {/* DESCRIPTION */}
-        <motion.p
+        {/* <motion.p
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
@@ -218,7 +218,7 @@ export default function WhoCanApply() {
           The unique Multi-Link Operation technology of Wi-Fi 7, dual-band
           simultaneous transmission is possible with Wi-Fi 7 terminal devices,
           the network speed is faster than the BE3600 and the network latency is lower.
-        </motion.p>
+        </motion.p> */}
 
         {/* ICON SECTION */}
         <motion.div

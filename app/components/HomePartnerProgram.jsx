@@ -84,14 +84,7 @@ export default function HomePartnerProgram() {
       value: 'Brand Growth',
       color: 'from-purple-400 to-pink-400',
       description: 'Branding & marketing assistance',
-    },
-    {
-      icon: <FaSeedling />,
-      label: 'Growth Opportunities',
-      value: 'Long-term',
-      color: 'from-green-400 to-emerald-400',
-      description: 'Sustainable business growth',
-    },
+    }
   ];
 
   /* -------------------- MOUSE EVENTS -------------------- */

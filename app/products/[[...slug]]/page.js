@@ -1,8 +1,8 @@
 import { Suspense } from "react";
-import Productbanner from "../components/ProductPages/Productbanner";
-import ProductCategoriesPage from "./ProductCategoriesPage";
-import ProductContent from "./ProductContent";
-import ProductFAQ from "./ProductFAQ";
+import Productbanner from "../../components/ProductPages/Productbanner";
+import ProductCategoriesPage from "../ProductCategoriesPage";
+import ProductContent from "../ProductContent";
+import ProductFAQ from "../ProductFAQ";
 
 export const dynamic = "force-dynamic";
 

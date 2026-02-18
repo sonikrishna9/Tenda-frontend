@@ -43,7 +43,7 @@ export default function Homeproducts() {
             img: item.images?.[0]?.url || "/images/placeholder.png",
             category: item.parentCategory || "",
             subcategory: item.subCategory || "",
-            link: "/all-product",
+            link: "/products",
           }))
         );
       }
@@ -113,7 +113,7 @@ export default function Homeproducts() {
 
   /* ------------------ CLICK HANDLERS ------------------ */
   const handleViewProducts = (category) => {
-    router.push("/all-product");
+    router.push("/products");
   };
 
 
@@ -121,7 +121,7 @@ export default function Homeproducts() {
     // if (!parent || !sub) return;
 
     router.push(
-      `/single-product/${encodeURIComponent(parent)}/${encodeURIComponent(sub)}`
+      `/product/${encodeURIComponent(parent)}/${encodeURIComponent(sub)}`
     );
   };
 

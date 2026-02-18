@@ -194,7 +194,7 @@ export default function AboutBanner() {
                 className="flex flex-wrap gap-4 mt-10"
               >
                 <button
-                  onClick={() => router.push("/all-product")}
+                  onClick={() => router.push("/products")}
                   className="group px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-full hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 flex items-center gap-2"
                 >
                   <span>Explore Our Products</span>

@@ -12,6 +12,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Header() {
+
+  const slugify = (s = "") => encodeURIComponent(s.trim());
+
+
   const [isOpen, setIsOpen] = useState(false);
   const [showProducts, setShowProducts] = useState(false);
 
@@ -26,7 +30,7 @@ export default function Header() {
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "About Us", href: "/about" },
-    { label: "Products", href: "/all-product", isMega: true },
+    { label: "Products", href: "/products", isMega: true },
     { label: "Partner Program", href: "/partner-program" },
     { label: "Blogs", href: "/blogs" },
   ];
@@ -93,8 +97,8 @@ export default function Header() {
                 <button
                   onMouseEnter={() => setShowProducts(true)}
                   className={`flex items-center gap-1 ${isActive(nav.href)
-                      ? "text-orange-500 font-semibold"
-                      : "hover:text-orange-500"
+                    ? "text-orange-500 font-semibold"
+                    : "hover:text-orange-500"
                     }`}
                 >
                   {nav.label}
@@ -130,10 +134,12 @@ export default function Header() {
                         {/* LEFT CATEGORY PANEL */}
                         <div className="w-[300px] max-h-[453px] overflow-y-auto border-r">
                           {parentCategories.map((cat) => (
-                            <div
+                            <Link
                               key={cat}
+                              href={`/products/${slugify(cat)}`}
+                              onClick={() => setShowProducts(false)}
                               onMouseEnter={() => setActiveCategory(cat)}
-                              className="relative flex items-center justify-between px-6 py-3 border-b cursor-pointer text-sm"
+                              className="relative flex items-center justify-between px-6 py-3 border-b cursor-pointer text-sm block"
                             >
                               <span
                                 className={
@@ -144,16 +150,17 @@ export default function Header() {
                               >
                                 {cat}
                               </span>
+
                               <FiChevronRight className="text-gray-400" />
 
                               {activeCategory === cat && (
                                 <span className="absolute right-0 top-0 h-full w-[3px] bg-orange-500" />
                               )}
-                            </div>
+                            </Link>
                           ))}
                           <div className="border-t p-3 bg-white">
                             <Link
-                              href="/all-product"
+                              href="/products"
                               className="block w-full text-center px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-md hover:bg-orange-600 transition"
                             >
                               Show All Products
@@ -173,11 +180,8 @@ export default function Header() {
                             ).map(([subCategory, count]) => (
                               <Link
                                 key={subCategory}
-                                href={`/all-product?category=${encodeURIComponent(
-                                  activeCategory
-                                )}&subcategory=${encodeURIComponent(
-                                  subCategory
-                                )}`}
+                                href={`/products/${slugify(activeCategory)}/${slugify(subCategory)}`}
+                                onClick={() => setShowProducts(false)}
                                 className="flex justify-between px-5 py-2 text-sm text-gray-700 border-b hover:text-orange-500"
                               >
                                 <span>{subCategory}</span>
@@ -259,15 +263,22 @@ export default function Header() {
                   />
                 </button>
 
+                <Link
+                  href={`/products/${slugify(cat)}`}
+                  onClick={() => setIsOpen(false)}
+                  className="block px-6 py-2 text-sm border-t bg-white font-medium"
+                >
+                  View all {cat}
+                </Link>
+
+
                 {mobileActiveCategory === cat && (
                   <div className="bg-gray-50">
                     {Object.entries(getSubCategoryCounts(cat)).map(
                       ([subCategory, count]) => (
                         <Link
                           key={subCategory}
-                          href={`/all-product?category=${encodeURIComponent(
-                            cat
-                          )}&subcategory=${encodeURIComponent(subCategory)}`}
+                          href={`/products/${slugify(cat)}/${slugify(subCategory)}`}
                           onClick={() => setIsOpen(false)}
                           className="flex justify-between px-6 py-2 text-sm border-t"
                         >

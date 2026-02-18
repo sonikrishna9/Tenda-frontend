@@ -114,7 +114,7 @@ export default function ProductSwiper() {
   const handleProductClick = (product) => {
     const encodedParent = encodeURIComponent(product.parentCategory);
     const encodedSub = encodeURIComponent(product.subCategory);
-    router.push(`/single-product/${encodedParent}/${encodedSub}`);
+    router.push(`/product/${encodedParent}/${encodedSub}`);
   };
 
   // Get exactly 3 USP points

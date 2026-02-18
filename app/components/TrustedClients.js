@@ -88,13 +88,7 @@ export default function TrustedClientsSection() {
                         ))}
                     </Marquee>
                 </div>
-
-                {/* Marquee Title */}
-                <div className="text-center mt-10">
-                    <p className="text-gray-500 text-sm font-medium uppercase tracking-widest">
-                        FEATURED CLIENTS
-                    </p>
-                </div>
+                
             </div>
 
             {/* Full Width Video Section - Orange Theme */}
@@ -107,7 +101,7 @@ export default function TrustedClientsSection() {
                     className="w-full"
                 >
                     {/* Video Header */}
-                    <div className="text-center mb-10 px-4 sm:px-6 lg:px-8">
+                    {/* <div className="text-center mb-10 px-4 sm:px-6 lg:px-8">
                         <div className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-orange-700 text-white px-8 py-4 rounded-full text-lg font-bold mb-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
                             <FaPlay className="animate-pulse" />
                             <span>WATCH OUR PRODUCT DEMO</span>
@@ -120,7 +114,7 @@ export default function TrustedClientsSection() {
                         <p className="text-gray-600 text-lg max-w-2xl mx-auto">
                             Discover how industry leaders achieve remarkable results with our platform
                         </p>
-                    </div>
+                    </div> */}
 
                     {/* Full Width Video Container */}
                     <div className="relative w-full bg-gradient-to-r from-orange-50 to-orange-100 py-4">
