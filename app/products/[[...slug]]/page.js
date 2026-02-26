@@ -16,7 +16,7 @@ export default function ProductsPage() {
         <ProductCategoriesPage />
       </Suspense>
 
-      <ProductContent />
+      {/* <ProductContent /> */}
       <ProductFAQ />
     </>
   );

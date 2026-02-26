@@ -15,7 +15,15 @@ export default function HomeFeaturedProducts() {
   const router = useRouter();
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  const slugify = (s = "") => encodeURIComponent(s.trim());
+  const slugify = (s = "") =>
+    s
+      .toString()
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")        // spaces → -
+      .replace(/[^\w-]+/g, "")     // remove special chars
+      .replace(/--+/g, "-");       // remove double --
+      
 
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

@@ -17,7 +17,52 @@ const ProductSupport = ({
 
     const [activeTab, setActiveTab] = useState("quickstart");
     const [activeVideo, setActiveVideo] = useState(null);
+    const [thumbs, setThumbs] = useState({});
 
+
+    const getVideoThumbnail = (url) => {
+        return new Promise((resolve) => {
+            const video = document.createElement("video");
+            video.src = url;
+            video.crossOrigin = "anonymous";
+            video.muted = true;
+            video.playsInline = true;
+
+            video.addEventListener("loadeddata", () => {
+                video.currentTime = 1;
+            });
+
+            video.addEventListener("seeked", () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                resolve(canvas.toDataURL("image/png"));
+            });
+
+            video.addEventListener("error", () => {
+                resolve(null);
+            });
+        });
+    };
+
+    useEffect(() => {
+        const loadThumbs = async () => {
+            const map = {};
+
+            for (const v of videos) {
+                const img = await getVideoThumbnail(v.url);
+                map[v.url] = img;
+            }
+
+            setThumbs(map);
+        };
+
+        if (videos.length) loadThumbs();
+    }, [videos]);
 
     /* ---------------- SCROLL + ACTIVE TAB ---------------- */
     useEffect(() => {
@@ -48,7 +93,7 @@ const ProductSupport = ({
     return (
         <>
             {/* ================= STICKY TABS ================= */}
-            <div className="sticky top-[72px] z-40 bg-white border-b">
+            <div className="sticky top-[72px] z-40 bg-white ">
                 <div className="flex justify-center gap-2 md:gap-4 py-3 px-3 flex-wrap">
                     {tabs.map((tab) => (
                         <button
@@ -131,6 +176,9 @@ const ProductSupport = ({
                                             className="w-full h-full object-cover"
                                             preload="metadata"
                                             muted
+                                            onLoadedData={(e) => {
+                                                e.currentTarget.currentTime = 1;
+                                            }}
                                         />
                                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                                             <div className="w-14 h-14 bg-white/80 rounded-full flex items-center justify-center">

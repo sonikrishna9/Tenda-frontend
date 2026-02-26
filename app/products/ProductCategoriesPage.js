@@ -19,7 +19,16 @@ import { useRouter } from "next/navigation";
 
 export default function ProductCategoriesPage() {
 
-  const slugify = (s = "") => encodeURIComponent(s.trim());
+  // const slugify = (s = "") => encodeURIComponent(s.trim());
+
+  const slugify = (s = "") =>
+    s
+      .toString()
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")          // spaces → -
+      .replace(/[^\w-]+/g, "")       // remove special chars
+      .replace(/--+/g, "-");         // remove duplicate -
 
   const router = useRouter();
   const params = useParams();
@@ -30,7 +39,12 @@ export default function ProductCategoriesPage() {
       ? [params.slug]
       : [];
 
-  const formatName = (s) => decodeURIComponent(s || "");
+  // const formatName = (s) => decodeURIComponent(s || "");
+
+  const formatName = (s = "") =>
+    s
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
 
 
   const capitalizeWords = (s = "") =>
@@ -38,10 +52,19 @@ export default function ProductCategoriesPage() {
 
 
 
-  const category = slug[0] ? formatName(slug[0]) : null;
-  const subcategory = slug[1] ? formatName(slug[1]) : null;
+  // const category = slug[0] ? formatName(slug[0]) : null;
+  // const subcategory = slug[1] ? formatName(slug[1]) : null;
+
+  const categorySlug = slug[0] || null;
+  const subcategorySlug = slug[1] || null;
+
+  const category = categorySlug ? formatName(categorySlug) : null;
+  const subcategory = subcategorySlug ? formatName(subcategorySlug) : null;
 
 
+  const [resolvedParent, setResolvedParent] = useState(null);
+  const [resolvedSub, setResolvedSub] = useState(null);
+  const [notFound, setNotFound] = useState(false);
 
   // const searchParams = useSearchParams();
 
@@ -59,12 +82,59 @@ export default function ProductCategoriesPage() {
   const [openParent, setOpenParent] = useState(null);
   const [openSub, setOpenSub] = useState(null);
   const [search, setSearch] = useState("");
+  // const [FilterSubcategories, setFilterSubcategories] = useState([]);
+
+
+
 
   const subcategoryRefs = useRef({});
   const productsGridRef = useRef(null);
   const sidebarScrollRef = useRef(null);
 
   const sidebarRef = useRef(null);
+
+
+
+
+  // const fetchProducts = useCallback(async () => {
+  //   try {
+  //     const res = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}api/product/all-categories`
+  //     );
+
+  //     const result = await res.json();
+
+  //     const arr = result?.allproducts || [];
+
+  //     console.log(arr, "API PRODUCTS");
+
+  //     if (Array.isArray(arr)) {
+  //       const subs = [];
+
+  //       for (const item of arr) {
+  //         if (item?.subCategory && !subs.includes(item.subCategory)) {
+  //           subs.push(item.subCategory);
+  //         }
+  //       }
+
+  //       console.log(subs, "FINAL SUBS");
+  //       setFilterSubcategories(subs);
+  //     }
+
+  //   } catch (err) {
+  //     console.error("Failed to fetch products", err);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   console.log(FilterSubcategories, "fwefwef fiter sub")
+  // }, [FilterSubcategories])
+
+
+  // useEffect(() => {
+  //   fetchProducts();
+  // }, [fetchProducts]);
+
 
   /* ================= FETCH ================= */
   useEffect(() => {
@@ -105,35 +175,75 @@ export default function ProductCategoriesPage() {
 
 
   // Initialize open states based on URL params
+
+  const slugMap = useMemo(() => {
+    const map = {};
+
+    products.forEach(p => {
+      const parentSlug = slugify(p.parentCategory);
+      const subSlug = slugify(p.subCategory);
+
+      if (!map[parentSlug]) map[parentSlug] = {};
+      if (!map[parentSlug][subSlug]) map[parentSlug][subSlug] = [];
+
+      map[parentSlug][subSlug].push(p);
+    });
+
+    return map;
+  }, [products]);
+
   useEffect(() => {
     if (!products.length) return;
 
-    let realParent = null;
-    let realSub = null;
+    setNotFound(false);
 
-    // find matching parent from products
-    for (const p of products) {
-      if (
-        category &&
-        p.parentCategory.toLowerCase() === category.toLowerCase()
-      ) {
-        realParent = p.parentCategory;
+    let parent = null;
+    let sub = null;
+
+    // CASE 1: /products/category/subcategory
+    if (categorySlug && subcategorySlug) {
+
+      if (slugMap[categorySlug]?.[subcategorySlug]) {
+        parent = slugMap[categorySlug][subcategorySlug][0].parentCategory;
+        sub = slugMap[categorySlug][subcategorySlug][0].subCategory;
       }
 
-      if (
-        subcategory &&
-        p.subCategory.toLowerCase() === subcategory.toLowerCase()
-      ) {
-        realSub = p.subCategory;
-        realParent = p.parentCategory;
-      }
     }
 
-    if (realParent) setOpenParent(realParent);
-    if (realSub) setOpenSub(realSub);
+    // CASE 2: /products/category  (may be parent OR subcategory)
+    else if (categorySlug) {
 
-  }, [category, subcategory, products]);
+      // Parent exists
+      if (slugMap[categorySlug]) {
+        const firstSub = Object.keys(slugMap[categorySlug])[0];
+        parent = slugMap[categorySlug][firstSub][0].parentCategory;
+      }
 
+      // Subcategory exists
+      else {
+        for (const parentSlug in slugMap) {
+          if (slugMap[parentSlug][categorySlug]) {
+            parent = slugMap[parentSlug][categorySlug][0].parentCategory;
+            sub = slugMap[parentSlug][categorySlug][0].subCategory;
+            break;
+          }
+        }
+      }
+
+    }
+
+    if (!parent && !sub) {
+      setNotFound(true);
+      return;
+    }
+
+    setResolvedParent(parent);
+    setResolvedSub(sub);
+    setOpenParent(parent);
+    if (sub) setOpenSub(sub);
+
+  }, [categorySlug, subcategorySlug, slugMap]);
+  
   /* ================= GROUP DATA ================= */
   const grouped = useMemo(() => {
     const map = {};
@@ -146,33 +256,37 @@ export default function ProductCategoriesPage() {
     return map;
   }, [products]);
 
-  useEffect(() => {
-    // Case: subcategory exists but category is missing
-    if (subcategory && !category && products.length > 0) {
-      const matchedProduct = products.find(
-        (p) => p.subCategory === subcategory
-      );
+  // useEffect(() => {
+  //   // Case: subcategory exists but category is missing
+  //   if (subcategory && !category && products.length > 0) {
+  //     const matchedProduct = products.find(
+  //       (p) => slugify(p.subCategory) === subcategorySlug
+  //     );
 
-      if (matchedProduct) {
-        const parent = matchedProduct.parentCategory;
+  //     if (matchedProduct) {
+  //       const parent = matchedProduct.parentCategory;
 
-        // Open correct parent & subcategory
-        setOpenParent(parent);
-        setOpenSub(subcategory);
+  //       // Open correct parent & subcategory
+  //       setOpenParent(parent);
+  //       setOpenSub(matchedProduct.subCategory);
 
-        // Update URL to keep it consistent
-        router.replace(`/products/${slugify(parent)}/${slugify(subcategory)}`, { scroll: false })
+  //       // Update URL to keep it consistent
+  //       router.replace(
+  //         `/products/${slugify(parent)}/${slugify(matchedProduct.subCategory)}`,
+  //         { scroll: false }
+  //       );
 
-        // Scroll subcategory into view
-        setTimeout(() => {
-          const element = subcategoryRefs.current[subcategory];
-          if (element) {
-            element.scrollIntoView({ behavior: "smooth", block: "center" });
-          }
-        }, 100);
-      }
-    }
-  }, [subcategory, category, products, router]);
+  //       // Scroll subcategory into view
+  //       setTimeout(() => {
+  //         const element = subcategoryRefs.current[matchedProduct.subCategory];
+  //         if (element) {
+
+  //           element.scrollIntoView({ behavior: "smooth", block: "center" });
+  //         }
+  //       }, 100);
+  //     }
+  //   }
+  // }, [subcategorySlug, categorySlug, products, router]);
 
   useEffect(() => {
     const sidebar = sidebarScrollRef.current;
@@ -193,21 +307,22 @@ export default function ProductCategoriesPage() {
 
   /* ================= RIGHT SIDE FILTER ================= */
   const visibleProducts = useMemo(() => {
-    if (!category && !subcategory) return products;
 
-    if (category && !subcategory) {
+    if (!resolvedParent && !resolvedSub) return products;
+
+    if (resolvedParent && !resolvedSub) {
       return products.filter(
-        (p) =>
-          p.parentCategory.toLowerCase() === category.toLowerCase()
+        (p) => p.parentCategory === resolvedParent
       );
     }
 
     return products.filter(
       (p) =>
-        p.parentCategory.toLowerCase() === category.toLowerCase() &&
-        p.subCategory.toLowerCase() === subcategory.toLowerCase()
+        p.parentCategory === resolvedParent &&
+        p.subCategory === resolvedSub
     );
-  }, [products, category, subcategory]);
+
+  }, [products, resolvedParent, resolvedSub]);
 
 
   /* ================= ENHANCED BREADCRUMB ================= */
@@ -237,14 +352,14 @@ export default function ProductCategoriesPage() {
                 </button>
               </li>
 
-              {category && (
+              {resolvedParent && (
                 <>
                   <FaAngleRight className="text-gray-400" />
                   <li>
                     <button
                       onClick={() => {
-                        router.push(`/products/${slugify(category)}`, { scroll: false });
-                        setOpenParent(category);
+                        router.push(`/products/${slugify(resolvedParent)}`, { scroll: false });
+                        setOpenParent(resolvedParent);
                         setOpenSub(null);
                         // Scroll to top
 
@@ -255,22 +370,25 @@ export default function ProductCategoriesPage() {
                         <FaLayerGroup className="text-gray-600" />
                       </div>
                       <span className="font-semibold">
-                        {capitalizeWords(category)}
+                        {capitalizeWords(resolvedParent)}
                       </span>
                     </button>
                   </li>
                 </>
               )}
 
-              {subcategory && (
+              {resolvedSub && (
                 <>
                   <FaAngleRight className="text-gray-400" />
                   <li>
                     <button
                       onClick={() => {
-                        router.push(`/products/${slugify(category)}/${slugify(subcategory)}`, { scroll: false });
-                        setOpenParent(category);
-                        setOpenSub(subcategory);
+                        router.push(
+                          `/products/${slugify(resolvedParent)}/${slugify(resolvedSub)}`,
+                          { scroll: false }
+                        );
+                        setOpenParent(resolvedParent);
+                        setOpenSub(resolvedSub);
                         // Scroll to top
 
                       }}
@@ -280,7 +398,7 @@ export default function ProductCategoriesPage() {
                         <FaFolderOpen className="text-orange-500" />
                       </div>
                       <span className="font-semibold">
-                        {capitalizeWords(subcategory)}
+                        {capitalizeWords(resolvedSub)}
                       </span>
                     </button>
                   </li>
@@ -289,29 +407,33 @@ export default function ProductCategoriesPage() {
             </ol>
 
             {/* Page Title */}
+            {/* Page Title */}
             <div className="mt-4">
+
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">
-                {subcategory
-                  ? capitalizeWords(subcategory)
-                  : category
-                    ? capitalizeWords(category)
+                {resolvedSub
+                  ? capitalizeWords(resolvedSub)
+                  : resolvedParent
+                    ? capitalizeWords(resolvedParent)
                     : "All Products"}
               </h1>
+
               <div className="flex items-center gap-3 mt-2">
                 <p className="text-gray-600">
-                  {subcategory
-                    ? `${subcategory} products`
-                    : category
-                      ? `${category} collection`
-                      : "Explore our product catalog"
-                  }
+                  {resolvedSub
+                    ? `${resolvedSub} products`
+                    : resolvedParent
+                      ? `${resolvedParent} collection`
+                      : "Explore our product catalog"}
                 </p>
+
                 {visibleProducts.length > 0 && (
                   <span className="px-3 py-1 bg-orange-500 text-white text-sm font-medium rounded-full">
                     {visibleProducts.length} {visibleProducts.length === 1 ? "Product" : "Products"}
                   </span>
                 )}
               </div>
+
             </div>
           </div>
         </div>
@@ -342,6 +464,14 @@ export default function ProductCategoriesPage() {
     );
 
   };
+
+  if (!loading && notFound) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <h2 className="text-2xl font-semibold">Category not found</h2>
+      </div>
+    );
+  }
 
 
   if (loading) {

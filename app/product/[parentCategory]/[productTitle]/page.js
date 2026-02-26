@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { generateProductPDF } from "../../../../utils/generateProductPDF";
 import {
   FiArrowLeft,
   FiArrowRight,
@@ -24,6 +25,8 @@ import HaveQuestion from "../../../components/Haveaquestion";
 import ProductSupport from "./ProductSupport";
 import ProductFeature from "./ProductFeature";
 import ProductParameter from "./ProductParameter";
+import ProductPDFGenerator, { PDFDownloadButton, PDFPreview } from '../../ProductPDFGenerator';
+
 
 /* ================= LOADING COMPONENT ================= */
 const LoadingState = () => {
@@ -571,6 +574,10 @@ export default function ProductDisplay() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [activetab, setactivetab] = useState("feature");
   const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+
+
   const [showMessage, setShowMessage] = useState({ type: null, title: null });
   const [loading, setLoading] = useState(true); // Add loading state
 
@@ -590,6 +597,15 @@ export default function ProductDisplay() {
     // Open video in new tab
     window.open(video.url, '_blank');
     setTimeout(() => setShowMessage({ type: null, title: null }), 3000);
+  };
+
+  const handleDownload = () => {
+    setDownloading(true);
+
+    setTimeout(() => {
+      generateProductPDF(product);
+      setDownloading(false);
+    }, 100);
   };
 
   // Handle PDF click
@@ -694,6 +710,12 @@ export default function ProductDisplay() {
 
   return (
     <>
+      <ProductPDFGenerator
+        product={product}
+        onDownloadStart={() => console.log('Download started')}
+        onDownloadComplete={() => console.log('Download completed')}
+        onError={(error) => console.error('PDF error:', error)}
+      />
       {/* ================= NOTIFICATION MESSAGE ================= */}
       <AnimatePresence>
         {showMessage.type && (
@@ -727,6 +749,37 @@ export default function ProductDisplay() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ===== STICKY RIGHT CORNER TABS ===== */}
+      <div className=" w-full hidden md:flex fixed top-18 z-40">
+        <div className="w-full flex justify-end gap-6 bg-white backdrop-blur-md shadow-xl border border-gray-200 pr-16 py-3 transition-all duration-300">
+
+          {tabs.map((tab) => (
+            <div
+              key={tab.id}
+              onClick={() => setactivetab(tab.id)}
+              className="cursor-pointer flex flex-col items-center group"
+            >
+              <span
+                className={`text-sm transition-all duration-300 ${activetab === tab.id
+                  ? "text-orange-600 font-semibold"
+                  : "text-gray-500 group-hover:text-orange-500"
+                  }`}
+              >
+                {tab.label}
+              </span>
+
+              <div
+                className={`h-[3px] mt-1 rounded-full transition-all duration-300 ${activetab === tab.id
+                  ? "w-16 bg-gradient-to-r from-orange-500 to-amber-500"
+                  : "w-0 bg-transparent"
+                  }`}
+              />
+            </div>
+          ))}
+
+        </div>
+      </div>
 
       {/* ================= TOP SECTION ================= */}
       <div className="w-full flex flex-col md:flex-row gap-10 p-5 md:p-10 mt-[5rem]">
@@ -789,42 +842,39 @@ export default function ProductDisplay() {
           <p className="text-gray-600 mt-5">{product.description}</p>
 
           <div className="flex flex-wrap gap-4 mt-6">
-            <button className="flex items-center gap-2 bg-orange-500 text-white px-5 py-2 rounded-md">
+            <button
+              className="flex items-center gap-2 bg-orange-500 text-white px-5 py-2 rounded-md"
+              onClick={handleDownload}
+            >
               <FiDownload /> Download Datasheet
             </button>
             <button className="flex items-center gap-2 bg-gray-200 px-5 py-2 rounded-md">
               <FiMapPin /> Where to Buy ?
             </button>
-            <button className="flex items-center gap-2 bg-white border px-5 py-2 rounded-md">
+            <button
+              onClick={() =>
+                document
+                  .getElementById("have-question")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }
+              className="flex items-center gap-2 bg-white border px-5 py-2 rounded-md"
+            >
               <FiMessageCircle /> Enquiry
             </button>
           </div>
+
         </div>
       </div>
 
-      {/* ================= TABS ================= */}
-      <div className="flex gap-6 justify-center my-6">
-        {tabs.map((tab) => (
-          <div
-            key={tab.id}
-            onClick={() => setactivetab(tab.id)}
-            className="cursor-pointer flex flex-col items-center"
-          >
-            <span
-              className={`${activetab === tab.id
-                ? "text-zinc-800 font-semibold"
-                : "text-zinc-500"
-                }`}
-            >
-              {tab.label}
-            </span>
+      {showPreview && (
+        <PDFPreview
+          product={product}
+          onClose={() => setShowPreview(false)}
+        />
+      )}
 
-            {activetab === tab.id && (
-              <div className="w-20 h-[3px] mt-1 bg-gradient-to-r from-[#7DD8D0] to-[#F0622B]" />
-            )}
-          </div>
-        ))}
-      </div>
+      {/* ================= TABS ================= */}
+
 
       {activetab === "parameter" && (
         <ProductParameter parameters={parameters} />
@@ -846,7 +896,9 @@ export default function ProductDisplay() {
           onPdfClick={handlePDFClick}
         />
       )}
-      <HaveQuestion />
+      <div id="have-question">
+        <HaveQuestion />
+      </div>
     </>
   );
 }

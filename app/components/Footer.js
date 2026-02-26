@@ -23,34 +23,33 @@ import Image from "next/image";
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
+  const navbarRoutes = [
+    "/",
+    "/about",
+    "/products",
+    "/partner-program",
+    "/blogs",
+    "/gallery",
+    "/contact"
+  ];
+
   const footerLinks = {
     products: [
-      { label: "WiFi Routers", href: "/products/routers" },
-      { label: "Mesh Systems", href: "/products/mesh" },
-      { label: "Network Switches", href: "/products/switches" },
-      { label: "Security Solutions", href: "/products/security" },
-      { label: "Enterprise Solutions", href: "/products/enterprise" },
-    ],
-    solutions: [
-      { label: "Smart Home", href: "/solutions/smart-home" },
-      { label: "Small Business", href: "/solutions/business" },
-      { label: "Education", href: "/solutions/education" },
-      { label: "Hospitality", href: "/solutions/hospitality" },
-      { label: "Healthcare", href: "/solutions/healthcare" },
-    ],
-    support: [
-      { label: "Technical Support", href: "/support" },
-      { label: "Documentation", href: "/docs" },
-      { label: "Downloads", href: "/downloads" },
-      { label: "Community Forum", href: "/forum" },
-      { label: "Contact Support", href: "/support/contact" },
+      { label: "Routers", href: "/products/router" },
+      { label: "Mesh Router", href: "/products/mesh-router" },
+      { label: "Range Extender", href: "/products/range-extender" },
+      { label: "Access Points", href: "/products/access-point" },
+      { label: "USB Adaptor", href: "/products/usb-adaptor" },
     ],
     company: [
       { label: "About Tenda", href: "/about" },
-      { label: "Leadership", href: "/about/leadership" },
-      { label: "Careers", href: "/careers" },
-      { label: "Press Center", href: "/press" },
-      { label: "Investor Relations", href: "/investors" },
+      { label: "Products", href: "/products" },
+      { label: "Partner Program", href: "/partner-program" },
+      { label: "Blogs", href: "/blogs" },
+      { label: "Gallery", href: "/gallery" },
+    ],
+    support: [
+      { label: "Contact Support", href: "/contactus" },
     ],
   };
 
@@ -213,40 +212,46 @@ export default function Footer() {
           {/* Footer Links Grid */}
           <div className="lg:col-span-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {Object.entries(footerLinks).map(([category, links], categoryIndex) => (
-                <motion.div
-                  key={category}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: categoryIndex * 0.1 + 0.2 }}
-                >
-                  <h3 className="text-white font-semibold mb-4 text-lg uppercase tracking-wider">
-                    {category}
-                  </h3>
-                  <ul className="space-y-3">
-                    {links.map((link, index) => (
-                      <motion.li
-                        key={link.label}
-                        initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.05 }}
-                      >
-                        <Link
-                          href={link.href}
-                          className="group flex items-center text-gray-400 hover:text-orange-400 transition-all duration-300 text-sm"
+              {Object.entries(footerLinks).map(([category, links], categoryIndex) => {
+
+                const filteredLinks = links;
+
+                return (
+                  <motion.div
+                    key={category}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: categoryIndex * 0.1 + 0.2 }}
+                  >
+                    <h3 className="text-white font-semibold mb-4 text-lg uppercase tracking-wider">
+                      {category}
+                    </h3>
+
+                    <ul className="space-y-3">
+                      {filteredLinks.map((link, index) => (
+                        <motion.li
+                          key={link.label}
+                          initial={{ opacity: 0, x: -10 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: index * 0.05 }}
                         >
-                          <span className="w-0 group-hover:w-2 h-px bg-orange-500 mr-0 group-hover:mr-2 transition-all duration-300" />
-                          <span className="transform group-hover:translate-x-1 transition-transform duration-300">
-                            {link.label}
-                          </span>
-                        </Link>
-                      </motion.li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ))}
+                          <Link
+                            href={link.href}
+                            className="group flex items-center text-gray-400 hover:text-orange-400 transition-all duration-300 text-sm"
+                          >
+                            <span className="w-0 group-hover:w-2 h-px bg-orange-500 mr-0 group-hover:mr-2 transition-all duration-300" />
+                            <span className="transform group-hover:translate-x-1 transition-transform duration-300">
+                              {link.label}
+                            </span>
+                          </Link>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                );
+              })}
             </div>
 
             {/* Newsletter Subscription */}

@@ -13,7 +13,16 @@ import { usePathname } from "next/navigation";
 
 export default function Header() {
 
-  const slugify = (s = "") => encodeURIComponent(s.trim());
+  // const slugify = (s = "") => encodeURIComponent(s.trim());
+
+  const slugify = (s = "") =>
+    s
+      .toString()
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w-]+/g, "")
+      .replace(/--+/g, "-");
 
 
   const [isOpen, setIsOpen] = useState(false);
@@ -33,6 +42,7 @@ export default function Header() {
     { label: "Products", href: "/products", isMega: true },
     { label: "Partner Program", href: "/partner-program" },
     { label: "Blogs", href: "/blogs" },
+    { label: "Gallery", href: "/gallery" },
   ];
 
   const isActive = (href) =>
@@ -56,6 +66,11 @@ export default function Header() {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+  useEffect(() => {
+    setShowProducts(false);
+    setIsOpen(false);
+  }, [pathname]);
 
   /* ================= GROUP PRODUCTS ================= */
   const groupedProducts = allProducts.reduce((acc, item) => {
