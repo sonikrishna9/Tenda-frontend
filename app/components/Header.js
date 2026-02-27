@@ -288,7 +288,7 @@ export default function Header() {
               className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:from-zinc-900 hover:to-black transition-all duration-300 shadow-md hover:shadow-lg relative overflow-hidden group"
             >
               <motion.img
-                src="https://assets-bg.gem.gov.in/resources/images/gem-new-logo-v6.svg"
+                src="/gem-new-logo-v6.svg"
                 alt="GeM Logo"
                 className="h-5 sm:h-7 w-auto relative z-10 brightness-0 invert"
                 animate={{
