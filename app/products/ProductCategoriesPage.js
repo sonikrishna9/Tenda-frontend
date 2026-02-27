@@ -51,10 +51,6 @@ export default function ProductCategoriesPage() {
     s.replace(/\b\w/g, (c) => c.toUpperCase());
 
 
-
-  // const category = slug[0] ? formatName(slug[0]) : null;
-  // const subcategory = slug[1] ? formatName(slug[1]) : null;
-
   const categorySlug = slug[0] || null;
   const subcategorySlug = slug[1] || null;
 
@@ -66,15 +62,6 @@ export default function ProductCategoriesPage() {
   const [resolvedSub, setResolvedSub] = useState(null);
   const [notFound, setNotFound] = useState(false);
 
-  // const searchParams = useSearchParams();
-
-  // const categoryParam = searchParams.get("category");
-  // const subcategoryParam = searchParams.get("subcategory");
-
-  // const category = categoryParam ? decodeURIComponent(categoryParam) : null;
-  // const subcategory = subcategoryParam
-  //   ? decodeURIComponent(subcategoryParam)
-  //   : null;
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -256,37 +243,6 @@ export default function ProductCategoriesPage() {
     return map;
   }, [products]);
 
-  // useEffect(() => {
-  //   // Case: subcategory exists but category is missing
-  //   if (subcategory && !category && products.length > 0) {
-  //     const matchedProduct = products.find(
-  //       (p) => slugify(p.subCategory) === subcategorySlug
-  //     );
-
-  //     if (matchedProduct) {
-  //       const parent = matchedProduct.parentCategory;
-
-  //       // Open correct parent & subcategory
-  //       setOpenParent(parent);
-  //       setOpenSub(matchedProduct.subCategory);
-
-  //       // Update URL to keep it consistent
-  //       router.replace(
-  //         `/products/${slugify(parent)}/${slugify(matchedProduct.subCategory)}`,
-  //         { scroll: false }
-  //       );
-
-  //       // Scroll subcategory into view
-  //       setTimeout(() => {
-  //         const element = subcategoryRefs.current[matchedProduct.subCategory];
-  //         if (element) {
-
-  //           element.scrollIntoView({ behavior: "smooth", block: "center" });
-  //         }
-  //       }, 100);
-  //     }
-  //   }
-  // }, [subcategorySlug, categorySlug, products, router]);
 
   useEffect(() => {
     const sidebar = sidebarScrollRef.current;
