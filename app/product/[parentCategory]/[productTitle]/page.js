@@ -998,14 +998,25 @@ export default function ProductDisplay() {
               </div>
 
               {/* GENERIC SHOPPING (Meesho Alternative) */}
+              {/* GEM */}
               <div
                 onClick={() => window.open(product.buyLinks?.meesho, "_blank")}
-                className="group cursor-pointer bg-gradient-to-br from-pink-50 to-pink-100 
-          rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
-          transition-all duration-300"
+                className="group cursor-pointer bg-gradient-to-br from-emerald-50 to-green-100 
+  rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
+  transition-all duration-300 flex flex-col items-center justify-center"
               >
-                <FiShoppingCart className="text-5xl mx-auto mb-4 text-pink-500 group-hover:scale-110 transition" />
-                <p className="font-semibold text-gray-800">Meesho</p>
+                <div className="w-20 h-16 flex items-center justify-center 
+    rounded-xl bg-white shadow-md mb-4 
+    group-hover:scale-110 transition duration-300">
+
+                  <img
+                    src="/gem.png"
+                    alt="GEM"
+                    className="w-20 h-16 object-contain"
+                  />
+                </div>
+
+                <p className="font-semibold text-gray-800">GEM</p>
               </div>
 
               {/* WEBSITE */}
