@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { generateProductPDF } from "../../../../utils/generateProductPDF";
 import {
@@ -26,7 +26,8 @@ import ProductSupport from "./ProductSupport";
 import ProductFeature from "./ProductFeature";
 import ProductParameter from "./ProductParameter";
 import ProductPDFGenerator, { PDFDownloadButton, PDFPreview } from '../../ProductPDFGenerator';
-
+import { SiAmazon, SiFlipkart } from "react-icons/si";
+import { FiGlobe, FiShoppingCart } from "react-icons/fi";
 
 /* ================= LOADING COMPONENT ================= */
 const LoadingState = () => {
@@ -558,6 +559,8 @@ const PDFCard = ({ pdf, type = "download", onClick }) => {
 
 export default function ProductDisplay() {
 
+
+
   const deslugify = (s = "") =>
     s
       .replace(/-/g, " ")
@@ -566,6 +569,7 @@ export default function ProductDisplay() {
 
 
   const params = useParams();
+  const supportRef = useRef(null)
   const parentCategory = params?.parentCategory;
   const productTitle = params?.productTitle;
 
@@ -576,6 +580,10 @@ export default function ProductDisplay() {
   const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [downloading, setDownloading] = useState(false);
+
+
+
+  const [showBuyOptions, setShowBuyOptions] = useState(false);
 
 
   const [showMessage, setShowMessage] = useState({ type: null, title: null });
@@ -607,6 +615,19 @@ export default function ProductDisplay() {
       setDownloading(false);
     }, 100);
   };
+
+  useEffect(() => {
+    if (showBuyOptions) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [showBuyOptions]);
+
 
   // Handle PDF click
   const handlePDFClick = (pdf) => {
@@ -750,36 +771,7 @@ export default function ProductDisplay() {
         )}
       </AnimatePresence>
 
-      {/* ===== STICKY RIGHT CORNER TABS ===== */}
-      <div className=" w-full hidden md:flex fixed top-18 z-40">
-        <div className="w-full flex justify-end gap-6 bg-white backdrop-blur-md shadow-xl border border-gray-200 pr-16 py-3 transition-all duration-300">
 
-          {tabs.map((tab) => (
-            <div
-              key={tab.id}
-              onClick={() => setactivetab(tab.id)}
-              className="cursor-pointer flex flex-col items-center group"
-            >
-              <span
-                className={`text-sm transition-all duration-300 ${activetab === tab.id
-                  ? "text-orange-600 font-semibold"
-                  : "text-gray-500 group-hover:text-orange-500"
-                  }`}
-              >
-                {tab.label}
-              </span>
-
-              <div
-                className={`h-[3px] mt-1 rounded-full transition-all duration-300 ${activetab === tab.id
-                  ? "w-16 bg-gradient-to-r from-orange-500 to-amber-500"
-                  : "w-0 bg-transparent"
-                  }`}
-              />
-            </div>
-          ))}
-
-        </div>
-      </div>
 
       {/* ================= TOP SECTION ================= */}
       <div className="w-full flex flex-col md:flex-row gap-10 p-5 md:p-10 mt-[5rem]">
@@ -843,12 +835,24 @@ export default function ProductDisplay() {
 
           <div className="flex flex-wrap gap-4 mt-6">
             <button
-              className="flex items-center gap-2 bg-orange-500 text-white px-5 py-2 rounded-md"
-              onClick={handleDownload}
+              className="cursor-pointer flex items-center gap-2 bg-orange-500 text-white px-5 py-2 rounded-md"
+              onClick={() => {
+                setactivetab("support");
+
+                setTimeout(() => {
+                  const section = document.getElementById("downloads");
+                  if (section) {
+                    section.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }, 200);
+              }}
             >
               <FiDownload /> Download Datasheet
             </button>
-            <button className="flex items-center gap-2 bg-gray-200 px-5 py-2 rounded-md">
+            <button
+              onClick={() => setShowBuyOptions(true)}
+              className=" cursor-pointer flex items-center gap-2 bg-gray-200 px-5 py-2 rounded-md hover:bg-gray-300 transition"
+            >
               <FiMapPin /> Where to Buy ?
             </button>
             <button
@@ -857,7 +861,7 @@ export default function ProductDisplay() {
                   .getElementById("have-question")
                   ?.scrollIntoView({ behavior: "smooth", block: "start" })
               }
-              className="flex items-center gap-2 bg-white border px-5 py-2 rounded-md"
+              className="cursor-pointer flex items-center gap-2 bg-white border px-5 py-2 rounded-md"
             >
               <FiMessageCircle /> Enquiry
             </button>
@@ -865,6 +869,9 @@ export default function ProductDisplay() {
 
         </div>
       </div>
+
+      {/* ===== STICKY RIGHT CORNER TABS ===== */}
+
 
       {showPreview && (
         <PDFPreview
@@ -874,6 +881,36 @@ export default function ProductDisplay() {
       )}
 
       {/* ================= TABS ================= */}
+
+      <div className=" w-full hidden md:flex justify-center items-center z-40">
+        <div className=" w-full flex justify-center gap-6 bg-white backdrop-blur-md shadow-xl border border-gray-200 pr-16 py-3 transition-all duration-300">
+
+          {tabs.map((tab) => (
+            <div
+              key={tab.id}
+              onClick={() => setactivetab(tab.id)}
+              className="cursor-pointer flex flex-col items-center group"
+            >
+              <span
+                className={`text-sm transition-all duration-300 ${activetab === tab.id
+                  ? "text-orange-600 font-semibold"
+                  : "text-gray-500 group-hover:text-orange-500"
+                  }`}
+              >
+                {tab.label}
+              </span>
+
+              <div
+                className={`h-[3px] mt-1 rounded-full transition-all duration-300 ${activetab === tab.id
+                  ? "w-16 bg-gradient-to-r from-orange-500 to-amber-500"
+                  : "w-0 bg-transparent"
+                  }`}
+              />
+            </div>
+          ))}
+
+        </div>
+      </div>
 
 
       {activetab === "parameter" && (
@@ -899,6 +936,93 @@ export default function ProductDisplay() {
       <div id="have-question">
         <HaveQuestion />
       </div>
+      {showBuyOptions && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+
+          {/* BACKDROP */}
+          <div
+            onClick={() => setShowBuyOptions(false)}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+          />
+
+          {/* MODAL CARD */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+            className="relative bg-white rounded-3xl w-full max-w-3xl p-10 shadow-2xl"
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setShowBuyOptions(false)}
+              className="absolute top-5 right-5 w-10 h-10 rounded-full bg-gray-100 
+              cursor-pointer flex items-center justify-center hover:bg-gray-200 transition"
+            >
+              ✕
+            </button>
+
+            {/* HEADER */}
+            <div className="text-center mb-10">
+              <h3 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+                Buy This Product
+              </h3>
+              <p className="text-gray-500 mt-2">
+                Choose your preferred marketplace
+              </p>
+            </div>
+
+            {/* MARKETPLACE GRID */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+
+              {/* AMAZON */}
+              <div
+                onClick={() => window.open(product.buyLinks?.amazon, "_blank")}
+                className="group cursor-pointer bg-gradient-to-br from-orange-50 to-orange-100 
+          rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
+          transition-all duration-300"
+              >
+                <SiAmazon className="text-5xl mx-auto mb-4 text-orange-500 group-hover:scale-110 transition" />
+                <p className="font-semibold text-gray-800">Amazon</p>
+              </div>
+
+              {/* FLIPKART */}
+              <div
+                onClick={() => window.open(product.buyLinks?.flipkart, "_blank")}
+                className="group cursor-pointer bg-gradient-to-br from-blue-50 to-blue-100 
+          rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
+          transition-all duration-300"
+              >
+                <SiFlipkart className="text-5xl mx-auto mb-4 text-blue-500 group-hover:scale-110 transition" />
+                <p className="font-semibold text-gray-800">Flipkart</p>
+              </div>
+
+              {/* GENERIC SHOPPING (Meesho Alternative) */}
+              <div
+                onClick={() => window.open(product.buyLinks?.meesho, "_blank")}
+                className="group cursor-pointer bg-gradient-to-br from-pink-50 to-pink-100 
+          rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
+          transition-all duration-300"
+              >
+                <FiShoppingCart className="text-5xl mx-auto mb-4 text-pink-500 group-hover:scale-110 transition" />
+                <p className="font-semibold text-gray-800">Meesho</p>
+              </div>
+
+              {/* WEBSITE */}
+              <div
+                onClick={() => window.open(product.buyLinks?.website, "_blank")}
+                className="group cursor-pointer bg-gradient-to-br from-gray-50 to-gray-100 
+          rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
+          transition-all duration-300"
+              >
+                <FiGlobe className="text-5xl mx-auto mb-4 text-gray-700 group-hover:scale-110 transition" />
+                <p className="font-semibold text-gray-800">Official Site</p>
+              </div>
+
+            </div>
+          </motion.div>
+        </div>
+      )}
     </>
   );
 }
