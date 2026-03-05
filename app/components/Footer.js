@@ -190,7 +190,7 @@ export default function Footer() {
               </div>
 
               {/* Trust Badges */}
-              <div className="flex flex-wrap gap-3 pt-6">
+              {/* <div className="flex flex-wrap gap-3 pt-6">
                 {certifications.map((cert, index) => (
                   <motion.div
                     key={cert.name}
@@ -205,7 +205,7 @@ export default function Footer() {
                     <span className="text-xs font-medium text-gray-300">{cert.name}</span>
                   </motion.div>
                 ))}
-              </div>
+              </div> */}
             </motion.div>
           </div>
 
@@ -342,7 +342,7 @@ export default function Footer() {
           {/* Social Media & Trust Indicators */}
           <div className="flex items-center gap-6">
             {/* Trust Indicators */}
-            <div className="hidden md:flex items-center gap-4">
+            {/* <div className="hidden md:flex items-center gap-4">
               <div className="flex items-center gap-2 text-gray-400">
                 <FaShieldAlt className="text-green-500" />
                 <span className="text-sm">Trusted & Secure</span>
@@ -352,7 +352,7 @@ export default function Footer() {
                 <FaGlobe className="text-blue-500" />
                 <span className="text-sm">Global Presence</span>
               </div>
-            </div>
+            </div> */}
 
             {/* Social Media */}
             <div className="flex items-center gap-4">
@@ -387,10 +387,10 @@ export default function Footer() {
               <span>Tenda is a registered trademark.</span>
               <span>All product names, logos, and brands are property of their respective owners.</span>
             </div>
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <SiTrustpilot className="text-green-500" />
               <span>ISO 9001:2015 Certified Quality Management</span>
-            </div>
+            </div> */}
           </div>
         </motion.div>
       </div>

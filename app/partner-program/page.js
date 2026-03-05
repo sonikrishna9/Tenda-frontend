@@ -11,6 +11,7 @@ import PartnerSlider from '../components/PartnerSlider';
 import WhoCanApply from '../components/ProductPages/Whocanapply';
 import AnimatedPartnerButton from "../components/AnimatedPartnerButton";
 import PartnerQuickActions from '../components/PartnerQuickActions';
+import ProductFAQ from "../products/ProductFAQ";
 /* -------------------- DATA -------------------- */
 
 const faqItems = [
@@ -111,41 +112,8 @@ export default function Page() {
       {/* Who Can Apply */}
       <WhoCanApply />
 
-      {/* FAQ */}
-      <section className="py-20 px-4 bg-gray-50">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-center text-4xl font-bold mb-12">
-            Frequently Asked Questions
-          </h2>
 
-          <div className="space-y-6">
-            {faqItems.map((faq, i) => (
-              <div key={i} className="bg-white p-6 rounded-xl shadow border">
-                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                  <FaQuestionCircle className="text-orange-500" />
-                  {faq.question}
-                </h3>
-                <p className="text-gray-600">{faq.answer}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-16 bg-orange-50 p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h3 className="text-2xl font-bold mb-2">Still have questions?</h3>
-              <p className="text-gray-600">
-                Our team is ready to help you get started.
-              </p>
-            </div>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-semibold flex items-center gap-2">
-              <FaPhone />
-              Contact Us
-            </button>
-          </div>
-        </div>
-      </section>
-      {/* <PartnerQuickActions /> */}
-
+      <ProductFAQ />
     </div>
   );
 }

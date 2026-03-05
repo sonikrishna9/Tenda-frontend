@@ -41,6 +41,7 @@ export default function Header() {
     { label: "Partner Program", href: "/partner-program" },
     { label: "Blogs", href: "/blogs" },
     { label: "Gallery", href: "/gallery" },
+    { label: "News", href: "/news" },
   ];
 
   const isActive = (href) =>
@@ -108,11 +109,10 @@ export default function Header() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled 
-          ? "bg-white/95 backdrop-blur-md shadow-lg py-2" 
-          : "bg-white shadow-sm py-0"
-      }`}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
+        ? "bg-white/95 backdrop-blur-md shadow-lg py-2"
+        : "bg-white shadow-sm py-0"
+        }`}
     >
       <div className="h-[72px] max-w-[1600px] mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
@@ -140,11 +140,10 @@ export default function Header() {
                   <div className="relative">
                     <button
                       onMouseEnter={() => setShowProducts(true)}
-                      className={`flex items-center gap-1 px-3 xl:px-4 py-2 rounded-lg transition-all duration-200 ${
-                        isActive(nav.href)
-                          ? "text-orange-500 bg-orange-50 font-semibold"
-                          : "hover:text-orange-500 hover:bg-gray-50"
-                      }`}
+                      className={`flex items-center gap-1 px-3 xl:px-4 py-2 rounded-lg transition-all duration-200 ${isActive(nav.href)
+                        ? "text-orange-500 bg-orange-50 font-semibold"
+                        : "hover:text-orange-500 hover:bg-gray-50"
+                        }`}
                     >
                       {nav.label}
                       <motion.div
@@ -175,16 +174,14 @@ export default function Header() {
                                   href={`/products/${slugify(cat)}`}
                                   onClick={() => setShowProducts(false)}
                                   onMouseEnter={() => setActiveCategory(cat)}
-                                  className={`relative flex items-center justify-between px-5 py-3.5 border-b border-gray-100 cursor-pointer text-sm transition-all duration-200 ${
-                                    activeCategory === cat
-                                      ? "bg-white text-orange-500 font-medium"
-                                      : "text-gray-700 hover:bg-white hover:text-orange-500"
-                                  }`}
+                                  className={`relative flex items-center justify-between px-5 py-3.5 border-b border-gray-100 cursor-pointer text-sm transition-all duration-200 ${activeCategory === cat
+                                    ? "bg-white text-orange-500 font-medium"
+                                    : "text-gray-700 hover:bg-white hover:text-orange-500"
+                                    }`}
                                 >
                                   <span>{cat}</span>
-                                  <FiChevronRight className={`transition-transform duration-200 ${
-                                    activeCategory === cat ? "text-orange-500" : "text-gray-400"
-                                  }`} />
+                                  <FiChevronRight className={`transition-transform duration-200 ${activeCategory === cat ? "text-orange-500" : "text-gray-400"
+                                    }`} />
                                   {activeCategory === cat && (
                                     <motion.span
                                       layoutId="activeCategory"
@@ -243,11 +240,10 @@ export default function Header() {
                 ) : (
                   <Link
                     href={nav.href}
-                    className={`px-3 xl:px-4 py-2 rounded-lg transition-all duration-200 ${
-                      isActive(nav.href)
-                        ? "text-orange-500 bg-orange-50 font-semibold"
-                        : "hover:text-orange-500 hover:bg-gray-50"
-                    }`}
+                    className={`px-3 xl:px-4 py-2 rounded-lg transition-all duration-200 ${isActive(nav.href)
+                      ? "text-orange-500 bg-orange-50 font-semibold"
+                      : "hover:text-orange-500 hover:bg-gray-50"
+                      }`}
                   >
                     {nav.label}
                   </Link>
@@ -277,53 +273,25 @@ export default function Header() {
 
           {/* GeM Button */}
           <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 300 }}
           >
             <Link
               href="https://gem.gov.in/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:from-zinc-900 hover:to-black transition-all duration-300 shadow-md hover:shadow-lg relative overflow-hidden group"
+              className="flex items-center w-32 text-center gap-2 "
             >
-              <motion.img
-                src="/gem-new-logo-v6.svg"
+              <img
+                src="/gemlogo.png"
                 alt="GeM Logo"
-                className="h-5 sm:h-7 w-auto relative z-10 brightness-0 invert"
-                animate={{
-                  scale: [1, 1.05, 1],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  ease: "easeInOut",
-                }}
+                className="h-12  w-28 border bg-orange-50 hover:bg-orange-100 border-orange-200 px-4 shadow-sm hover:shadow-md rounded-xl"
               />
-              {/* <span className="text-[10px] sm:text-xs font-medium tracking-wide relative z-10">GeM</span> */}
-              
-              {/* Shine Effect */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-                initial={{ x: "-100%" }}
-                whileHover={{ x: "100%" }}
-                transition={{ duration: 0.8 }}
-              />
-              
-              {/* Pulse Effect */}
-              <motion.div
-                className="absolute inset-0 bg-white/5"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0, 0.3, 0],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "loop",
-                }}
-              />
+
+              {/* <span className="text-xs font-semibold text-orange-600 tracking-wide">
+                Available on GeM
+              </span> */}
             </Link>
           </motion.div>
 
@@ -437,11 +405,10 @@ export default function Header() {
                       <Link
                         href={nav.href}
                         onClick={() => setIsOpen(false)}
-                        className={`block px-4 py-3.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-                          isActive(nav.href)
-                            ? "text-orange-500 bg-orange-50"
-                            : "text-gray-700 hover:text-orange-500 hover:bg-orange-50"
-                        }`}
+                        className={`block px-4 py-3.5 text-sm font-medium rounded-lg transition-all duration-200 ${isActive(nav.href)
+                          ? "text-orange-500 bg-orange-50"
+                          : "text-gray-700 hover:text-orange-500 hover:bg-orange-50"
+                          }`}
                       >
                         {nav.label}
                       </Link>

@@ -28,7 +28,7 @@ export default function Solutions() {
   ];
 
   return (
-    <section className=" bg-gradient-to-b from-white to-gray-50 px-4">
+    <section className=" bg-gradient-to-b from-white to-gray-50 px-4 py-6">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <motion.div
@@ -37,10 +37,10 @@ export default function Solutions() {
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-100 to-red-100 text-orange-700 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+          {/* <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-100 to-red-100 text-orange-700 px-4 py-2 rounded-full text-sm font-semibold mb-6">
             <MdOutlineAttachMoney className="text-lg" />
             <span>High-Profit Solutions Portfolio</span>
-          </div>
+          </div> */}
           
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
             Complete <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">Networking Solutions</span>
@@ -54,7 +54,7 @@ export default function Solutions() {
         </motion.div>
 
         {/* Market Segments */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -77,7 +77,7 @@ export default function Solutions() {
               </div>
             ))}
           </div>
-        </motion.div>
+        </motion.div> */}
 
         
         {/* Performance Banner */}

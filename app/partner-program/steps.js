@@ -48,8 +48,8 @@ export default function Steps() {
                             <div className="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full bg-gradient-to-r from-orange-500 to-red-500 border-4 border-white shadow-lg hidden md:block" />
 
                             {/* Step Card */}
-                            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-                                <div className="text-5xl font-bold text-gray-200 mb-4">
+                            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border border-orange-400">
+                                <div className="text-5xl font-bold text-orange-500 mb-4">
                                     {step.number}
                                 </div>
                                 <h3 className="text-xl font-bold mb-3">

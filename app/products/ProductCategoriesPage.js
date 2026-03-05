@@ -184,30 +184,33 @@ export default function ProductCategoriesPage() {
 
     setNotFound(false);
 
+    // 🔥 IMPORTANT FIX
+    // If URL is exactly /products
+    if (!categorySlug) {
+      setResolvedParent(null);
+      setResolvedSub(null);
+      setOpenParent(null);
+      setOpenSub(null);
+      return;
+    }
+
     let parent = null;
     let sub = null;
 
     // CASE 1: /products/category/subcategory
     if (categorySlug && subcategorySlug) {
-
       if (slugMap[categorySlug]?.[subcategorySlug]) {
         parent = slugMap[categorySlug][subcategorySlug][0].parentCategory;
         sub = slugMap[categorySlug][subcategorySlug][0].subCategory;
       }
-
     }
 
-    // CASE 2: /products/category  (may be parent OR subcategory)
+    // CASE 2: /products/category
     else if (categorySlug) {
-
-      // Parent exists
       if (slugMap[categorySlug]) {
         const firstSub = Object.keys(slugMap[categorySlug])[0];
         parent = slugMap[categorySlug][firstSub][0].parentCategory;
-      }
-
-      // Subcategory exists
-      else {
+      } else {
         for (const parentSlug in slugMap) {
           if (slugMap[parentSlug][categorySlug]) {
             parent = slugMap[parentSlug][categorySlug][0].parentCategory;
@@ -216,7 +219,6 @@ export default function ProductCategoriesPage() {
           }
         }
       }
-
     }
 
     if (!parent && !sub) {
@@ -227,10 +229,10 @@ export default function ProductCategoriesPage() {
     setResolvedParent(parent);
     setResolvedSub(sub);
     setOpenParent(parent);
-    if (sub) setOpenSub(sub);
+    setOpenSub(sub || null);
 
   }, [categorySlug, subcategorySlug, slugMap]);
-  
+
   /* ================= GROUP DATA ================= */
   const grouped = useMemo(() => {
     const map = {};
@@ -295,7 +297,7 @@ export default function ProductCategoriesPage() {
       <nav className="mb-8">
         <div className="flex flex-col gap-4">
           <div>
-            <ol className="flex flex-wrap items-center gap-3 text-base md:text-lg font-medium">
+            {/* <ol className="flex flex-wrap items-center gap-3 text-base md:text-lg font-medium">
               <li className="flex items-center gap-2">
                 <button
                   onClick={handleHomeClick}
@@ -360,35 +362,35 @@ export default function ProductCategoriesPage() {
                   </li>
                 </>
               )}
-            </ol>
+            </ol> */}
 
             {/* Page Title */}
             {/* Page Title */}
             <div className="mt-4">
 
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">
-                {resolvedSub
-                  ? capitalizeWords(resolvedSub)
-                  : resolvedParent
-                    ? capitalizeWords(resolvedParent)
-                    : "All Products"}
-              </h1>
-
-              <div className="flex items-center gap-3 mt-2">
-                <p className="text-gray-600">
+              {/* <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">
                   {resolvedSub
-                    ? `${resolvedSub} products`
+                    ? capitalizeWords(resolvedSub)
                     : resolvedParent
-                      ? `${resolvedParent} collection`
-                      : "Explore our product catalog"}
-                </p>
+                      ? capitalizeWords(resolvedParent)
+                      : "All Products"}
+                </h1> */}
 
-                {visibleProducts.length > 0 && (
-                  <span className="px-3 py-1 bg-orange-500 text-white text-sm font-medium rounded-full">
-                    {visibleProducts.length} {visibleProducts.length === 1 ? "Product" : "Products"}
-                  </span>
-                )}
-              </div>
+              {/* <div className="flex items-center gap-3 mt-2">
+                  <p className="text-gray-600">
+                    {resolvedSub
+                      ? `${resolvedSub} products`
+                      : resolvedParent
+                        ? `${resolvedParent} collection`
+                        : "Explore our product catalog"}
+                  </p>
+
+                  {visibleProducts.length > 0 && (
+                    <span className="px-3 py-1 bg-orange-500 text-white text-sm font-medium rounded-full">
+                      {visibleProducts.length} {visibleProducts.length === 1 ? "Product" : "Products"}
+                    </span>
+                  )}
+                </div> */}
 
             </div>
           </div>
@@ -441,9 +443,25 @@ export default function ProductCategoriesPage() {
     );
   }
 
+  const filteredCategories = Object.entries(grouped).filter(([parent, subs]) => {
+    if (!search) return true;
+
+    const s = search.toLowerCase();
+
+    if (parent.toLowerCase().includes(s)) return true;
+
+    return Object.entries(subs).some(([sub, items]) => {
+      if (sub.toLowerCase().includes(s)) return true;
+
+      return items.some(p =>
+        p.title.toLowerCase().includes(s)
+      );
+    });
+  });
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 mt-[4.5rem]">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 ">
         <Breadcrumb />
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
@@ -452,7 +470,7 @@ export default function ProductCategoriesPage() {
             <div
               ref={sidebarRef}
               className="sticky top-24 bg-white rounded-xl shadow-sm border border-gray-200 
-              overflow-hidden overflow-x-hidden"
+                overflow-hidden overflow-x-hidden"
               style={{ maxHeight: "calc(100vh - 6rem)" }}
             >
 
@@ -484,142 +502,137 @@ export default function ProductCategoriesPage() {
               <div
                 ref={sidebarScrollRef}
                 className="p-4 overflow-y-auto overflow-x-hidden"
-                style={{ maxHeight: 'calc(100vh - 18rem)' }}>
+                style={{ maxHeight: "calc(100vh - 18rem)" }}
+              >
                 <div className="space-y-1">
-                  {Object.entries(grouped)
-                    .filter(([parent, subs]) => {
-                      if (!search) return true;
 
-                      const s = search.toLowerCase();
+                  {filteredCategories.map(([parent, subs]) => (
+                    <div key={parent} className="mb-1">
 
-                      // parent match
-                      if (parent.toLowerCase().includes(s)) return true;
+                      {/* PARENT CATEGORY BUTTON */}
+                      <button
+                        onClick={() => {
+                          setOpenParent(prev => prev === parent ? null : parent);
+                          setOpenSub(null);
+                        }}
+                        className={`w-full flex justify-between items-center px-3 py-3 text-sm font-medium rounded-lg transition-all ${openParent === parent
+                          ? "bg-orange-500 text-white"
+                          : "hover:bg-gray-50 text-gray-700 border border-gray-100"
+                          }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          {openParent === parent ? (
+                            <FaFolderOpen className="text-white" />
+                          ) : (
+                            <FaFolder className="text-gray-400" />
+                          )}
+                          <span className="truncate text-left">{parent}</span>
+                        </div>
 
-                      // subcategory OR product match
-                      return Object.entries(subs).some(([sub, items]) => {
-                        if (sub.toLowerCase().includes(s)) return true;
-
-                        return items.some(p =>
-                          p.title.toLowerCase().includes(s)
-                        );
-                      });
-                    })
-                    .map(([parent, subs]) => (
-                      <div key={parent} className="mb-1">
-
-                        {/* PARENT CATEGORY BUTTON */}
-                        <button
-                          onClick={() => {
-                            setOpenParent(parent);
-                            setOpenSub(null);
-                            router.push(`/products/${slugify(parent)}`, { scroll: false });
-                          }}
-                          className={`w-full flex justify-between items-center px-3 py-3 text-sm font-medium rounded-lg transition-all ${openParent === parent
-                            ? "bg-orange-500 text-white"
-                            : "hover:bg-gray-50 text-gray-700 border border-gray-100"
-                            }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            {openParent === parent ? (
-                              <FaFolderOpen className="text-white" />
-                            ) : (
-                              <FaFolder className="text-gray-400" />
-                            )}
-                            <span className="truncate text-left">{parent}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${openParent === parent
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded-full ${openParent === parent
                               ? "bg-white/20 text-white"
                               : "bg-gray-100 text-gray-600"
-                              }`}>
-                              {Object.values(grouped[parent]).flat().length}
-                            </span>
-                            {openParent === parent ? (
-                              <FaChevronUp className="text-xs" />
-                            ) : (
-                              <FaChevronDown className="text-gray-400 text-xs" />
-                            )}
-                          </div>
-                        </button>
+                              }`}
+                          >
+                            {Object.values(subs).flat().length}
+                          </span>
 
-                        {/* SUBCATEGORIES DROPDOWN */}
-                        <AnimatePresence>
-                          {openParent === parent && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0, y: -10 }}
-                              animate={{ height: "auto", opacity: 1, y: 0 }}
-                              exit={{ height: 0, opacity: 0, y: -10 }}
-                              transition={{ duration: 0.2 }}
-                              className="mt-2 ml-3 pl-3 border-l-2 border-orange-200"
-                            >
-                              {Object.entries(grouped[parent]).map(
-                                ([sub, items]) => (
-                                  <div
-                                    key={sub}
-                                    className="mb-2"
-                                    ref={(el) => subcategoryRefs.current[sub] = el}
-                                  >
-                                    {/* SUBCATEGORY HEADER */}
-                                    <button
-                                      onClick={() => handleSubcategoryClick(parent, sub)}
-                                      className={`w-full flex justify-between items-center px-4 py-2.5 text-sm rounded-lg transition-all border ${openSub === sub
-                                        ? "bg-orange-50 border-orange-200 text-orange-700"
-                                        : "hover:bg-gray-50 border-gray-100 text-gray-700"
+                          {openParent === parent ? (
+                            <FaChevronUp className="text-xs" />
+                          ) : (
+                            <FaChevronDown className="text-gray-400 text-xs" />
+                          )}
+                        </div>
+                      </button>
+
+                      {/* SUBCATEGORIES */}
+                      <AnimatePresence>
+                        {openParent === parent && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0, y: -10 }}
+                            animate={{ height: "auto", opacity: 1, y: 0 }}
+                            exit={{ height: 0, opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
+                            className="mt-2 ml-3 pl-3 border-l-2 border-orange-200"
+                          >
+                            {Object.entries(subs).map(([sub, items]) => (
+                              <div
+                                key={sub}
+                                className="mb-2"
+                                ref={(el) => (subcategoryRefs.current[sub] = el)}
+                              >
+                                {/* SUBCATEGORY BUTTON */}
+                                <button
+                                  onClick={() => handleSubcategoryClick(parent, sub)}
+                                  className={`w-full flex justify-between items-center px-4 py-2.5 text-sm rounded-lg transition-all border ${openSub === sub
+                                    ? "bg-orange-50 border-orange-200 text-orange-700"
+                                    : "hover:bg-gray-50 border-gray-100 text-gray-700"
+                                    }`}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <FaFolder
+                                      className={`text-xs ${openSub === sub
+                                        ? "text-orange-600"
+                                        : "text-gray-400"
+                                        }`}
+                                    />
+                                    <span className="truncate text-left">{sub}</span>
+                                  </div>
+
+                                  <div className="flex items-center gap-2">
+                                    <span
+                                      className={`text-xs px-2 py-0.5 rounded-full ${openSub === sub
+                                        ? "bg-orange-100 text-orange-700"
+                                        : "bg-gray-100 text-gray-600"
                                         }`}
                                     >
-                                      <div className="flex items-center gap-2">
-                                        <FaFolder className={`text-xs ${openSub === sub
-                                          ? "text-orange-600"
-                                          : "text-gray-400"
-                                          }`} />
-                                        <span className="truncate text-left">{sub}</span>
-                                      </div>
-                                      <div className="flex items-center gap-2">
-                                        <span className={`text-xs px-2 py-0.5 rounded-full ${openSub === sub
-                                          ? "bg-orange-100 text-orange-700"
-                                          : "bg-gray-100 text-gray-600"
-                                          }`}>
-                                          {items.length}
-                                        </span>
-                                        <FaChevronDown className={`text-xs transition-transform ${openSub === sub ? "rotate-180" : ""
-                                          }`} />
-                                      </div>
-                                    </button>
+                                      {items.length}
+                                    </span>
 
-                                    {/* PRODUCT LIST DROPDOWN */}
-                                    {/* PRODUCT LIST REMOVED — only keep spacing for animation */}
-                                    <AnimatePresence>
-                                      {openSub === sub && (
-                                        <motion.div
-                                          initial={{ height: 0, opacity: 0 }}
-                                          animate={{ height: 8, opacity: 1 }}
-                                          exit={{ height: 0, opacity: 0 }}
-                                          transition={{ duration: 0.15 }}
-                                          className="mt-1 ml-4 pl-3 border-l border-gray-200"
-                                        />
-                                      )}
-                                    </AnimatePresence>
+                                    <FaChevronDown
+                                      className={`text-xs transition-transform ${openSub === sub ? "rotate-180" : ""
+                                        }`}
+                                    />
                                   </div>
-                                )
-                              )}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    ))}
+                                </button>
 
-                  {/* No Results State */}
-                  {Object.keys(grouped).filter((parent) =>
-                    parent.toLowerCase().includes(search.toLowerCase())
-                  ).length === 0 && (
-                      <div className="text-center py-8 px-4">
-                        <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
-                          <FaSearch className="text-xl text-gray-400" />
-                        </div>
-                        <h3 className="font-medium text-gray-900 mb-1">No categories found</h3>
-                        <p className="text-sm text-gray-500">Try a different search term</p>
+                                {/* SMALL ANIMATION SPACE */}
+                                <AnimatePresence>
+                                  {openSub === sub && (
+                                    <motion.div
+                                      initial={{ height: 0, opacity: 0 }}
+                                      animate={{ height: 8, opacity: 1 }}
+                                      exit={{ height: 0, opacity: 0 }}
+                                      transition={{ duration: 0.15 }}
+                                      className="mt-1 ml-4 pl-3 border-l border-gray-200"
+                                    />
+                                  )}
+                                </AnimatePresence>
+                              </div>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  ))}
+
+                  {/* EMPTY STATE */}
+                  {filteredCategories.length === 0 && (
+                    <div className="text-center py-8 px-4">
+                      <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
+                        <FaSearch className="text-xl text-gray-400" />
                       </div>
-                    )}
+                      <h3 className="font-medium text-gray-900 mb-1">
+                        No categories found
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        Try a different search term
+                      </p>
+                    </div>
+                  )}
+
                 </div>
               </div>
             </div>
