@@ -284,9 +284,9 @@ export default function Header() {
               className="flex items-center w-32 text-center gap-2 "
             >
               <img
-                src="/gemlogo.png"
+                src="/gem.jpeg"
                 alt="GeM Logo"
-                className="h-12  w-28 border bg-orange-50 hover:bg-orange-100 border-orange-200 px-4 shadow-sm hover:shadow-md rounded-xl"
+                className="h-10  w-28 shadow-sm hover:shadow-md rounded-sm"
               />
 
               {/* <span className="text-xs font-semibold text-orange-600 tracking-wide">

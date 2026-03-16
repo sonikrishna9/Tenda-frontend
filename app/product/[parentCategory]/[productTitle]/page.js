@@ -28,6 +28,8 @@ import ProductParameter from "./ProductParameter";
 import ProductPDFGenerator, { PDFDownloadButton, PDFPreview } from '../../ProductPDFGenerator';
 import { SiAmazon, SiFlipkart } from "react-icons/si";
 import { FiGlobe, FiShoppingCart } from "react-icons/fi";
+import FixedContactCard from "@/app/contactus/FixedContactCard";
+import EnquiryForm from "@/app/contactus/EnquiryForm";
 
 /* ================= LOADING COMPONENT ================= */
 const LoadingState = () => {
@@ -569,19 +571,28 @@ export default function ProductDisplay() {
 
 
   const params = useParams();
-  const supportRef = useRef(null)
+  // const supportRef = useRef(null)
   const parentCategory = params?.parentCategory;
   const productTitle = params?.productTitle;
 
+  const parentRef = useRef(null);
 
   const [product, setProduct] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [activetab, setactivetab] = useState("feature");
-  const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
+  // const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [downloading, setDownloading] = useState(false);
+  // const [downloading, setDownloading] = useState(false);
 
-
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    inquiryType: "general",
+    priceRange: "",
+    message: ""
+  });
 
   const [showBuyOptions, setShowBuyOptions] = useState(false);
 
@@ -590,10 +601,60 @@ export default function ProductDisplay() {
   const [loading, setLoading] = useState(true); // Add loading state
 
   const tabs = [
-    { id: "parameter", label: "Parameter" },
-    { id: "feature", label: "Feature" },
+    { id: "parameter", label: "Specifications" },
+    { id: "feature", label: "Features" },
     { id: "support", label: "Support" },
   ];
+
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(
+        "https://bothook.io/v1/public/triggers/webhooks/d48f4297-66cc-4303-8748-90ad07182868",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (response.ok) {
+        setShowSuccess(true);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          inquiryType: "general",
+          priceRange: "",
+          message: ""
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
+
 
   // Handle video click
   const handleVideoClick = (video) => {
@@ -607,14 +668,14 @@ export default function ProductDisplay() {
     setTimeout(() => setShowMessage({ type: null, title: null }), 3000);
   };
 
-  const handleDownload = () => {
-    setDownloading(true);
+  // const handleDownload = () => {
+  //   setDownloading(true);
 
-    setTimeout(() => {
-      generateProductPDF(product);
-      setDownloading(false);
-    }, 100);
-  };
+  //   setTimeout(() => {
+  //     generateProductPDF(product);
+  //     setDownloading(false);
+  //   }, 100);
+  // };
 
   useEffect(() => {
     if (showBuyOptions) {
@@ -651,8 +712,8 @@ export default function ProductDisplay() {
 
     setLoading(true);
 
-    const deslugify = (s = "") =>
-      s.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    // const deslugify = (s = "") =>
+    //   s.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 
     const pc = decodeURIComponent(parentCategory);
     const pt = decodeURIComponent(productTitle);
@@ -708,7 +769,7 @@ export default function ProductDisplay() {
   }
 
   const images = product.images?.map((img) => img.url) || [];
-  const featurePictures = product.featurePictures || [];
+  // const featurePictures = product.featurePictures || [];
   const parameters = product.parameters || [];
   const videos = product.videos || [];
   const quickstartpdfs = product.pdf?.quickstartpdfs || [];
@@ -731,12 +792,12 @@ export default function ProductDisplay() {
 
   return (
     <>
-      <ProductPDFGenerator
+      {/* <ProductPDFGenerator
         product={product}
         onDownloadStart={() => console.log('Download started')}
         onDownloadComplete={() => console.log('Download completed')}
         onError={(error) => console.error('PDF error:', error)}
-      />
+      /> */}
       {/* ================= NOTIFICATION MESSAGE ================= */}
       <AnimatePresence>
         {showMessage.type && (
@@ -857,9 +918,10 @@ export default function ProductDisplay() {
             </button>
             <button
               onClick={() =>
-                document
-                  .getElementById("have-question")
-                  ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                parentRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                })
               }
               className="cursor-pointer flex items-center gap-2 bg-white border px-5 py-2 rounded-md"
             >
@@ -933,9 +995,51 @@ export default function ProductDisplay() {
           onPdfClick={handlePDFClick}
         />
       )}
-      <div id="have-question">
-        <HaveQuestion />
-      </div>
+
+      <section className="bg-gradient-to-b from-white via-orange-50 to-white py-20 px-4">
+
+        <div className="max-w-7xl mx-auto">
+
+          {/* HEADING */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            variants={itemVariants}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+
+            <h2 className="text-4xl font-bold text-orange-600 mb-4">
+              Get In Touch
+            </h2>
+
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Have questions about our partner program? Send us a message and our team will get back to you shortly.
+            </p>
+
+          </motion.div>
+
+          <div
+            ref={parentRef}
+            className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-12"
+          >
+
+
+            <FixedContactCard parentRef={parentRef} />
+
+            <EnquiryForm
+              formData={formData}
+              handleChange={handleChange}
+              handleSubmit={handleSubmit}
+              itemVariants={itemVariants}
+            />
+
+          </div>
+
+        </div>
+
+      </section>
+
       {showBuyOptions && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
 
@@ -973,14 +1077,14 @@ export default function ProductDisplay() {
             </div>
 
             {/* MARKETPLACE GRID */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-4  gap-8">
 
               {/* AMAZON */}
               <div
                 onClick={() => window.open(product.buyLinks?.amazon, "_blank")}
                 className="group cursor-pointer bg-gradient-to-br from-orange-50 to-orange-100 
-          rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
-          transition-all duration-300"
+                rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
+                transition-all duration-300"
               >
                 <SiAmazon className="text-5xl mx-auto mb-4 text-orange-500 group-hover:scale-110 transition" />
                 <p className="font-semibold text-gray-800">Amazon</p>
@@ -1002,12 +1106,12 @@ export default function ProductDisplay() {
               <div
                 onClick={() => window.open(product.buyLinks?.meesho, "_blank")}
                 className="group cursor-pointer bg-gradient-to-br from-emerald-50 to-green-100 
-  rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
-  transition-all duration-300 flex flex-col items-center justify-center"
+               rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
+               transition-all duration-300 flex flex-col items-center justify-center"
               >
                 <div className="w-20 h-16 flex items-center justify-center 
-    rounded-xl bg-white shadow-md mb-4 
-    group-hover:scale-110 transition duration-300">
+                rounded-xl bg-white shadow-md mb-4 
+                group-hover:scale-110 transition duration-300">
 
                   <img
                     src="/gem.png"
@@ -1020,7 +1124,7 @@ export default function ProductDisplay() {
               </div>
 
               {/* WEBSITE */}
-              <div
+              {/* <div
                 onClick={() => window.open(product.buyLinks?.website, "_blank")}
                 className="group cursor-pointer bg-gradient-to-br from-gray-50 to-gray-100 
           rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
@@ -1028,12 +1132,54 @@ export default function ProductDisplay() {
               >
                 <FiGlobe className="text-5xl mx-auto mb-4 text-gray-700 group-hover:scale-110 transition" />
                 <p className="font-semibold text-gray-800">Official Site</p>
-              </div>
+              </div> */}
 
             </div>
           </motion.div>
         </div>
       )}
+
+      {showSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
+
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center animate-fadeIn">
+
+            <div className="w-16 h-16 bg-green-100 mx-auto rounded-full flex items-center justify-center mb-4">
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              Message Sent!
+            </h3>
+
+            <p className="text-gray-600 mb-6">
+              Thank you for contacting us. Our team will reach out to you shortly.
+            </p>
+
+            <button
+              onClick={() => setShowSuccess(false)}
+              className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg transition"
+            >
+              Close
+            </button>
+
+          </div>
+
+        </div>
+      )}
+
     </>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronDown, FaPhoneAlt, FaEnvelope, FaHeadset } from "react-icons/fa";
 
@@ -50,6 +50,62 @@ const faqData = [
 export default function HaveQuestionFAQ() {
   const [openIndex, setOpenIndex] = useState(null);
 
+  const leftRef = useRef(null);
+  const parentRef = useRef(null);
+
+  const [isFixed, setIsFixed] = useState(false);
+  const [isBottom, setIsBottom] = useState(false);
+
+  useEffect(() => {
+
+    const handleScroll = () => {
+
+      if (!parentRef.current || !leftRef.current) return;
+
+      const parent = parentRef.current;
+      const card = leftRef.current;
+
+      const parentRect = parent.getBoundingClientRect();
+      const cardHeight = card.offsetHeight;
+
+      const parentTop = parentRect.top;
+      const parentBottom = parentRect.bottom;
+
+      if (window.innerWidth < 1024) {
+        setIsFixed(false);
+        setIsBottom(false);
+        return;
+      }
+
+      if (parentTop <= 0) {
+
+        if (parentBottom <= cardHeight + 120) {
+
+          setIsFixed(false);
+          setIsBottom(true);
+
+        } else {
+
+          setIsFixed(true);
+          setIsBottom(false);
+
+        }
+
+      } else {
+
+        setIsFixed(false);
+        setIsBottom(false);
+
+      }
+
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+
+  }, []);
+
   const toggle = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
@@ -71,26 +127,44 @@ export default function HaveQuestionFAQ() {
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+        <div
+          ref={parentRef}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 relative"
+        >
 
           {/* ================= LEFT CONTACT PANEL (STICKY) ================= */}
-          <div className="lg:w-1/3 lg:sticky lg:top-28 self-start">
-            <div className="bg-gradient-to-br from-orange-400 to-orange-600 text-white rounded-2xl shadow-xl overflow-hidden h-full flex flex-col">
+          <div className="relative">
 
-              {/* Header */}
-              <div className="p-8">
-                <div className="inline-flex bg-white/20 rounded-full p-3 mb-6">
-                  <FaHeadset className="text-2xl" />
+            <div
+              ref={leftRef}
+              className={`
+      transition-all duration-300
+      ${isFixed ? "lg:fixed lg:top-28 lg:w-[380px]" : ""}
+      ${isBottom ? "lg:absolute lg:bottom-0 lg:w-[380px]" : ""}
+    `}
+            >
+
+              {/* YOUR EXISTING DESIGN SAME */}
+              <div className="bg-gradient-to-br from-orange-400 to-orange-600 text-white rounded-2xl shadow-xl overflow-hidden flex flex-col">
+
+                {/* Header */}
+                <div className="p-8">
+                  <div className="inline-flex bg-white/20 rounded-full p-3 mb-6">
+                    <FaHeadset className="text-2xl" />
+                  </div>
+
+                  <h3 className="text-2xl font-bold mb-3">
+                    Still have questions?
+                  </h3>
+
+                  <p className="text-orange-100 leading-relaxed">
+                    Can't find what you're looking for? Our support team is here to help.
+                  </p>
                 </div>
-                <h3 className="text-2xl font-bold mb-3">Still have questions?</h3>
-                <p className="text-orange-100 leading-relaxed">
-                  Can't find what you're looking for? Our support team is here to help.
-                </p>
-              </div>
 
-              {/* Contact Options */}
-              <div className="bg-white/10 backdrop-blur-sm px-8 py-6 flex-1">
-                <div className="space-y-4">
+                {/* Contact Options */}
+                <div className="bg-white/10 backdrop-blur-sm px-8 py-6 flex-1">
+
                   {/* Phone */}
                   <a
                     href="tel:18001022366"
@@ -99,35 +173,45 @@ export default function HaveQuestionFAQ() {
                     <div className="bg-orange-400 p-3 rounded-lg group-hover:scale-110 transition-transform">
                       <FaPhoneAlt className="text-white text-sm" />
                     </div>
+
                     <div>
-                      <p className="text-xs text-orange-200 mb-1">Call us toll-free</p>
-                      <p className="font-semibold">1800 1022 366</p>
+                      <p className="text-xs text-orange-200 mb-1">
+                        Call us toll-free
+                      </p>
+                      <p className="font-semibold">
+                        +91 8000200056
+                      </p>
                     </div>
                   </a>
 
                   {/* Email */}
                   <a
                     href="mailto:info@tenda.com"
-                    className="flex items-center gap-4 bg-white/10 hover:bg-white/20 rounded-xl px-5 py-4 transition-all group"
+                    className="flex items-center gap-4 bg-white/10 hover:bg-white/20 rounded-xl px-5 py-4 transition-all group mt-4"
                   >
                     <div className="bg-orange-400 p-3 rounded-lg group-hover:scale-110 transition-transform">
                       <FaEnvelope className="text-white text-sm" />
                     </div>
+
                     <div>
-                      <p className="text-xs text-orange-200 mb-1">Email us anytime</p>
-                      <p className="font-semibold">info@tenda.com</p>
+                      <p className="text-xs text-orange-200 mb-1">
+                        Email us anytime
+                      </p>
+                      <p className="font-semibold">
+                        sales@tendaindia.com
+                      </p>
                     </div>
                   </a>
+
                 </div>
+
               </div>
 
-              {/* Footer */}
-             
             </div>
-          </div>
 
+          </div>
           {/* ================= RIGHT FAQ LIST ================= */}
-          <div className="lg:w-2/3">
+          <div className="lg:col-span-2">
             <div className="space-y-4">
               {faqData.map((item, index) => {
                 const isOpen = openIndex === index;

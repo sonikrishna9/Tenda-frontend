@@ -173,19 +173,19 @@ export default function Footer() {
                   <div className="p-2 bg-gray-900/50 rounded-lg group-hover:bg-orange-500/10 transition-colors">
                     <FaMapMarkerAlt className="text-orange-500" />
                   </div>
-                  <span className="text-sm">Global Headquarters • Shenzhen, China</span>
+                  <span className="text-sm">Plot 03, Sector 138, Noida , Uttar-Pradesh-201305</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-400 hover:text-orange-400 transition-colors group cursor-pointer">
                   <div className="p-2 bg-gray-900/50 rounded-lg group-hover:bg-orange-500/10 transition-colors">
                     <FaPhone className="text-orange-500" />
                   </div>
-                  <span className="text-sm">+86 755 3335 9999</span>
+                  <span className="text-sm">+91 8000200056</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-400 hover:text-orange-400 transition-colors group cursor-pointer">
                   <div className="p-2 bg-gray-900/50 rounded-lg group-hover:bg-orange-500/10 transition-colors">
                     <FaEnvelope className="text-orange-500" />
                   </div>
-                  <span className="text-sm">corporate@tenda.com</span>
+                  <span className="text-sm">sales@tendaindia.com</span>
                 </div>
               </div>
 
@@ -325,7 +325,7 @@ export default function Footer() {
 
             {/* Policy Links */}
             <div className="flex items-center gap-4">
-              <Link href="/privacy" className="hover:text-orange-400 transition-colors">
+              <Link href="/privacy-policy" className="hover:text-orange-400 transition-colors">
                 Privacy Policy
               </Link>
               <span className="text-gray-700">•</span>

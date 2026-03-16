@@ -1,11 +1,13 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
     FaChartLine,
     FaHeadset,
     FaShieldAlt,
     FaTruck,
+    FaCheck,
     FaUsers,
     FaQuestionCircle,
     FaPhone,
@@ -15,11 +17,75 @@ import {
 import { MdOutlineAttachMoney, MdOutlineBusiness } from "react-icons/md";
 import Steps from "../steps";
 import VideoShowcaseSection from "../VideoCard";
+import ProductFAQ from "../../products/ProductFAQ"
 import Solutions from "../Solutions";
 import SipartnerSlider from "./SipartnerSlider";
+import FixedContactCard from "@/app/contactus/FixedContactCard";
+import EnquiryForm from "@/app/contactus/EnquiryForm";
 
 
 export default function SiPartnerPage() {
+
+    const parentRef = useRef(null);
+    const [showSuccess, setShowSuccess] = useState(false);
+
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        inquiryType: "general",
+        priceRange: "",
+        message: ""
+    });
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await fetch(
+                "https://bothook.io/v1/public/triggers/webhooks/d48f4297-66cc-4303-8748-90ad07182868",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        ...formData,
+                        mobile: formData.phone
+                    })
+                }
+            );
+
+            if (response.ok) {
+                setShowSuccess(true);
+
+                setFormData({
+                    name: "",
+                    email: "",
+                    phone: "",
+                    inquiryType: "general",
+                    priceRange: "",
+                    message: ""
+                });
+            }
+
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const scrollToForm = () => {
+        parentRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    };
+
     const benefits = [
         {
             icon: <FaNetworkWired className="text-3xl" />,
@@ -111,6 +177,30 @@ export default function SiPartnerPage() {
                         <br /> as a System Integrator / ISP
                     </h1>
 
+                    {/* ================= BEAUTIFUL BUTTONS ================= */}
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pb-4">
+
+
+                        {/* SI Partner Button */}
+                        <button
+                            onClick={scrollToForm}
+                            className=" cursor-pointer
+                          relative px-6 py-3 rounded-full 
+                         bg-gradient-to-r from-orange-500 to-orange-600
+                         text-white font-semibold text-lg
+                         shadow-lg shadow-orange-200
+                         hover:shadow-orange-300
+                         hover:scale-105
+                         transition-all duration-300
+                         group
+                       "
+                        >
+                            Contact Us
+                        </button>
+
+                    </div>
+
+
                     <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-10">
                         Deliver scalable, secure, and high-performance networking solutions
                         with TENDA’s enterprise-grade portfolio and expert support.
@@ -192,41 +282,64 @@ export default function SiPartnerPage() {
 
             <Solutions />
 
-            {/* -------- FAQ Section -------- */}
-            <section className="py-20 px-4 bg-gray-50">
-                <div className="max-w-4xl mx-auto">
-                    <h2 className="text-center text-4xl font-bold mb-12">
-                        Frequently Asked Questions
-                    </h2>
+            <section className="bg-gradient-to-b from-white via-orange-50 to-white py-20 px-4">
+                <div className="max-w-7xl mx-auto">
 
-                    <div className="space-y-6">
-                        {faqItems.map((faq, i) => (
-                            <div key={i} className="bg-white p-6 rounded-xl shadow border">
-                                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                                    <FaQuestionCircle className="text-orange-600" />
-                                    {faq.question}
-                                </h3>
-                                <p className="text-gray-600">{faq.answer}</p>
-                            </div>
-                        ))}
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-bold text-orange-600 mb-4">
+                            Get In Touch
+                        </h2>
+
+                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                            Have questions about our SI / ISP partner program? Send us a message and our team will reach out shortly.
+                        </p>
                     </div>
 
-                    <div className="mt-16 bg-orange-50 p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div>
-                            <h3 className="text-2xl font-bold mb-2">
-                                Need enterprise assistance?
-                            </h3>
-                            <p className="text-gray-600">
-                                Our SI & ISP support team is here to help.
-                            </p>
-                        </div>
-                        <button className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-full font-semibold flex items-center gap-2">
-                            <FaPhone />
-                            Contact Enterprise Team
-                        </button>
+                    <div
+                        ref={parentRef}
+                        className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-12"
+                    >
+                        <FixedContactCard parentRef={parentRef} />
+
+                        <EnquiryForm
+                            formData={formData}
+                            handleChange={handleChange}
+                            handleSubmit={handleSubmit}
+                        />
                     </div>
+
                 </div>
             </section>
+
+            <ProductFAQ />
+            {showSuccess && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
+
+                    <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+
+                        <div className="w-16 h-16 bg-green-100 mx-auto rounded-full flex items-center justify-center mb-4">
+                            <FaCheck />
+                        </div>
+
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                            Message Sent!
+                        </h3>
+
+                        <p className="text-gray-600 mb-6">
+                            Our enterprise team will contact you shortly.
+                        </p>
+
+                        <button
+                            onClick={() => setShowSuccess(false)}
+                            className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg"
+                        >
+                            Close
+                        </button>
+
+                    </div>
+
+                </div>
+            )}
         </>
     );
 }

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { toast } from "react-hot-toast";
 import { useState, useEffect } from 'react';
 import {
   FaChevronLeft,
@@ -12,43 +13,74 @@ import {
   FaArrowRight,
 } from 'react-icons/fa';
 
+const API_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/";
+
 export default function SipartnerSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  const slides = [
-    {
-      image:
-        'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=2000&q=80',
-      title: 'Become a TENDA Distributor',
-      subtitle:
-        'Lead the networking market with a globally trusted brand',
-      icon: <FaHandshake className="w-14 h-14" />,
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=2000&q=80',
-      title: 'Enterprise Networking Portfolio',
-      subtitle:
-        'Routers, switches, access points & ISP-grade solutions',
-      icon: <FaNetworkWired className="w-14 h-14" />,
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=2000&q=80',
-      title: 'Nationwide Partner Support',
-      subtitle:
-        'Sales enablement, logistics & 24/7 technical assistance',
-      icon: <FaHeadset className="w-14 h-14" />,
-    },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [slides, setslides] = useState([])
+
+  const getslides = async () => {
+    try {
+      const res = await fetch(`${API_URL}api/slider/si-partner`, {
+        cache: "no-store",
+      });
+      const data = await res.json();
+
+      if (data?.success) {
+        setslides(data.data.images);
+      } else {
+        toast.error("Failed to load Slides");
+      }
+    } catch (error) {
+      toast.error("Error while fetching Slides");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!isAutoPlaying) return;
-    const interval = setInterval(
-      () => setCurrentSlide((prev) => (prev + 1) % slides.length),
-      5000
-    );
+    getslides();
+  }, []);
+
+
+  // const slides = [
+  //   {
+  //     image:
+  //       'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=2000&q=80',
+  //     title: 'Become a TENDA Distributor',
+  //     subtitle:
+  //       'Lead the networking market with a globally trusted brand',
+  //     icon: <FaHandshake className="w-14 h-14" />,
+  //   },
+  //   {
+  //     image:
+  //       'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=2000&q=80',
+  //     title: 'Enterprise Networking Portfolio',
+  //     subtitle:
+  //       'Routers, switches, access points & ISP-grade solutions',
+  //     icon: <FaNetworkWired className="w-14 h-14" />,
+  //   },
+  //   {
+  //     image:
+  //       'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=2000&q=80',
+  //     title: 'Nationwide Partner Support',
+  //     subtitle:
+  //       'Sales enablement, logistics & 24/7 technical assistance',
+  //     icon: <FaHeadset className="w-14 h-14" />,
+  //   },
+  // ];
+
+  useEffect(() => {
+    if (!isAutoPlaying || slides.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+
     return () => clearInterval(interval);
   }, [isAutoPlaying, slides.length]);
 
@@ -80,11 +112,11 @@ export default function SipartnerSlider() {
             {/* Background */}
             <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${slide.image})` }}
+              style={{ backgroundImage: `url(${slide.url})` }}
             />
             <div className="absolute inset-0 bg-black/60" />
 
-           
+
           </motion.div>
         ))}
 

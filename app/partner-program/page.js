@@ -1,17 +1,21 @@
 'use client';
-
+import { useRef, useState } from "react";
 import {
   FaQuestionCircle,
   FaHandshake,
   FaPhone,
 } from 'react-icons/fa';
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+
 
 import PartnerSlider from '../components/PartnerSlider';
 import WhoCanApply from '../components/ProductPages/Whocanapply';
 import AnimatedPartnerButton from "../components/AnimatedPartnerButton";
 import PartnerQuickActions from '../components/PartnerQuickActions';
 import ProductFAQ from "../products/ProductFAQ";
+import EnquiryForm from '../contactus/EnquiryForm';
+import FixedContactCard from '../contactus/FixedContactCard';
 /* -------------------- DATA -------------------- */
 
 const faqItems = [
@@ -39,6 +43,55 @@ const faqItems = [
 export default function Page() {
 
   const router = useRouter();
+
+  const parentRef = useRef(null);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    inquiryType: "general",
+    priceRange: "",
+    message: ""
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(
+        "https://bothook.io/v1/public/triggers/webhooks/d48f4297-66cc-4303-8748-90ad07182868",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (response.ok) {
+        setFormData({
+          name: "",
+          email: "",
+          inquiryType: "general",
+          priceRange: "",
+          message: ""
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { opacity: 1, y: 0 }
+  };
 
 
   return (
@@ -71,7 +124,7 @@ export default function Page() {
             {/* Dealer Button */}
             <button
               onClick={() => router.push("/partner-program/dealer")}
-              className="
+              className=" cursor-pointer
           relative px-10 py-4 rounded-full 
           bg-gradient-to-r from-orange-500 to-orange-600
           text-white font-semibold text-lg
@@ -89,7 +142,7 @@ export default function Page() {
             {/* SI Partner Button */}
             <button
               onClick={() => router.push("/partner-program/sipartner")}
-              className="
+              className=" cursor-pointer
            relative px-10 py-4 rounded-full 
           bg-gradient-to-r from-orange-500 to-orange-600
           text-white font-semibold text-lg
@@ -112,8 +165,52 @@ export default function Page() {
       {/* Who Can Apply */}
       <WhoCanApply />
 
+      <section className="bg-gradient-to-b from-white via-orange-50 to-white py-20 px-4">
 
-      <ProductFAQ />
+        <div className="max-w-7xl mx-auto">
+
+          {/* HEADING */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            variants={itemVariants}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+
+            <h2 className="text-4xl font-bold text-orange-600 mb-4">
+              Get In Touch
+            </h2>
+
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Have questions about our partner program? Send us a message and our team will get back to you shortly.
+            </p>
+
+          </motion.div>
+
+          <div
+            ref={parentRef}
+            className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-12"
+          >
+
+
+            <FixedContactCard parentRef={parentRef} />
+
+            <EnquiryForm
+              formData={formData}
+              handleChange={handleChange}
+              handleSubmit={handleSubmit}
+              itemVariants={itemVariants}
+            />
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* <ProductFAQ /> */}
     </div>
   );
 }

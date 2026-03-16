@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import Link from "next/link";
+import { toast } from "react-hot-toast";
+
 import {
   FaChevronLeft,
   FaChevronRight,
@@ -25,119 +27,67 @@ import {
 
 /* ------------------ DATA ------------------ */
 
-const featuredProducts = [
-  {
-    category: 'WiFi-6 Router',
-    model: 'RX27 Pro',
-    icon: <FaWifi className="w-6 h-6" />,
-    image:
-      'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=800&auto=format&fit=crop',
-    description: 'High-performance WiFi-6 router with extended coverage',
-  },
-  {
-    category: 'Managed POE Switch',
-    model: 'TEG5328P',
-    icon: <FaNetworkWired className="w-6 h-6" />,
-    image:
-      'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&auto=format&fit=crop',
-    description: '24-port managed POE switch with 410W power budget',
-  },
-  {
-    category: 'Outdoor AP',
-    model: 'O9',
-    icon: <FaBroadcastTower className="w-6 h-6" />,
-    image:
-      'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&auto=format&fit=crop',
-    description: 'Weatherproof outdoor access point for enterprise deployment',
-  },
-  {
-    category: 'WiFi-7 Router',
-    model: 'RE6L Pro',
-    icon: <FaSignal className="w-6 h-6" />,
-    image:
-      'https://images.unsplash.com/photo-1591789033331-02d6b8f64f06?w=800&auto=format&fit=crop',
-    description: 'Next-generation WiFi-7 router with multi-gigabit speeds',
-  },
-];
 
-const benefits = [
-  {
-    icon: <FaAward className="w-10 h-10" />,
-    title: 'Technical Training',
-    description: 'Comprehensive product and technical training programs',
-    color: 'from-blue-500 to-cyan-500',
-  },
-  {
-    icon: <FaUsers className="w-10 h-10" />,
-    title: 'Marketing Support',
-    description: 'Co-marketing funds and promotional materials',
-    color: 'from-purple-500 to-pink-500',
-  },
-  {
-    icon: <FaChartLine className="w-10 h-10" />,
-    title: 'Sales Enablement',
-    description: 'Dedicated sales tools and pre-sales support',
-    color: 'from-green-500 to-emerald-500',
-  },
-  {
-    icon: <FaShieldAlt className="w-10 h-10" />,
-    title: 'Warranty & Support',
-    description: 'Extended warranty and priority technical support',
-    color: 'from-orange-500 to-red-500',
-  },
-  {
-    icon: <FaLightbulb className="w-10 h-10" />,
-    title: 'Solution Design',
-    description: 'Custom network design and architecture support',
-    color: 'from-yellow-500 to-amber-500',
-  },
-  {
-    icon: <FaHandshake className="w-10 h-10" />,
-    title: 'Partner Portal',
-    description: 'Exclusive access to partner resources and tools',
-    color: 'from-indigo-500 to-blue-500',
-  },
-];
+
 
 /* ------------------ COMPONENT ------------------ */
 
 export default function PartnerSlider() {
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const slides = [
-    {
-      image:
-        'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=2000&q=80',
-    
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=2000&q=80',
-     
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=2000&q=80',
-     
-    },
-  ];
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/";
+
+
+  const getSlides = async () => {
+    try {
+
+      const res = await fetch(`${API_URL}api/slider/partner`, {
+        cache: "no-store",
+      });
+
+      const data = await res.json();
+
+      if (data?.success) {
+        setSlides(data.data.images);
+      } else {
+        toast.error("Failed to load slides");
+      }
+
+    } catch (error) {
+      toast.error("Error while fetching slides");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!isAutoPlaying) return;
-    const interval = setInterval(
-      () => setCurrentSlide((prev) => (prev + 1) % slides.length),
-      5000
-    );
+    getSlides();
+  }, []);
+
+
+  useEffect(() => {
+    if (!isAutoPlaying || slides.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+
     return () => clearInterval(interval);
   }, [isAutoPlaying, slides.length]);
 
   const nextSlide = () => {
+    if (!slides.length) return;
     setCurrentSlide((prev) => (prev + 1) % slides.length);
     setIsAutoPlaying(false);
   };
 
   const prevSlide = () => {
+    if (!slides.length) return;
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
     setIsAutoPlaying(false);
   };
@@ -160,7 +110,7 @@ export default function PartnerSlider() {
             {/* Background */}
             <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${slide.image})` }}
+              style={{ backgroundImage: `url(${slide.url})` }}
             />
             <div className="absolute inset-0 bg-black/60" />
 
@@ -172,7 +122,7 @@ export default function PartnerSlider() {
                     {slide.icon}
                   </div>
                 </div>
-               
+
 
               </div>
             </div>

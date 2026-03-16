@@ -1,5 +1,5 @@
 "use client";
-
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import DealerSlider from "./DealerSlider";
 import Link from "next/link";
@@ -13,8 +13,71 @@ import Steps from "../steps";
 import Solutions from "../Solutions";
 import VideoShowcaseSection from "../VideoCard";
 import ProductFAQ from "../../products/ProductFAQ"
+import FixedContactCard from "@/app/contactus/FixedContactCard";
+import EnquiryForm from "@/app/contactus/EnquiryForm";
 
 export default function DealerPage() {
+
+    const parentRef = useRef(null);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        inquiryType: "general",
+        priceRange: "",
+        message: ""
+    });
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await fetch(
+                "https://bothook.io/v1/public/triggers/webhooks/d48f4297-66cc-4303-8748-90ad07182868",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData),
+                }
+            );
+
+            if (response.ok) {
+                setShowSuccess(true);
+                setFormData({
+                    name: "",
+                    email: "",
+                    phone: "",
+                    inquiryType: "general",
+                    priceRange: "",
+                    message: ""
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.6,
+                ease: "easeOut"
+            }
+        }
+    };
+
+
     const benefits = [
         {
             icon: <MdOutlineAttachMoney className="text-3xl" />,
@@ -48,33 +111,6 @@ export default function DealerPage() {
         }
     ];
 
-    const faqItems = [
-        {
-            question: 'Is there any joining fee for the partner program?',
-            answer:
-                'No, joining our partner program is completely free. We believe in growing together and only succeed when our partners succeed.',
-        },
-        {
-            question: 'What kind of training and support do you provide?',
-            answer:
-                'We provide comprehensive training including product knowledge, technical implementation, sales enablement, and marketing guidance.',
-        },
-        {
-            question: 'How quickly can I start selling TENDA products?',
-            answer:
-                'Once registered, you can start immediately. Approval usually takes 24–48 hours.',
-        },
-    ];
-
-
-    const requirements = [
-        "Valid business registration and tax documents",
-        "Retail space or established online presence",
-        "Minimum initial order commitment",
-        "Technical knowledge of networking products",
-        "Customer service capabilities",
-        "Market development plan"
-    ];
 
 
     return (
@@ -110,24 +146,39 @@ export default function DealerPage() {
                         </span>
                     </h1>
 
+                    {/* ================= BEAUTIFUL BUTTONS ================= */}
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pb-4">
+
+
+                        {/* SI Partner Button */}
+                        <button
+                            onClick={() => {
+                                parentRef.current?.scrollIntoView({
+                                    behavior: "smooth",
+                                    block: "start"
+                                });
+                            }}
+                            className=" cursor-pointer
+                          relative px-6 py-3 rounded-full 
+                         bg-gradient-to-r from-orange-500 to-orange-600
+                         text-white font-semibold text-lg
+                         shadow-lg shadow-orange-200
+                         hover:shadow-orange-300
+                         hover:scale-105
+                         transition-all duration-300
+                         group
+                       "
+                        >
+                            Contact Us
+                        </button>
+
+                    </div>
+
                     <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-10">
                         Join India's fastest-growing networking brand. Access premium products,
                         competitive pricing, and comprehensive support to grow your business.
                     </p>
 
-                    {/* <motion.div
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.4 }}
-                        className="flex flex-col sm:flex-row gap-4 justify-center"
-                    >
-                        <button className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl hover:shadow-orange-200 transition-all duration-300 hover:-translate-y-1">
-                            Apply Now
-                        </button>
-                        <button className="bg-white text-gray-800 px-8 py-4 rounded-lg font-semibold text-lg border-2 border-gray-200 hover:border-orange-400 hover:bg-orange-50 transition-all duration-300">
-                            Download Brochure
-                        </button>
-                    </motion.div> */}
 
                     {/* Stats */}
                     <motion.div
@@ -236,7 +287,92 @@ export default function DealerPage() {
                 </div>
             </section> */}
 
-            <ProductFAQ/>
+            <section className="bg-gradient-to-b from-white via-orange-50 to-white py-20 px-4">
+
+                <div className="max-w-7xl mx-auto">
+
+                    {/* HEADING */}
+                    <motion.div
+                        initial="hidden"
+                        whileInView="visible"
+                        variants={itemVariants}
+                        viewport={{ once: true }}
+                        className="text-center mb-16"
+                    >
+
+                        <h2 className="text-4xl font-bold text-orange-600 mb-4">
+                            Get In Touch
+                        </h2>
+
+                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                            Have questions about our partner program? Send us a message and our team will get back to you shortly.
+                        </p>
+
+                    </motion.div>
+
+                    <div
+                        ref={parentRef}
+                        className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-12"
+                    >
+
+
+                        <FixedContactCard parentRef={parentRef} />
+
+                        <EnquiryForm
+                            formData={formData}
+                            handleChange={handleChange}
+                            handleSubmit={handleSubmit}
+                            itemVariants={itemVariants}
+                        />
+
+                    </div>
+
+                </div>
+
+            </section>
+            {showSuccess && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
+
+                    <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center animate-fadeIn">
+
+                        <div className="w-16 h-16 bg-green-100 mx-auto rounded-full flex items-center justify-center mb-4">
+                            <svg
+                                className="w-8 h-8 text-green-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={3}
+                                    d="M5 13l4 4L19 7"
+                                />
+                            </svg>
+                        </div>
+
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                            Message Sent!
+                        </h3>
+
+                        <p className="text-gray-600 mb-6">
+                            Thank you for contacting us. Our team will reach out to you shortly.
+                        </p>
+
+                        <button
+                            onClick={() => setShowSuccess(false)}
+                            className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg transition"
+                        >
+                            Close
+                        </button>
+
+                    </div>
+
+                </div>
+            )}
+
+            <ProductFAQ />
+
 
         </>
     );

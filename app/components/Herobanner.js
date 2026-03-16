@@ -12,9 +12,38 @@ const slidesData = [
   { id: 4, img: "/images/carousel/sliderp4.jpeg" },
 ];
 
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/";
+
+
 export default function Herobanner() {
   const [current, setCurrent] = useState(0);
-  const slides = slidesData;
+  // const slides = slidesData;
+  const [loading, setLoading] = useState(true);
+  const [slides, setslides] = useState([])
+
+  const getslides = async () => {
+    try {
+      const res = await fetch(`${API_URL}api/slider/home`, {
+        cache: "no-store",
+      });
+      const data = await res.json();
+
+      if (data?.success) {
+        setslides(data.data.images);
+      } else {
+        toast.error("Failed to load Slides");
+      }
+    } catch (error) {
+      toast.error("Error while fetching Slides");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getslides();
+  }, []);
+
 
   /* AUTO SLIDE */
   useEffect(() => {
@@ -41,7 +70,7 @@ export default function Herobanner() {
       {/* STACK ALL IMAGES (NO UNMOUNTING) */}
       {slides.map((slide, index) => (
         <motion.div
-          key={slide.id}
+          key={slide._id}
           className="absolute inset-0"
           initial={false}
           animate={{
@@ -51,7 +80,7 @@ export default function Herobanner() {
           transition={{ duration: 1 }}
         >
           <Image
-            src={slide.img}
+            src={slide.url}
             alt="Hero Slide"
             fill
             priority={index === 0}
@@ -93,11 +122,10 @@ export default function Herobanner() {
           <button
             key={idx}
             onClick={() => setCurrent(idx)}
-            className={`h-3 rounded-full transition-all duration-300 ${
-              current === idx
-                ? "w-10 bg-orange-400"
-                : "w-3 bg-white/50"
-            }`}
+            className={`h-3 rounded-full transition-all duration-300 ${current === idx
+              ? "w-10 bg-orange-400"
+              : "w-3 bg-white/50"
+              }`}
           />
         ))}
       </div>
