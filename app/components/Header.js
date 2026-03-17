@@ -26,6 +26,8 @@ export default function Header() {
   const [showProducts, setShowProducts] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  const [showPartner, setShowPartner] = useState(false);
+
   const [allProducts, setAllProducts] = useState([]);
   const [activeCategory, setActiveCategory] = useState("");
   const [mobileActiveCategory, setMobileActiveCategory] = useState(null);
@@ -38,7 +40,7 @@ export default function Header() {
     { label: "Home", href: "/" },
     { label: "About Us", href: "/about" },
     { label: "Products", href: "/products", isMega: true },
-    { label: "Partner Program", href: "/partner-program" },
+    { label: "Partner Program", href: "/partner-program", isPartner: true },
     { label: "Blogs", href: "/blogs" },
     { label: "Gallery", href: "/gallery" },
     { label: "News", href: "/news" },
@@ -136,7 +138,57 @@ export default function Header() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                {nav.isMega ? (
+                {nav.isPartner ? (
+                  <div
+                    className="relative"
+                    onMouseEnter={() => {
+                      setShowPartner(true);
+                      setShowProducts(false);
+                    }}
+                    onMouseLeave={() => setShowPartner(false)}
+                  >
+                    <button
+                      className={`flex items-center gap-1 px-3 xl:px-4 py-2 rounded-lg transition-all duration-200 ${isActive(nav.href)
+                        ? "text-orange-500 bg-orange-50 font-semibold"
+                        : "hover:text-orange-500 hover:bg-gray-50"
+                        }`}
+                    >
+                      {nav.label}
+                      <motion.div
+                        animate={{ rotate: showPartner ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <FiChevronDown />
+                      </motion.div>
+                    </button>
+
+                    <AnimatePresence>
+                      {showPartner && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 8 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute top-[48px] left-1/2 -translate-x-1/2 w-[240px] bg-white rounded-xl shadow-2xl border border-gray-100 z-40 overflow-hidden"
+                        >
+                          <Link
+                            href="/partner-program/sipartner"
+                            className="block px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-500"
+                          >
+                            SI Partner
+                          </Link>
+
+                          <Link
+                            href="/partner-program/dealer"
+                            className="block px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-500"
+                          >
+                            Dealer / Distributor
+                          </Link>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ) : nav.isMega ? (
                   <div className="relative">
                     <button
                       onMouseEnter={() => setShowProducts(true)}
@@ -212,23 +264,25 @@ export default function Header() {
                                   {activeCategory}
                                 </div>
                                 <div className="divide-y divide-gray-100">
-                                  {Object.entries(
-                                    getSubCategoryCounts(activeCategory)
-                                  ).map(([subCategory, count]) => (
-                                    <Link
-                                      key={subCategory}
-                                      href={`/products/${slugify(activeCategory)}/${slugify(subCategory)}`}
-                                      onClick={() => setShowProducts(false)}
-                                      className="flex items-center justify-between px-5 py-3 text-sm text-gray-700 hover:text-orange-500 hover:bg-orange-50/50 transition-all duration-200 group"
-                                    >
-                                      <span className="group-hover:translate-x-1 transition-transform duration-200">
-                                        {subCategory}
-                                      </span>
-                                      <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600 group-hover:bg-orange-100 group-hover:text-orange-600 transition-all duration-200">
-                                        {count}
-                                      </span>
-                                    </Link>
-                                  ))}
+                                  {Object.entries(getSubCategoryCounts(activeCategory)).map(
+                                    ([subCategory, count]) => (
+                                      <Link
+                                        key={subCategory}
+                                        href={`/products/${slugify(activeCategory)}/${slugify(subCategory)}`}
+                                        onClick={() => setShowProducts(false)}
+                                        className="flex items-center justify-between px-5 py-3 text-sm text-gray-700 hover:text-orange-500 hover:bg-orange-50 transition-all duration-200"
+                                      >
+                                        <span>{subCategory}</span>
+
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-xs px-2 py-1 bg-gray-100 rounded-full">
+                                            {count}
+                                          </span>
+                                          <FiChevronRight className="text-gray-400" />
+                                        </div>
+                                      </Link>
+                                    )
+                                  )}
                                 </div>
                               </motion.div>
                             )}
@@ -247,7 +301,8 @@ export default function Header() {
                   >
                     {nav.label}
                   </Link>
-                )}
+                )
+                }
               </motion.li>
             ))}
           </ul>

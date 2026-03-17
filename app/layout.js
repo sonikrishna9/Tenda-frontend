@@ -3,6 +3,8 @@ import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ClientToaster from "./components/ClientToaster";
+import GlobalEnquiryButton from "./components/GlobalEnquiryButton"; // 👈 add this
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +36,8 @@ export default function RootLayout({ children }) {
         {children}
         <ClientToaster />
         <Footer />
+        <GlobalEnquiryButton />
+
       </body>
     </html>
   );

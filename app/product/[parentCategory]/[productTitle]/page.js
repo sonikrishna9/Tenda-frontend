@@ -790,6 +790,20 @@ export default function ProductDisplay() {
     );
   };
 
+
+  const totalItems = product.buylink?.reduce(
+    (acc, company) => acc + (company.items?.length || 0),
+    0
+  );
+
+  const getWidthClass = () => {
+    if (totalItems <= 1) return "max-w-sm";
+    if (totalItems === 2) return "max-w-md";
+    if (totalItems === 3) return "max-w-xl";
+    if (totalItems <= 4) return "max-w-2xl";
+    return "max-w-4xl";
+  };
+
   return (
     <>
       {/* <ProductPDFGenerator
@@ -1055,8 +1069,7 @@ export default function ProductDisplay() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.3 }}
-            className="relative bg-white rounded-3xl w-full max-w-3xl p-10 shadow-2xl"
-          >
+            className={`relative bg-white rounded-3xl w-full ${getWidthClass()} p-8 shadow-2xl`}          >
             {/* Close Button */}
             <button
               onClick={() => setShowBuyOptions(false)}
@@ -1077,63 +1090,44 @@ export default function ProductDisplay() {
             </div>
 
             {/* MARKETPLACE GRID */}
-            <div className="grid grid-cols-2 md:grid-cols-4  gap-8">
+            <div
+              className={`grid gap-6 ${totalItems === 1
+                ? "grid-cols-1"
+                : totalItems === 2
+                  ? "grid-cols-2"
+                  : totalItems === 3
+                    ? "grid-cols-3"
+                    : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
+                }`}
+            >
+              {product.buylink?.map((company, i) =>
+                company.items?.map((item, j) => (
+                  <div
+                    key={`${i}-${j}`}
+                    onClick={() => window.open(item.link, "_blank")}
+                    className="group cursor-pointer bg-gradient-to-br from-gray-50 to-gray-100 
+        rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
+        transition-all duration-300 flex flex-col items-center justify-center"
+                  >
+                    {/* IMAGE */}
+                    <div className="w-20 h-16 flex items-center justify-center 
+          rounded-xl bg-white shadow-md mb-4 
+          group-hover:scale-110 transition duration-300"
+                    >
+                      <img
+                        src={item.image}
+                        alt={company.companyname}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
 
-              {/* AMAZON */}
-              <div
-                onClick={() => window.open(product.buyLinks?.amazon, "_blank")}
-                className="group cursor-pointer bg-gradient-to-br from-orange-50 to-orange-100 
-                rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
-                transition-all duration-300"
-              >
-                <SiAmazon className="text-5xl mx-auto mb-4 text-orange-500 group-hover:scale-110 transition" />
-                <p className="font-semibold text-gray-800">Amazon</p>
-              </div>
-
-              {/* FLIPKART */}
-              <div
-                onClick={() => window.open(product.buyLinks?.flipkart, "_blank")}
-                className="group cursor-pointer bg-gradient-to-br from-blue-50 to-blue-100 
-          rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
-          transition-all duration-300"
-              >
-                <SiFlipkart className="text-5xl mx-auto mb-4 text-blue-500 group-hover:scale-110 transition" />
-                <p className="font-semibold text-gray-800">Flipkart</p>
-              </div>
-
-              {/* GENERIC SHOPPING (Meesho Alternative) */}
-              {/* GEM */}
-              <div
-                onClick={() => window.open(product.buyLinks?.meesho, "_blank")}
-                className="group cursor-pointer bg-gradient-to-br from-emerald-50 to-green-100 
-               rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
-               transition-all duration-300 flex flex-col items-center justify-center"
-              >
-                <div className="w-20 h-16 flex items-center justify-center 
-                rounded-xl bg-white shadow-md mb-4 
-                group-hover:scale-110 transition duration-300">
-
-                  <img
-                    src="/gem.png"
-                    alt="GEM"
-                    className="w-20 h-16 object-contain"
-                  />
-                </div>
-
-                <p className="font-semibold text-gray-800">GEM</p>
-              </div>
-
-              {/* WEBSITE */}
-              {/* <div
-                onClick={() => window.open(product.buyLinks?.website, "_blank")}
-                className="group cursor-pointer bg-gradient-to-br from-gray-50 to-gray-100 
-          rounded-2xl p-6 text-center hover:shadow-xl hover:-translate-y-2 
-          transition-all duration-300"
-              >
-                <FiGlobe className="text-5xl mx-auto mb-4 text-gray-700 group-hover:scale-110 transition" />
-                <p className="font-semibold text-gray-800">Official Site</p>
-              </div> */}
-
+                    {/* COMPANY NAME */}
+                    <p className="font-semibold text-gray-800">
+                      {company.companyname}
+                    </p>
+                  </div>
+                ))
+              )}
             </div>
           </motion.div>
         </div>

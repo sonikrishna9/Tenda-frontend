@@ -7,20 +7,11 @@ import {
   FaRocket,
   FaPlay,
   FaUsers,
-  FaGlobe,
-  FaLightbulb,
   FaHandshake,
-  FaShieldAlt,
+  FaProjectDiagram,
   FaAward,
-  FaChartLine,
-  FaNetworkWired,
-  FaCrown,
-  FaStar,
-  FaTrophy,
-  FaHeart,
-  FaChevronRight,
-  FaChevronLeft,
-  FaQuoteLeft,
+  FaGlobe,
+  FaShieldAlt,
   FaQuoteRight,
   FaBoxOpen,
   FaLayerGroup,
@@ -169,7 +160,7 @@ export default function AboutBanner() {
           >
             <div className="max-w-xl sm:max-w-2xl">
 
-              <motion.h1
+              {/* <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
@@ -185,9 +176,9 @@ export default function AboutBanner() {
                 className="mt-6 text-gray-300 text-base sm:text-lg md:text-xl leading-relaxed max-w-xl sm:max-w-2xl"
               >
                 Empowering India’s digital connectivity with reliable, high-performance networking products designed for modern homes, businesses, and enterprises. Tenda India delivers innovative and easy-to-use solutions that help individuals, professionals, and organisations stay connected with confidence.
-              </motion.p>
+              </motion.p> */}
 
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
@@ -202,7 +193,7 @@ export default function AboutBanner() {
                 </button>
 
 
-              </motion.div>
+              </motion.div> */}
             </div>
           </motion.div>
 
@@ -380,8 +371,8 @@ export default function AboutBanner() {
 
             {/* Card */}
             <div className="bg-white rounded-xl p-8 flex flex-col gap-4 shadow-md">
-              <FaUsers className="text-4xl text-black" />
-              <p className="text-sm font-medium">25000+ Happy Clients</p>
+              <FaHandshake className="text-4xl text-black" />
+              <p className="text-sm font-medium">1000+ Happy Partners</p>
             </div>
 
             <div className="bg-white rounded-xl p-8 flex flex-col gap-4 shadow-md 
@@ -389,22 +380,22 @@ export default function AboutBanner() {
            hover:-translate-y-2 hover:shadow-xl hover:scale-[1.03]"
             >
               <FaBoxOpen className="text-4xl text-black" />
-              <p className="text-sm font-medium">500+ Products</p>
+              <p className="text-sm font-medium">100+ Products</p>
             </div>
 
             <div className="bg-white rounded-xl p-8 flex flex-col gap-4 shadow-md 
            transition-all duration-300 ease-out
            hover:-translate-y-2 hover:shadow-xl hover:scale-[1.03]"
             >
-              <FaLayerGroup className="text-4xl text-black" />
-              <p className="text-sm font-medium">20000+ Projects</p>
+              <FaProjectDiagram className="text-4xl text-black" />
+              <p className="text-sm font-medium">100+ Projects</p>
             </div>
 
             <div className="bg-white rounded-xl p-8 flex flex-col gap-4 shadow-md 
            transition-all duration-300 ease-out
            hover:-translate-y-2 hover:shadow-xl hover:scale-[1.03]"
             >
-              <FaCertificate className="text-4xl text-black" />
+              <FaAward className="text-4xl text-black" />
               <p className="text-sm font-medium">100+ Certificates</p>
             </div>
 
@@ -412,7 +403,7 @@ export default function AboutBanner() {
            transition-all duration-300 ease-out
            hover:-translate-y-2 hover:shadow-xl hover:scale-[1.03]"
             >
-              <FaMapMarkerAlt className="text-4xl text-black" />
+              <FaGlobe className="text-4xl text-black" />
               <p className="text-sm font-medium">24 Branches Pan India</p>
             </div>
 

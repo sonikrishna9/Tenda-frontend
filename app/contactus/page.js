@@ -13,6 +13,8 @@ export default function Page() {
         email: "",
         phone: "",
         inquiryType: "general",
+        city: "",
+        state: "",
         priceRange: "",
         message: ""
     });
@@ -38,7 +40,7 @@ export default function Page() {
                     },
                     body: JSON.stringify({
                         ...formData,
-                        mobile: formData.phone
+                        mobile: `+91${formData.phone}`
                     })
                 }
             );
@@ -52,6 +54,8 @@ export default function Page() {
                     email: "",
                     phone: "",
                     inquiryType: "general",
+                    city: "",
+                    state: "",
                     priceRange: "",
                     message: ""
                 });

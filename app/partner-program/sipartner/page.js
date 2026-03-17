@@ -195,7 +195,7 @@ export default function SiPartnerPage() {
                          group
                        "
                         >
-                            Contact Us
+                            Become a Authorized Partner
                         </button>
 
                     </div>
@@ -275,7 +275,49 @@ export default function SiPartnerPage() {
             </div>
 
             {/* -------- Process Section -------- */}
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pb-4">
+
+
+                {/* SI Partner Button */}
+                <button
+                    onClick={scrollToForm}
+                    className=" cursor-pointer
+                          relative px-6 py-3 rounded-full 
+                         bg-gradient-to-r from-orange-500 to-orange-600
+                         text-white font-semibold text-lg
+                         shadow-lg shadow-orange-200
+                         hover:shadow-orange-300
+                         hover:scale-105
+                         transition-all duration-300
+                         group
+                       "
+                >
+                    Contact Us
+                </button>
+
+            </div>
             <Steps />
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pb-4">
+
+
+                {/* SI Partner Button */}
+                <button
+                    onClick={scrollToForm}
+                    className=" cursor-pointer
+                          relative px-6 py-3 rounded-full 
+                         bg-gradient-to-r from-orange-500 to-orange-600
+                         text-white font-semibold text-lg
+                         shadow-lg shadow-orange-200
+                         hover:shadow-orange-300
+                         hover:scale-105
+                         transition-all duration-300
+                         group
+                       "
+                >
+                    Contact Us
+                </button>
+
+            </div>
 
             <VideoShowcaseSection />
 

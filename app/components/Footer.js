@@ -40,6 +40,9 @@ export default function Footer() {
       { label: "Range Extender", href: "/products/range-extender" },
       { label: "Access Points", href: "/products/access-point" },
       { label: "USB Adaptor", href: "/products/usb-adaptor" },
+      { label: "Network Switch", href: "/products/network-switch" },
+      { label: "POE Switch", href: "/products/poe-switch" },
+      { label: "POE Injector", href: "/products/poe-injector" },
     ],
     company: [
       { label: "About Tenda", href: "/about" },
@@ -254,52 +257,46 @@ export default function Footer() {
               })}
             </div>
 
-            {/* Newsletter Subscription */}
+
+            {/* Reach Us Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.6 }}
-              className="mt-12 p-6 bg-gradient-to-r from-gray-900/50 to-black/50 rounded-2xl border border-gray-800 backdrop-blur-sm"
+              className="mt-12"
             >
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-gradient-to-r from-orange-500/20 to-amber-500/20 rounded-lg">
-                      <IoIosSend className="text-orange-500 text-xl" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-white">
-                      Stay Updated
-                    </h3>
-                  </div>
-                  <p className="text-gray-400 text-sm">
-                    Subscribe to our newsletter for the latest in networking technology and solutions.
-                  </p>
-                </div>
+              <h3 className="text-xl font-semibold text-white mb-6">
+                Reach Us
+              </h3>
 
-                <div className="flex-1 w-full max-w-md">
-                  <form className="flex gap-2">
-                    <div className="relative flex-1">
-                      <input
-                        type="email"
-                        placeholder="Enter your email"
-                        className="w-full bg-gray-900/70 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
-                      />
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <FaEnvelope className="text-gray-500" />
-                      </div>
-                    </div>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      type="submit"
-                      className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-6 py-3 rounded-lg font-medium hover:shadow-lg hover:shadow-orange-500/20 transition-all flex items-center gap-2 whitespace-nowrap"
-                    >
-                      Subscribe
-                      <FaArrowRight className="text-sm" />
-                    </motion.button>
-                  </form>
-                </div>
+              <div className="flex flex-col gap-4 max-w-md">
+
+                {/* Phone Button */}
+                <motion.a
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  href="tel:18001022366"
+                  className="flex items-center justify-between bg-orange-600 text-white px-6 py-4 rounded-full font-semibold shadow-lg hover:bg-orange-500 transition"
+                >
+                  <span className="flex items-center gap-3">
+                    <FaPhone />
+                    Contact Us
+                  </span>
+                  <span>+91 8000 2000 56</span>
+                </motion.a>
+
+                {/* Email Button */}
+                <motion.a
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  href="mailto:sales@tendaindia.com"
+                  className="flex items-center justify-center gap-3 border border-gray-500 text-gray-300 px-6 py-4 rounded-full hover:border-orange-500 hover:text-white transition"
+                >
+                  <FaEnvelope />
+                  sales@tendaindia.com
+                </motion.a>
+
               </div>
             </motion.div>
           </div>
@@ -328,14 +325,14 @@ export default function Footer() {
               <Link href="/privacy-policy" className="hover:text-orange-400 transition-colors">
                 Privacy Policy
               </Link>
-              <span className="text-gray-700">•</span>
+              {/* <span className="text-gray-700">•</span>
               <Link href="/terms" className="hover:text-orange-400 transition-colors">
                 Terms of Service
               </Link>
               <span className="text-gray-700">•</span>
               <Link href="/cookies" className="hover:text-orange-400 transition-colors">
                 Cookie Policy
-              </Link>
+              </Link> */}
             </div>
           </motion.div>
 
