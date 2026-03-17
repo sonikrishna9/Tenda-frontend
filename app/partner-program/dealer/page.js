@@ -111,7 +111,14 @@ export default function DealerPage() {
         }
     ];
 
+    const scrollToForm = () => {
+        if (!parentRef.current) return;
 
+        parentRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    };
 
     return (
         <>
@@ -169,7 +176,7 @@ export default function DealerPage() {
                          group
                        "
                         >
-                            Contact Us
+                            Become a Authorized Dealer
                         </button>
 
                     </div>
@@ -261,7 +268,7 @@ export default function DealerPage() {
                          group
                        "
                 >
-                    Become a Authorized Partner
+Contact Us
                 </button>
 
             </div>
@@ -283,7 +290,7 @@ export default function DealerPage() {
                          group
                        "
                 >
-                    Become a Authorized Partner
+Contact Us
                 </button>
 
             </div>

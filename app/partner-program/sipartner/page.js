@@ -195,7 +195,7 @@ export default function SiPartnerPage() {
                          group
                        "
                         >
-                            Become a Authorized Partner
+                            Become a Authorized  SI Partner
                         </button>
 
                     </div>
