@@ -420,7 +420,7 @@ Contact Us
                 </div>
             )}
 
-            <ProductFAQ />
+            {/* <ProductFAQ /> */}
 
 
         </>

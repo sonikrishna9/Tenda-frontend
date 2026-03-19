@@ -84,7 +84,7 @@ export default function Herobanner() {
             alt="Hero Slide"
             fill
             priority={index === 0}
-            quality={100}
+            quality={[100,75]}
             sizes="100vw"
             className="object-cover"
           />

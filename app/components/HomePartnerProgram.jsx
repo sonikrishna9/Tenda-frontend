@@ -73,7 +73,7 @@ export default function HomePartnerProgram() {
     },
     {
       icon: <FaHeadset />,
-      label: 'Full Support',
+      label: 'After Sales Support',
       value: '24/7 Help',
       color: 'from-blue-400 to-cyan-400',
       description: 'Sales & technical assistance',

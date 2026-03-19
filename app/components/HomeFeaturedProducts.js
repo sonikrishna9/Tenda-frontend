@@ -23,7 +23,7 @@ export default function HomeFeaturedProducts() {
       .replace(/\s+/g, "-")        // spaces → -
       .replace(/[^\w-]+/g, "")     // remove special chars
       .replace(/--+/g, "-");       // remove double --
-      
+
 
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -121,8 +121,8 @@ export default function HomeFeaturedProducts() {
                       router.push(`/product/${slugify(p.parentCategory)}/${slugify(p.title)}`)
                     }
                     className="group h-full bg-white rounded-2xl border border-gray-200 
-                    shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer 
-                    flex flex-col"
+hover:border-black shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer 
+flex flex-col"
                   >
 
                     {/* IMAGE */}

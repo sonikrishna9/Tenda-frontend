@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 
 export default function PrivacyPolicy() {
-  const lastUpdated = 'March 15, 2024'; // You can dynamically set this
+  // const lastUpdated = 'March 15, 2024'; // You can dynamically set this
 
   return (
     <>
@@ -12,18 +12,18 @@ export default function PrivacyPolicy() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <main className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
+      <main className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 mt-20">
         {/* Decorative header bar */}
         <div className="h-2 bg-gradient-to-r from-orange-400 to-orange-600"></div>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 max-w-7xl">
           {/* Header Section with Orange Theme */}
           <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-            <div className="inline-block p-2 px-6 bg-orange-100 rounded-full mb-4">
+            {/* <div className="inline-block p-2 px-6 bg-orange-100 rounded-full mb-4">
               <span className="text-orange-600 font-semibold text-sm sm:text-base">
                 Last Updated: {lastUpdated}
               </span>
-            </div>
+            </div> */}
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
               Privacy{' '}
               <span className="bg-orange-500 text-white px-4 py-2 rounded-lg inline-block transform -rotate-1">
