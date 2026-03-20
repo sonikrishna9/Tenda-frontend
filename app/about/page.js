@@ -15,10 +15,10 @@ import {
   FaGlobe,
   FaShieldAlt,
   FaQuoteRight,
-  FaAmazon ,
+  FaAmazon,
   FaBoxOpen,
   FaLayerGroup,
-  
+
   FaCertificate,
   FaMapMarkerAlt,
   FaCheckCircle,
@@ -392,16 +392,8 @@ export default function AboutBanner() {
            transition-all duration-300 ease-out
            hover:-translate-y-2 hover:shadow-xl hover:scale-[1.03]"
             >
-              <FaLayerGroup  className="text-4xl text-black" />
+              <FaLayerGroup className="text-4xl text-black" />
               <p className="text-sm font-medium">200+ Projects</p>
-            </div>
-
-            <div className="bg-white rounded-xl p-8 flex flex-col gap-4 shadow-md 
-           transition-all duration-300 ease-out
-           hover:-translate-y-2 hover:shadow-xl hover:scale-[1.03]"
-            >
-              <FaAmazon  className="text-4xl text-black" />
-              <p className="text-sm font-medium">100+ Certificates</p>
             </div>
 
             <div className="bg-white rounded-xl p-8 flex flex-col gap-4 shadow-md 
@@ -410,6 +402,14 @@ export default function AboutBanner() {
             >
               <FaMapLocationDot className="text-4xl text-black" />
               <p className="text-sm font-medium">24 Branches Pan India</p>
+            </div>
+
+            <div className="bg-white rounded-xl p-8 flex flex-col gap-4 shadow-md 
+           transition-all duration-300 ease-out
+           hover:-translate-y-2 hover:shadow-xl hover:scale-[1.03]"
+            >
+              <FaAmazon className="text-4xl text-black" />
+              <p className="text-sm font-medium">Available on Amazon</p>
             </div>
 
             <div className="bg-white rounded-xl p-8 flex flex-col gap-4 shadow-md 

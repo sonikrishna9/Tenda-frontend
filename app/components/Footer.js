@@ -159,7 +159,6 @@ export default function Footer() {
                   >
                     <span className="flex items-center gap-3 mr-3">
                       <FaPhone />
-                      Contact Us
                     </span>
                     <span>+91 8000 2000 56</span>
                   </a>
