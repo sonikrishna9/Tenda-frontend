@@ -15,6 +15,7 @@ import VideoShowcaseSection from "../VideoCard";
 import ProductFAQ from "../../products/ProductFAQ"
 import FixedContactCard from "@/app/contactus/FixedContactCard";
 import EnquiryForm from "@/app/contactus/EnquiryForm";
+import Solutionsdealer from "../Solutiondealer";
 
 export default function DealerPage() {
 
@@ -268,7 +269,7 @@ export default function DealerPage() {
                          group
                        "
                 >
-Contact Us
+                    Contact Us
                 </button>
 
             </div>
@@ -290,14 +291,14 @@ Contact Us
                          group
                        "
                 >
-Contact Us
+                    Contact Us
                 </button>
 
             </div>
 
             <VideoShowcaseSection />
             {/* Solutions */}
-            <Solutions />
+            <Solutionsdealer />
 
             {/* -------- FAQ Section -------- */}
             {/* <section className="py-20 px-4 bg-gray-50">

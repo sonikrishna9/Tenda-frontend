@@ -9,7 +9,7 @@ import {
   FaWarehouse,
 } from 'react-icons/fa';
 
-export default function Solutions() {
+export default function Solutionsdealer() {
   const [active, setActive] = useState(5);
 
   const handleHover = useCallback((index) => {
@@ -18,28 +18,28 @@ export default function Solutions() {
 
   const items = [
     {
+      title: "Banking",
+      image: "/images/dealer/Banking.webp",
+    },
+    {
       title: "Corporate",
-      image: "/images/sipartner/Corporate.webp",
+      image: "/images/dealer/Corporate.webp",
     },
     {
-      title: "Healthcare",
-      image: "/images/sipartner/Healthcare.webp",
-    },
-    {
-      title: "Hospitality",
-      image: "/images/sipartner/Hospitality.webp",
-    },
-    {
-      title: "Hotel, Resorts & Restaurants",
-      image: "/images/sipartner/Hotel, Resorts & Restaurants.webp",
-    },
-    {
-      title: "Real Estate",
-      image: "/images/sipartner/Real Estate.webp",
+      title: "Public Safety",
+      image: "/images/dealer/Public Safety.webp",
     },
     {
       title: "Residential",
-      image: "/images/sipartner/Residential.webp",
+      image: "/images/dealer/Residential.webp",
+    },
+    {
+      title: "Small & Large Businesses",
+      image: "/images/dealer/Small & Large Businesses.webp",
+    },
+    {
+      title: "Transport",
+      image: "/images/dealer/Transport.webp",
     },
   ];
 
