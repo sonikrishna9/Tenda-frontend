@@ -62,7 +62,7 @@ export default function FixedContactCard({ parentRef }) {
       <div
         ref={leftRef}
         className={`
-        transition-all duration-300
+        transition-all duration-300 
         ${isFixed ? "lg:fixed lg:top-24 lg:w-[420px]" : ""}
         ${isBottom ? "lg:absolute lg:bottom-0 lg:w-[420px]" : ""}
         `}
@@ -83,32 +83,42 @@ export default function FixedContactCard({ parentRef }) {
           </p>
 
           {/* Call Button */}
-          <a
-            href="tel:18001022366"
-            className="flex items-center justify-between bg-black text-white rounded-full px-6 py-4 mb-4 hover:scale-[1.02] transition"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-xl">📞</span>
-              <span className="text-sm opacity-80">
-                {isPartnerPage ? "Talk to Sales" : "Call Us"}
-              </span>
-            </div>
+          {
+            !isPartnerPage && (
+              <a
+                href="tel:18001022366"
+                className="flex items-center justify-between bg-black text-white rounded-full px-6 py-4 mb-4 hover:scale-[1.02] transition"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">📞</span>
+                  <span className="text-sm opacity-80">
+                    {isPartnerPage ? "Talk to Sales" : "Call Us"}
+                  </span>
+                </div>
 
-            <span className="font-semibold">+91 8000 2000 56</span>
-          </a>
+                <span className="font-semibold">+91 8000 2000 56</span>
+              </a>
+
+            )
+          }
 
           {/* Email Button */}
-          <a
-            href="mailto:info@secureye.com"
-            className="flex items-center justify-between border border-white/70 text-white rounded-full px-6 py-4 hover:bg-white hover:text-[#FF5A2C] transition"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-xl">✉️</span>
-              <span className="text-sm opacity-80">Email Us</span>
-            </div>
 
-            <span className="font-semibold">sales@tendaindia.com</span>
-          </a>
+          {!isPartnerPage && (
+            <a
+              href="mailto:info@secureye.com"
+              className="flex items-center justify-between border border-white/70 text-white rounded-full px-6 py-4 hover:bg-white hover:text-[#FF5A2C] transition"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-xl">✉️</span>
+                <span className="text-sm opacity-80">Email Us</span>
+              </div>
+
+              <span className="font-semibold">sales@tendaindia.com</span>
+            </a>
+          )}
+
+
 
         </motion.div>
 

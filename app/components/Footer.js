@@ -153,23 +153,38 @@ export default function Footer() {
 
                 <div className="flex flex-col gap-4 w-full md:w-auto">
 
+                  {/* PHONE BUTTON */}
                   <a
                     href="tel:18001022366"
-                    className="flex items-center justify-between bg-orange-600 px-6 py-4 rounded-full font-semibold hover:bg-orange-500 transition"
+                    className="group flex items-center justify-between bg-orange-500 px-6 py-4 rounded-full font-semibold 
+      transition-all duration-300 ease-in-out
+      hover:bg-white hover:text-orange-500 hover:border hover:border-orange-500
+      hover:shadow-lg hover:-translate-y-1"
                   >
-                    <span className="flex items-center gap-3 mr-3">
+                    <span className="flex items-center gap-3 mr-3 transition-transform duration-300 group-hover:scale-110">
                       <FaPhone />
                     </span>
-                    <span>+91 8000 2000 56</span>
+                    <span className="transition-all duration-300">
+                      +91 8000 2000 56
+                    </span>
                   </a>
 
+                  {/* EMAIL BUTTON */}
                   <a
                     href="mailto:sales@tendaindia.com"
-                    className="flex items-center justify-center gap-3 border border-gray-500 px-6 py-4 rounded-full hover:border-orange-500 transition"
+                    className="group flex items-center justify-center gap-3 border border-gray-500 px-6 py-4 rounded-full
+      transition-all duration-300 ease-in-out
+      hover:border-orange-500 hover:bg-orange-500 hover:text-white
+      hover:shadow-lg hover:-translate-y-1"
                   >
-                    <FaEnvelope />
-                    sales@tendaindia.com
+                    <span className="transition-transform duration-300 group-hover:rotate-12">
+                      <FaEnvelope />
+                    </span>
+                    <span className="transition-all duration-300">
+                      sales@tendaindia.com
+                    </span>
                   </a>
+
                 </div>
               </div>
             </div>
@@ -190,7 +205,7 @@ export default function Footer() {
                   Privacy Policy
                 </Link>
 
-                
+
               </div>
 
               {/* RIGHT SOCIAL */}

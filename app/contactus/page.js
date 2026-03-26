@@ -89,7 +89,7 @@ export default function Page() {
 
                     <div
                         ref={parentRef}
-                        className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-12 pb-4 relative"
+                        className=" grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-12 pb-4 relative"
                     >
 
                         <FixedContactCard parentRef={parentRef} />
