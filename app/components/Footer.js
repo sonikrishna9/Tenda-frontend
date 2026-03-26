@@ -37,6 +37,7 @@ export default function Footer() {
     ],
     support: [
       { label: "Contact Support", href: "/contactus" },
+      { label: "Privacy Policy", href: "/privacy-policy" },
     ],
   };
 
@@ -78,7 +79,7 @@ export default function Footer() {
       />
 
       {/* CONTENT */}
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-16 py-16">
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-16 pt-8 pb-4">
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
 
@@ -148,7 +149,7 @@ export default function Footer() {
               {/* REACH US (RIGHT FIXED) */}
               <div className="flex flex-col items-start md:items-center md:text-right">
                 <h3 className="text-white font-semibold mb-6 text-lg">
-                  Reach Us
+                  Sales Contact
                 </h3>
 
                 <div className="flex flex-col gap-4 w-full md:w-auto">
@@ -185,41 +186,32 @@ export default function Footer() {
                     </span>
                   </a>
 
+                  {/* SOCIAL ICONS BELOW BUTTONS */}
+                  <div className="flex gap-4 mt-6 justify-start md:justify-center w-full">
+                    {socialMedia.map((social, i) => (
+                      <a
+                        key={i}
+                        href="#"
+                        className={`w-10 h-10 flex items-center justify-center bg-gray-900 border border-gray-800 rounded-lg ${social.color}
+                        transition-all duration-300 hover:-translate-y-1 hover:shadow-md`}
+                      >
+                        <social.icon size={16} />
+                      </a>
+                    ))}
+                  </div>
+
                 </div>
               </div>
             </div>
 
             {/* DIVIDER */}
-            <div className="h-px bg-gray-800 my-12" />
+            <div className="h-px bg-gray-800 my-6" />
 
-            {/* BOTTOM */}
             {/* BOTTOM */}
             <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-gray-500">
 
               {/* LEFT */}
               <span>© {currentYear} Tenda. All Rights Reserved.</span>
-
-              {/* CENTER / POLICY LINKS */}
-              <div className="flex items-center gap-5 flex-wrap justify-center">
-                <Link href="/privacy-policy" className="hover:text-orange-400 transition">
-                  Privacy Policy
-                </Link>
-
-
-              </div>
-
-              {/* RIGHT SOCIAL */}
-              <div className="flex gap-4">
-                {socialMedia.map((social, i) => (
-                  <a
-                    key={i}
-                    href="#"
-                    className={`w-10 h-10 flex items-center justify-center bg-gray-900 border border-gray-800 rounded-lg ${social.color}`}
-                  >
-                    <social.icon size={16} />
-                  </a>
-                ))}
-              </div>
 
             </div>
           </div>

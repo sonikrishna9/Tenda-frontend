@@ -1,10 +1,15 @@
 "use client";
-
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Marquee from "react-fast-marquee";
-import { FaCrown, FaPlay, FaStar, FaCheckCircle } from "react-icons/fa";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 
 export default function TrustedClientsSection() {
+
+    const [videos, setvideos] = useState()
+
     const logos = [
         "https://www.fortunehotels.in/images/logo.png",
         "https://s3-ap-southeast-1.amazonaws.com/bsy/iportal/images/airtel-logo-red-text-horizontal.jpg",
@@ -14,7 +19,27 @@ export default function TrustedClientsSection() {
         "https://upload.wikimedia.org/wikipedia/commons/e/e5/L%26T.png"
     ];
 
-    const videoUrl = "https://www.youtube.com/embed/dQw4w9WgXcQ";
+
+    const fetchvideo = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}api/videos/home`)
+            const data = await res.json();
+
+            if (data?.success) {
+                setvideos(data?.data?.videos)
+            }
+        }
+        catch (error) {
+            console.error("Failed to fetch products", error);
+
+        }
+    }
+
+    useEffect(() => {
+        fetchvideo()
+    }, [])
+
+    // const videoUrl = "https://www.youtube.com/embed/dQw4w9WgXcQ";
 
     return (
         <section className="bg-gradient-to-b from-white to-orange-50 pt-10 pb-2 overflow-hidden">
@@ -26,12 +51,6 @@ export default function TrustedClientsSection() {
                 viewport={{ once: true }}
                 className="text-center mb-16 px-4 sm:px-6 lg:px-8"
             >
-                {/* Badge */}
-                {/* <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-lg">
-                    <FaCrown className="text-yellow-300" />
-                    <span>TRUSTED BY INDUSTRY LEADERS</span>
-                    <FaCrown className="text-yellow-300" />
-                </div> */}
 
                 {/* Main Heading */}
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
@@ -88,7 +107,7 @@ export default function TrustedClientsSection() {
                         ))}
                     </Marquee>
                 </div>
-                
+
             </div>
 
             {/* Full Width Video Section - Orange Theme */}
@@ -100,21 +119,6 @@ export default function TrustedClientsSection() {
                     viewport={{ once: true }}
                     className="w-full"
                 >
-                    {/* Video Header */}
-                    {/* <div className="text-center mb-10 px-4 sm:px-6 lg:px-8">
-                        <div className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-orange-700 text-white px-8 py-4 rounded-full text-lg font-bold mb-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                            <FaPlay className="animate-pulse" />
-                            <span>WATCH OUR PRODUCT DEMO</span>
-                            <FaStar className="text-yellow-300" />
-                        </div>
-
-                        <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                            See <span className="text-orange-600">Transformation</span> in Action
-                        </h3>
-                        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                            Discover how industry leaders achieve remarkable results with our platform
-                        </p>
-                    </div> */}
 
                     {/* Full Width Video Container */}
                     <div className="relative w-full bg-gradient-to-r from-orange-50 to-orange-100 py-4">
@@ -128,15 +132,21 @@ export default function TrustedClientsSection() {
                                 <div className="absolute inset-0 bg-gradient-to-r from-orange-500/30 to-orange-600/30 blur-xl group-hover:blur-2xl transition-all duration-500"></div>
 
                                 {/* Video */}
-                                <div className="relative w-full aspect-video bg-black">
-                                    <iframe
-                                        src={videoUrl}
-                                        title="Product Demo Video"
-                                        className="w-full h-full"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                    />
-                                </div>
+                                {
+                                    videos && videos.map((item, index) => {
+                                        return (
+                                            <div className="relative w-full aspect-video bg-black " key={index}>
+                                                <iframe
+                                                    src={item}
+                                                    title="Product Demo Video"
+                                                    className="w-full h-full"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowFullScreen
+                                                />
+                                            </div>
+                                        )
+                                    })
+                                }
 
                                 {/* Video Overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

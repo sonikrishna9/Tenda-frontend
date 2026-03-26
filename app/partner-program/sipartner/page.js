@@ -28,6 +28,7 @@ export default function SiPartnerPage() {
 
     const parentRef = useRef(null);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [videos, setvideos] = useState()
 
     const [formData, setFormData] = useState({
         name: "",
@@ -79,6 +80,7 @@ export default function SiPartnerPage() {
         }
     };
 
+    
     const scrollToForm = () => {
         parentRef.current?.scrollIntoView({
             behavior: "smooth",
@@ -275,7 +277,7 @@ export default function SiPartnerPage() {
             </div>
 
             {/* -------- Process Section -------- */}
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pb-4">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mb-7">
 
 
                 {/* SI Partner Button */}
@@ -297,7 +299,7 @@ export default function SiPartnerPage() {
 
             </div>
             <Steps />
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pb-4">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pb-8">
 
 
                 {/* SI Partner Button */}
