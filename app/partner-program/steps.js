@@ -10,7 +10,7 @@ export default function Steps() {
     ];
 
     return (
-        <div className="max-w-6xl mx-auto px-4 pb-10">
+        <div className="max-w-6xl mx-auto px-4 pb-10 pt-2">
             {/* -------- Section Heading -------- */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -21,9 +21,7 @@ export default function Steps() {
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
                     Simple <span className="text-orange-500">3-Step</span> Process
                 </h2>
-                <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-                    From application to launching your partnership
-                </p>
+                
             </motion.div>
 
             {/* -------- Timeline -------- */}

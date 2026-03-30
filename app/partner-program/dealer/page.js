@@ -135,7 +135,7 @@ export default function DealerPage() {
             >
                 <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-white to-blue-50" />
 
-                <div className="relative max-w-6xl mx-auto px-4 py-16 md:py-24 text-center">
+                <div className="relative max-w-6xl mx-auto px-4 py-16 md:pb-24 md:pt-10 text-center">
                     {/* <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -158,15 +158,21 @@ export default function DealerPage() {
                     <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pb-4">
 
 
-                        {/* SI Partner Button */}
-                        <button
-                            onClick={() => {
-                                parentRef.current?.scrollIntoView({
-                                    behavior: "smooth",
-                                    block: "start"
-                                });
-                            }}
-                            className=" cursor-pointer
+                        <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-10">
+                            Join India's fastest-growing networking brand. Access premium products,
+                            competitive pricing, and comprehensive support to grow your business.
+                        </p>
+                    </div>
+
+                    {/* SI Partner Button */}
+                    <button
+                        onClick={() => {
+                            parentRef.current?.scrollIntoView({
+                                behavior: "smooth",
+                                block: "start"
+                            });
+                        }}
+                        className=" cursor-pointer
                           relative px-6 py-3 rounded-full 
                          bg-gradient-to-r from-orange-500 to-orange-600
                          text-white font-semibold text-lg
@@ -176,16 +182,9 @@ export default function DealerPage() {
                          transition-all duration-300
                          group
                        "
-                        >
-                            Become a Authorized Dealer
-                        </button>
-
-                    </div>
-
-                    <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-10">
-                        Join India's fastest-growing networking brand. Access premium products,
-                        competitive pricing, and comprehensive support to grow your business.
-                    </p>
+                    >
+                        Become an Authorized Dealer / Distributor
+                    </button>
 
 
                     {/* Stats */}
@@ -211,7 +210,7 @@ export default function DealerPage() {
             </motion.div>
 
             {/* -------- Benefits Section -------- */}
-            <div className="max-w-7xl mx-auto px-4 py-20">
+            <div className="max-w-7xl mx-auto px-4 py-14">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -252,7 +251,7 @@ export default function DealerPage() {
 
 
             {/* -------- Process Section -------- */}
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pb-4">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pb-6">
 
 
                 {/* SI Partner Button */}

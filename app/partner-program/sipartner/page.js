@@ -80,7 +80,7 @@ export default function SiPartnerPage() {
         }
     };
 
-    
+
     const scrollToForm = () => {
         parentRef.current?.scrollIntoView({
             behavior: "smooth",
@@ -159,8 +159,8 @@ export default function SiPartnerPage() {
             >
                 <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-white to-blue-50" />
 
-                <div className="relative max-w-6xl mx-auto px-4 py-16 md:py-24 text-center">
-                    <motion.div
+                <div className="relative max-w-6xl mx-auto px-4 py-16 md:pb-24 text-center md:pt-10">
+                    {/* <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.2 }}
@@ -169,7 +169,7 @@ export default function SiPartnerPage() {
                         <span className="bg-gradient-to-r from-orange-600 to-blue-600 text-white px-6 py-2 rounded-full text-sm font-semibold">
                             SI & ISP Partner Program
                         </span>
-                    </motion.div>
+                    </motion.div> */}
 
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                         Partner with{" "}
@@ -182,11 +182,18 @@ export default function SiPartnerPage() {
                     {/* ================= BEAUTIFUL BUTTONS ================= */}
                     <div className="flex flex-col sm:flex-row justify-center items-center gap-6 pb-4">
 
+                        <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-10">
+                            Deliver scalable, secure, and high-performance networking solutions
+                            with TENDA’s enterprise-grade portfolio and expert support.
+                        </p>
 
                         {/* SI Partner Button */}
-                        <button
-                            onClick={scrollToForm}
-                            className=" cursor-pointer
+
+                    </div>
+
+                    <button
+                        onClick={scrollToForm}
+                        className=" cursor-pointer
                           relative px-6 py-3 rounded-full 
                          bg-gradient-to-r from-orange-500 to-orange-600
                          text-white font-semibold text-lg
@@ -196,17 +203,10 @@ export default function SiPartnerPage() {
                          transition-all duration-300
                          group
                        "
-                        >
-                            Become a Authorized  SI Partner
-                        </button>
+                    >
+                        Become an Authorized  SI Partner
+                    </button>
 
-                    </div>
-
-
-                    <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-10">
-                        Deliver scalable, secure, and high-performance networking solutions
-                        with TENDA’s enterprise-grade portfolio and expert support.
-                    </p>
 
 
                     {/* Stats */}
@@ -237,7 +237,7 @@ export default function SiPartnerPage() {
             </motion.div>
 
             {/* -------- Benefits Section -------- */}
-            <div className="max-w-7xl mx-auto px-4 py-20">
+            <div className="max-w-7xl mx-auto px-4 pb-10 pt-14">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
