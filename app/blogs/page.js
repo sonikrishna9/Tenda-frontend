@@ -98,7 +98,7 @@ export default function Allblogs() {
                       </p>
 
                       {/* TAGS */}
-                      {blog.tags?.length > 0 && (
+                      {/* {blog.tags?.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-4">
                           {blog.tags.map((tag, i) => (
                             <span
@@ -110,14 +110,14 @@ export default function Allblogs() {
                             </span>
                           ))}
                         </div>
-                      )}
+                      )} */}
 
                       {/* META */}
-                      <div className="flex justify-between text-gray-500 text-xs mt-auto">
-                        <span className="flex items-center gap-1">
+                      <div className="flex justify-end text-gray-500 text-xs mt-auto">
+                        {/* <span className="flex items-center gap-1">
                           <FaUser />
                           {blog?.author?.name || "Admin"}
-                        </span>
+                        </span> */}
                         <span className="flex items-center gap-1">
                           <FaCalendarAlt />
                           {new Date(blog.publishedAt).toLocaleDateString("en-IN", {

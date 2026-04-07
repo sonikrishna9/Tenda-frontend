@@ -430,7 +430,7 @@ export default function Header() {
           </motion.div>
 
           {/* GeM Button */}
-          <motion.div
+          {/* <motion.div
             whileHover={{ y: -2 }}
             className="hidden lg:block"
             whileTap={{ scale: 0.97 }}
@@ -448,11 +448,9 @@ export default function Header() {
                 className="h-10  w-28 shadow-sm hover:shadow-md rounded-sm"
               />
 
-              {/* <span className="text-xs font-semibold text-orange-600 tracking-wide">
-                Available on GeM
-              </span> */}
+              
             </Link>
-          </motion.div>
+          </motion.div> */}
 
           {/* Mobile Menu Button */}
           <motion.button

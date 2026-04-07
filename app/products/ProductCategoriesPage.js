@@ -698,7 +698,7 @@ export default function ProductCategoriesPage() {
                         </h3>
 
                         {p.subtitle && (
-                          <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                          <p className="text-sm text-gray-600 mb-4 line-clamp-1 text-ellipsis">
                             {p.subtitle}
                           </p>
                         )}

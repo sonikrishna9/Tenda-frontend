@@ -101,23 +101,23 @@ export default function Allblogs() {
                       </p>
 
                       {/* CATEGORY */}
-                      {news.category && (
+                      {/* {news.category && (
                         <div className="flex flex-wrap gap-2 mb-4">
                           <span className="text-xs px-3 py-1 rounded-full bg-orange-50 text-orange-600 flex items-center gap-1">
                             <FaTags />
                             {news.category}
                           </span>
                         </div>
-                      )}
+                      )} */}
 
                       {/* META */}
-                      <div className="flex justify-between text-gray-500 text-xs mt-auto">
+                      <div className="flex justify-end text-gray-500 text-xs mt-auto">
 
                         {/* AUTHOR */}
-                        <span className="flex items-center gap-1">
+                        {/* <span className="flex items-center gap-1">
                           <FaUser />
                           {news.author || "Admin"}
-                        </span>
+                        </span> */}
 
                         {/* DATE */}
                         <span className="flex items-center gap-1">

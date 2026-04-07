@@ -157,7 +157,7 @@ export default function Footer() {
                   {/* PHONE BUTTON */}
                   <a
                     href="tel:18001022366"
-                    className="group flex items-center justify-between bg-orange-500 px-6 py-4 rounded-full font-semibold 
+                    className="group flex items-center justify-evenly bg-orange-500 px-6 py-4 rounded-full font-semibold 
       transition-all duration-300 ease-in-out
       hover:bg-white hover:text-orange-500 hover:border hover:border-orange-500
       hover:shadow-lg hover:-translate-y-1"

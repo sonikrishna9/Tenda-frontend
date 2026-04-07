@@ -14,7 +14,7 @@ export default function GlobalEnquiryButton() {
 
   return (
     <div style={styles.button} onClick={handleClick}>
-      Book Enquiry
+      Quick Enquiry
     </div>
   );
 }

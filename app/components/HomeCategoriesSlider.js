@@ -1,33 +1,24 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-/* ------------------ RESPONSIVE ITEMS COUNT ------------------ */
-const getItemsCount = () => {
-    if (typeof window === "undefined") return 4;
-    if (window.innerWidth >= 1280) return 4;
-    if (window.innerWidth >= 1024) return 3;
-    if (window.innerWidth >= 768) return 2;
-    return 1;
-};
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
+
+import "swiper/css";
+import "swiper/css/navigation";
 
 export default function HomeCategoriesSlider() {
 
     const slugify = (s) => s?.toLowerCase().trim().replace(/\s+/g, "-");
 
-
     const router = useRouter();
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
     const [sections, setSections] = useState([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [itemsCount, setItemsCount] = useState(4);
     const [isLoading, setIsLoading] = useState(true);
-
-    const autoSlideRef = useRef(null);
 
     /* ------------------ FETCH CATEGORIES ------------------ */
     const fetchCategories = useCallback(async () => {
@@ -42,54 +33,9 @@ export default function HomeCategoriesSlider() {
         }
     }, [API_BASE_URL]);
 
-    /* ------------------ RESPONSIVE ------------------ */
-    useEffect(() => {
-        const handleResize = () => setItemsCount(getItemsCount());
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
     useEffect(() => {
         fetchCategories();
     }, [fetchCategories]);
-
-    /* ------------------ AUTO SLIDE ------------------ */
-    const startAutoSlide = () => {
-        stopAutoSlide();
-        autoSlideRef.current = setInterval(() => {
-            nextSlide();
-        }, 2500);
-    };
-
-    const stopAutoSlide = () => {
-        if (autoSlideRef.current) clearInterval(autoSlideRef.current);
-    };
-
-    useEffect(() => {
-        if (sections.length > itemsCount) startAutoSlide();
-        return stopAutoSlide;
-    }, [sections, itemsCount]);
-
-    /* ------------------ SLIDE CONTROLS ------------------ */
-    const nextSlide = () => {
-        if (sections.length <= itemsCount) return;
-        setCurrentIndex((prev) =>
-            prev + 1 > sections.length - itemsCount ? 0 : prev + 1
-        );
-    };
-
-    const prevSlide = () => {
-        if (sections.length <= itemsCount) return;
-        setCurrentIndex((prev) =>
-            prev === 0 ? sections.length - itemsCount : prev - 1
-        );
-    };
-
-    const visibleCategories = sections.slice(
-        currentIndex,
-        currentIndex + itemsCount
-    );
 
     /* ------------------ SKELETON ------------------ */
     const SkeletonCard = () => (
@@ -115,103 +61,101 @@ export default function HomeCategoriesSlider() {
                         <h4 className="text-gray-700 text-xl">
                             Explore Our Networking Solutions
                         </h4>
-                        <p className="text-gray-600 ">
+                        <p className="text-gray-600">
                             Discover a complete range of networking products designed for homes, SMBs, enterprises, and outdoor deployments.
                         </p>
                     </div>
                 </div>
 
+
+
                 {/* SLIDER */}
-                <div
-                    className="relative overflow-hidden"
-                    onMouseEnter={stopAutoSlide}
-                    onMouseLeave={startAutoSlide}
-                >
-                    {/* SLIDE BUTTONS (INSIDE SLIDER) */}
-                    {sections.length > itemsCount && (
-                        <>
-                            <button
-                                onClick={() => {
-                                    prevSlide();
-                                    startAutoSlide();
-                                }}
-                                className="absolute left-2 top-1/2 -translate-y-1/2 z-20
-                           w-11 h-11 rounded-full bg-white shadow-lg border
-                           flex items-center justify-center
-                           hover:bg-orange-50 hover:scale-110 transition"
-                            >
-                                <FaArrowLeft className="text-orange-500" />
-                            </button>
+                <div className="relative">
 
-                            <button
-                                onClick={() => {
-                                    nextSlide();
-                                    startAutoSlide();
-                                }}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 z-20
-                           w-11 h-11 rounded-full bg-white shadow-lg border
-                           flex items-center justify-center
-                           hover:bg-orange-50 hover:scale-110 transition"
-                            >
-                                <FaArrowRight className="text-orange-500" />
-                            </button>
-                        </>
-                    )}
+                    <button
+                        className="cat-prev absolute -left-6 top-1/2 -translate-y-1/2 z-10 
+  bg-white shadow-md rounded-full w-10 h-10 flex items-center justify-center 
+  hover:bg-orange-500 hover:text-white transition"
+                    >
+                        ‹
+                    </button>
+                    <Swiper
+                        modules={[Navigation, Autoplay]}
+                        navigation={{
+                            prevEl: ".cat-prev",
+                            nextEl: ".cat-next",
+                        }}
+                        autoplay={{
+                            delay: 2500,
+                            disableOnInteraction: false,
+                        }}
+                        loop={sections.length > 4}
+                        spaceBetween={24}
+                        slidesPerView={1}
+                        breakpoints={{
+                            640: { slidesPerView: 2 },
+                            1024: { slidesPerView: 3 },
+                            1280: { slidesPerView: 4 },
+                        }}
+                    >
 
-                    {/* CARDS */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-10">
                         {isLoading
-                            ? Array.from({ length: itemsCount }).map((_, i) => (
-                                <SkeletonCard key={i} />
+                            ? Array.from({ length: 4 }).map((_, i) => (
+                                <SwiperSlide key={i}>
+                                    <SkeletonCard />
+                                </SwiperSlide>
                             ))
-                            : visibleCategories.map((cat) => (
-                                <div
-                                    key={cat._id}
-                                    onClick={() =>
-                                        router.push(`/products/${slugify(cat.categoryname)}`)
-                                    }
-                                    className="group relative bg-white rounded-2xl border
-                               shadow-md hover:shadow-2xl hover:border-orange-200
-                               transition-all duration-300 cursor-pointer
-                               hover:-translate-y-2 overflow-hidden"
-                                >
-                                    {/* IMAGE */}
-                                    <div className="h-48 p-6 bg-gradient-to-br from-gray-50 to-white">
-                                        <img
-                                            src={cat.images?.url || "/images/placeholder.png"}
-                                            alt={cat.categoryname}
-                                            className="w-full h-full object-contain
-                                   transition-transform duration-500
-                                   group-hover:scale-110"
-                                        />
+                            : sections.map((cat) => (
+                                <SwiperSlide key={cat._id}>
+                                    <div
+                                        onClick={() =>
+                                            router.push(`/products/${slugify(cat.categoryname)}`)
+                                        }
+                                        className="group relative my-2 bg-white rounded-2xl border
+                                        shadow-md  hover:border-black 
+                                        transition-all duration-300 cursor-pointer
+                                        hover:-translate-y-2 overflow-hidden"
+                                    >
+                                        {/* IMAGE */}
+                                        <div className="h-48 p-6 bg-gradient-to-br from-gray-50 to-white">
+                                            <img
+                                                src={cat.images?.url || "/images/placeholder.png"}
+                                                alt={cat.categoryname}
+                                                className="w-full h-full object-contain
+                                                transition-transform duration-500
+                                                group-hover:scale-110"
+                                            />
+                                        </div>
+
+                                        {/* CONTENT */}
+                                        <div className="p-6 text-center">
+                                            <h3 className="font-bold text-gray-900 text-lg mb-4">
+                                                {cat.categoryname}
+                                            </h3>
+
+                                            <button
+                                                className="inline-flex items-center gap-2 px-6 py-2.5
+                                                bg-gradient-to-r from-orange-500 to-amber-500
+                                                text-white font-semibold rounded-full
+                                                shadow hover:shadow-orange-300
+                                                transition-all duration-300"
+                                            >
+                                                View Products
+                                            </button>
+                                        </div>
                                     </div>
+                                </SwiperSlide>
+                            ))
+                        }
 
-                                    {/* CONTENT */}
-                                    <div className="p-6 text-center">
-                                        <h3 className="font-bold text-gray-900 text-lg mb-4">
-                                            {cat.categoryname}
-                                        </h3>
-
-                                        <button
-                                            className="inline-flex items-center gap-2 px-6 py-2.5
-                                   bg-gradient-to-r from-orange-500 to-amber-500
-                                   text-white font-semibold rounded-full
-                                   shadow hover:shadow-orange-300
-                                   transition-all duration-300"
-                                        >
-                                            View Products
-                                            <FaArrowRight className="text-sm group-hover:translate-x-1 transition-transform" />
-                                        </button>
-                                    </div>
-
-                                    {/* HOVER GLOW */}
-                                    <div className="absolute inset-0 rounded-2xl
-                                    bg-gradient-to-r from-orange-500/10 to-amber-500/10
-                                    opacity-0 group-hover:opacity-100
-                                    transition-opacity pointer-events-none" />
-                                </div>
-                            ))}
-                    </div>
+                    </Swiper>
+                    <button
+                        className="cat-next absolute -right-6 top-1/2 -translate-y-1/2 z-10 
+  bg-white shadow-md rounded-full w-10 h-10 flex items-center justify-center 
+  hover:bg-orange-500 hover:text-white transition"
+                    >
+                        ›
+                    </button>
                 </div>
             </div>
         </section>

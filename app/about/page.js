@@ -152,9 +152,9 @@ export default function AboutBanner() {
           </div>
 
           {/* Floating Elements */}
-          <div className="absolute top-20 left-20 w-8 h-8 bg-orange-500/30 rounded-full animate-pulse" />
+          {/* <div className="absolute top-20 left-20 w-8 h-8 bg-orange-500/30 rounded-full animate-pulse" />
           <div className="absolute bottom-40 right-32 w-12 h-12 bg-amber-500/20 rounded-full animate-pulse" />
-          <div className="absolute top-1/3 right-20 w-6 h-6 bg-orange-400/40 rounded-full animate-pulse" />
+          <div className="absolute top-1/3 right-20 w-6 h-6 bg-orange-400/40 rounded-full animate-pulse" /> */}
 
           {/* Content */}
           <motion.div
@@ -322,12 +322,12 @@ export default function AboutBanner() {
                 </h3>
               </div>
 
-              <div>
+              <div className="mb-6">
                 <h3 className="text-base font-semibold text-gray-900 mb-2">
                   Strong partner & support network across key cities and regions nationwide.
                 </h3>
               </div>
-              <div>
+              <div className="mb-6">
                 <h3 className="text-base font-semibold text-gray-900 mb-2">
                   Affordable solutions without compromising quality.
                 </h3>
@@ -355,13 +355,13 @@ export default function AboutBanner() {
       </section>
 
 
-      <section className="w-full bg-orange-500 py-16">
+      <section className="w-full bg-orange-500 py-16 mb-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Header */}
           <div className="text-center text-white max-w-3xl mx-auto mb-14">
             <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-              INDIA MARKET PRESENCE
+             PAN INDIA MARKET PRESENCE
             </h2>
             <p className="text-white/90 text-sm md:text-base">
               With the support of dedicated Indian partners and authorised nationwide distribution through Fortune Marketing Pvt. Ltd., Tenda products are easily accessible across the country — backed by genuine warranties, professional logistics, and local customer care.
@@ -428,10 +428,10 @@ export default function AboutBanner() {
       {/* =======================
     CERTIFICATIONS SECTION
 ======================== */}
-      <section className="py-20 bg-white">
+      {/* <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          {/* Heading */}
+     
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -448,7 +448,7 @@ export default function AboutBanner() {
             <div className="w-28 h-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full mx-auto mt-6" />
           </motion.div>
 
-          {/* Certificates Grid */}
+      
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               "/images/about/a1.jpg",
@@ -474,7 +474,7 @@ export default function AboutBanner() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
     </>
   );

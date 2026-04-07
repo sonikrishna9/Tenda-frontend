@@ -6,7 +6,7 @@ export default function Steps() {
     const steps = [
         { number: "01", title: "Registration Form", description: "Submit your dealership registration form" },
         { number: "02", title: "Document Verification", description: "Our team evaluates your eligibility" },
-        { number: "03", title: "Approval", description: "Approval & Start the business" }
+        { number: "03", title: "Onboarding & Activation", description: "Get approved and begin your journey with us" }
     ];
 
     return (

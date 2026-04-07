@@ -31,8 +31,8 @@ export default function VideoShowcaseSection() {
   }, []);
 
   const titles = [
-    "Product Installed",
-    "Happy Partners / Customers",
+    "Project Accomplished",
+    "Our Happy Partners",
   ];
 
   return (
