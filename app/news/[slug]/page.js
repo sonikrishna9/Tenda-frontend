@@ -103,13 +103,6 @@ export default function NewsDetail() {
 
           {/* Meta info */}
           <div className="flex items-center gap-6 text-sm text-gray-600">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 font-medium">
-                {news.author?.charAt(0) || "A"}
-              </div>
-              <span className="font-medium text-gray-900">{news.author}</span>
-            </div>
-            <span>•</span>
             <span>{formattedDate}</span>
             <span>•</span>
             <span>{readTime} min read</span>
@@ -171,10 +164,10 @@ export default function NewsDetail() {
         {/* Article Footer */}
         <div className="mt-12 pt-8 border-t border-gray-200">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
+            {/* <div>
               <p className="text-sm text-gray-500">Written by</p>
               <p className="font-medium text-gray-900">{news.author}</p>
-            </div>
+            </div> */}
 
             <Link
               href="/news"

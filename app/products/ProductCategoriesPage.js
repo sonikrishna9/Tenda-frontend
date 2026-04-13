@@ -69,6 +69,8 @@ export default function ProductCategoriesPage() {
   const [openParent, setOpenParent] = useState(null);
   const [openSub, setOpenSub] = useState(null);
   const [search, setSearch] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   // const [FilterSubcategories, setFilterSubcategories] = useState([]);
 
 
@@ -81,7 +83,24 @@ export default function ProductCategoriesPage() {
   const sidebarRef = useRef(null);
 
 
+  const handleSearchChange = (value) => {
+    setSearch(value);
 
+    if (!value.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    const term = value.toLowerCase();
+
+    const results = products.filter((p) =>
+      p.title.toLowerCase().includes(term) ||
+      p.parentCategory.toLowerCase().includes(term) ||
+      p.subCategory.toLowerCase().includes(term)
+    );
+
+    setSuggestions(results.slice(0, 6)); // max 6 suggestions
+  };
 
   // const fetchProducts = useCallback(async () => {
   //   try {
@@ -265,7 +284,6 @@ export default function ProductCategoriesPage() {
 
   /* ================= RIGHT SIDE FILTER ================= */
   const visibleProducts = useMemo(() => {
-
     if (!resolvedParent && !resolvedSub) return products;
 
     if (resolvedParent && !resolvedSub) {
@@ -279,9 +297,15 @@ export default function ProductCategoriesPage() {
         p.parentCategory === resolvedParent &&
         p.subCategory === resolvedSub
     );
-
   }, [products, resolvedParent, resolvedSub]);
 
+  // ✅ YAHAN SHIFT KARO
+  useEffect(() => {
+    if (!search) {
+      setResolvedParent(null);
+      setResolvedSub(null);
+    }
+  }, [search]);
 
   /* ================= ENHANCED BREADCRUMB ================= */
   const Breadcrumb = () => {
@@ -443,21 +467,14 @@ export default function ProductCategoriesPage() {
     );
   }
 
-  const filteredCategories = Object.entries(grouped).filter(([parent, subs]) => {
-    if (!search) return true;
+  // useEffect(() => {
+  //   if (!search) {
+  //     setResolvedParent(null);
+  //     setResolvedSub(null);
+  //   }
+  // }, [search]);
 
-    const s = search.toLowerCase();
-
-    if (parent.toLowerCase().includes(s)) return true;
-
-    return Object.entries(subs).some(([sub, items]) => {
-      if (sub.toLowerCase().includes(s)) return true;
-
-      return items.some(p =>
-        p.title.toLowerCase().includes(s)
-      );
-    });
-  });
+  const filteredCategories = Object.entries(grouped);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -489,12 +506,52 @@ export default function ProductCategoriesPage() {
                 {/* SEARCH */}
                 <div className="relative">
                   <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+
                   <input
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search categories..."
-                    className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                    placeholder="Search products..."
+                    className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
+
+                  {/* ORANGE BUTTON */}
+                  <button
+                    onClick={() => {
+                      if (!search.trim()) return;
+
+                      const first = suggestions[0];
+                      if (first) {
+                        setResolvedParent(first.parentCategory);
+                        setResolvedSub(first.subCategory);
+                      }
+                    }}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 bg-orange-500 text-white px-2 py-1 rounded-md text-xs hover:bg-orange-600"
+                  >
+                    Go
+                  </button>
+
+                  {/* SUGGESTIONS */}
+                  {suggestions.length > 0 && (
+                    <div className="absolute top-[110%] left-0 w-full bg-white border rounded-lg shadow-lg z-50">
+                      {suggestions.map((item, i) => (
+                        <div
+                          key={i}
+                          onClick={() => {
+                            setResolvedParent(item.parentCategory);
+                            setResolvedSub(item.subCategory);
+                            setSearch(item.title);
+                            setSuggestions([]);
+                          }}
+                          className="px-3 py-2 text-sm hover:bg-orange-50 cursor-pointer flex justify-between"
+                        >
+                          <span>{item.title}</span>
+                          <span className="text-xs text-gray-400">
+                            {item.subCategory}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 

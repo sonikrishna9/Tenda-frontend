@@ -1,27 +1,21 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { FaArrowRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { FaArrowRight } from "react-icons/fa";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
 
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
+import "swiper/css";
+import "swiper/css/navigation";
 
-/* ================= RESPONSIVE ITEMS COUNT ================= */
-const getItemsToShow = () => {
-  if (typeof window === "undefined") return 3;
-  if (window.innerWidth >= 1024) return 3;
-  if (window.innerWidth >= 640) return 2;
-  return 1;
-};
+const API_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
 
 export default function Homeblog() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsToShow, setItemsToShow] = useState(3);
   const [blogdata, setBlogdata] = useState([]);
   const [loading, setLoading] = useState(false);
-  const intervalRef = useRef(null);
 
   /* ================= FETCH BLOGS ================= */
   const getblog = async () => {
@@ -46,133 +40,87 @@ export default function Homeblog() {
     getblog();
   }, []);
 
-  /* ================= AUTO SLIDE ================= */
-  useEffect(() => {
-    if (!blogdata.length) return;
-
-    intervalRef.current = setInterval(() => {
-      nextSlide();
-    }, 3500);
-
-    return () => clearInterval(intervalRef.current);
-  }, [blogdata, itemsToShow]);
-
-  /* ================= RESPONSIVE ================= */
-  useEffect(() => {
-    const handleResize = () => {
-      setItemsToShow(getItemsToShow());
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  /* ================= SLIDER LOGIC ================= */
-  const nextSlide = () => {
-    setCurrentIndex((prev) =>
-      (prev + itemsToShow) % blogdata.length
-    );
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) =>
-      (prev - itemsToShow + blogdata.length) % blogdata.length
-    );
-  };
-
-  const visibleItems = blogdata.slice(
-    currentIndex,
-    currentIndex + itemsToShow
-  );
-
   return (
     <section className="w-full bg-white py-16 px-6 md:px-12">
       {/* HEADER */}
       <div className="max-w-7xl mx-auto text-center md:text-left mb-10">
         <h2 className="text-3xl md:text-4xl font-semibold text-gray-800">
-          In The News
+          In The <strong className="text-orange-600 font-semibold">News</strong>
         </h2>
         <p className="text-gray-500 mt-2">
-         Stay updated with the latest from Tenda India:
+          Stay updated with the latest from Tenda India:
         </p>
         <div className="h-[2px] w-16 bg-gradient-to-r from-orange-400 to-teal-400 mt-3 mx-auto md:mx-0" />
       </div>
 
       {/* SLIDER */}
-      <div className="max-w-7xl mx-auto relative overflow-hidden">
+      <div className="max-w-7xl mx-auto relative">
         {/* PREV */}
-        <button
-          onClick={prevSlide}
-          className="absolute left-2 top-1/2 -translate-y-1/2
-                     w-10 h-10 flex items-center justify-center
-                     rounded-full bg-white border shadow z-20"
-        >
-          <FaChevronLeft />
+        <button className="blog-prev absolute -left-4 top-1/2 -translate-y-1/2 z-10 
+          bg-white shadow-md rounded-full w-10 h-10 flex items-center justify-center">
+          ‹
         </button>
 
-        {/* NEXT */}
-        <button
-          onClick={nextSlide}
-          className="absolute right-2 top-1/2 -translate-y-1/2
-                     w-10 h-10 flex items-center justify-center
-                     rounded-full bg-white border shadow z-20"
+        <Swiper
+          modules={[Navigation, Autoplay]}
+          navigation={{
+            prevEl: ".blog-prev",
+            nextEl: ".blog-next",
+          }}
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+          }}
+          loop={blogdata.length > 3}
+          spaceBetween={24}
+          slidesPerView={1}
+          breakpoints={{
+            640: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+          }}
         >
-          <FaChevronRight />
-        </button>
+          {loading
+            ? Array.from({ length: 3 }).map((_, i) => (
+              <SwiperSlide key={i}>
+                <div className="h-64 bg-gray-200 animate-pulse rounded-xl" />
+              </SwiperSlide>
+            ))
+            : blogdata.map((item) => (
 
-        {/* CARDS */}
-        {loading ? (
-          <p className="text-center text-gray-500">Loading blogs...</p>
-        ) : (
-          <motion.div
-            className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 px-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            {visibleItems.map((item) => (
-              <div
-                key={item._id}
-                className="bg-white rounded-xl border shadow-sm p-3"
-              >
-                <img
-                  src={item.featuredImage?.url}
-                  alt={item.title}
-                  className="w-full h-48 object-cover rounded-lg"
-                />
+              <SwiperSlide key={item._id}>
+                <div className="bg-white rounded-xl border shadow-sm p-3">
+                  <Link href={`/blogs/${item.slug}`} className="cursor-pointer">
+                    <img
+                      src={item.featuredImage?.url}
+                      alt={item.title}
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
 
-                <div className="mt-4 px-2 pb-4">
-                  <p className="text-sm text-gray-400 mb-1">
-                    {item.author?.name}
-                  </p>
-                  <h3 className="text-gray-800 font-medium text-lg mb-3">
-                    {item.title}
-                  </h3>
+                    <div className="mt-4 px-2 pb-4">
 
-                  <Link href={`/blogs/${item.slug}`}>
-                    <button className="flex items-center gap-2 bg-orange-500 text-white text-sm px-4 py-2 rounded-md hover:bg-orange-600">
-                      Read More <FaArrowRight size={12} />
-                    </button>
+                      <h3 className="text-gray-800 font-medium text-lg mb-3 line-clamp-2">
+                        {item.title}
+                      </h3>
+
+
+                      <button className="flex items-center gap-2 bg-orange-500 text-white text-sm px-4 py-2 rounded-md hover:bg-orange-600">
+                        Read More <FaArrowRight size={12} />
+                      </button>
+
+                    </div>
+
                   </Link>
                 </div>
-              </div>
+              </SwiperSlide>
             ))}
-          </motion.div>
-        )}
+        </Swiper>
 
-        {/* DOTS */}
-        <div className="flex justify-center mt-8 space-x-2">
-          {blogdata.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-3 h-3 rounded-full ${index === currentIndex
-                  ? "bg-orange-500"
-                  : "bg-gray-300"
-                }`}
-            />
-          ))}
-        </div>
+        {/* NEXT */}
+        <button className="blog-next absolute -right-4 top-1/2 -translate-y-1/2 z-10 
+          bg-white shadow-md rounded-full w-10 h-10 flex items-center justify-center">
+          ›
+        </button>
       </div>
-    </section>
+    </section >
   );
 }

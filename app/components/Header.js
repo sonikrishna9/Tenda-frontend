@@ -215,7 +215,7 @@ export default function Header() {
           className="flex-shrink-0"
         >
           <Link href="/">
-            <img src="/logo.png" alt="Logo" className="h-7 sm:h-8 lg:h-9 w-auto" />
+            <img src="/logo.png" alt="Logo" className="h-7 sm:h-7 lg:h-8 w-auto" />
           </Link>
         </motion.div>
 
@@ -405,13 +405,52 @@ export default function Header() {
         {/* Right Side Buttons */}
         <div className="flex items-center gap-2 md:gap-3">
           {/* SEARCH ICON */}
-          <div>
-            <button
-              onClick={() => setShowSearch(true)}
-              className="cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition"
-            >
-              <FiSearch size={20} />
-            </button>
+          {/* SMALL SEARCH BAR */}
+          <div className="relative hidden md:block">
+            <div className="flex items-center bg-gray-100 rounded-lg px-3 py-1.5 focus-within:ring-2 focus-within:ring-orange-400 transition-all">
+
+              <FiSearch className="text-gray-500 mr-2" size={16} />
+
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="bg-transparent outline-none text-sm w-[140px] md:w-[180px] lg:w-[220px] placeholder-gray-400"
+              />
+            </div>
+
+            {/* DROPDOWN RESULTS */}
+            {searchResults.length > 0 && (
+              <div className="absolute top-[110%] left-0 w-full bg-white shadow-xl rounded-lg border border-gray-100 z-50 overflow-hidden">
+                {searchResults.map((item, i) => (
+                  <div
+                    key={i}
+                    onClick={() => {
+                      setSearchTerm("");
+
+                      if (item.type === "product") {
+                        router.push(
+                          `/product/${slugify(item.parentCategory)}/${slugify(item.title)}`
+                        );
+                      } else if (item.type === "subcategory") {
+                        router.push(
+                          `/products/${slugify(item.parentCategory)}/${slugify(item.title)}`
+                        );
+                      } else {
+                        router.push(`/products/${slugify(item.title)}`);
+                      }
+                    }}
+                    className="px-4 py-2 text-sm hover:bg-orange-50 cursor-pointer flex justify-between"
+                  >
+                    <span>{item.title}</span>
+                    <span className="text-xs text-gray-400 capitalize">
+                      {item.type}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           {/* Contact Us Button - Hidden on mobile, shows in mobile menu */}
           <motion.div

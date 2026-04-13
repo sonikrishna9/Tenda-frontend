@@ -1,15 +1,20 @@
 const nextConfig = {
   images: {
+    unoptimized: true, // ✅ correct place
+
     remotePatterns: [
-      // ✅ Local backend images (keep this)
       {
         protocol: "http",
         hostname: "127.0.0.1",
         port: "8000",
         pathname: "/storage/**",
       },
-
-      // ✅ Cloudinary images (ADD THIS)
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "8080",
+        pathname: "/uploads/**",
+      },
       {
         protocol: "https",
         hostname: "res.cloudinary.com",

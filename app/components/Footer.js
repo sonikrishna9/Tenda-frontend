@@ -19,8 +19,7 @@ export default function Footer() {
 
   const footerLinks = {
     products: [
-      { label: "Routers", href: "/products/router" },
-      { label: "Mesh Router", href: "/products/mesh-router" },
+      { label: "Router", href: "/products/router" },
       { label: "Range Extender", href: "/products/range-extender" },
       { label: "Access Points", href: "/products/access-point" },
       { label: "USB Adaptor", href: "/products/usb-adaptor" },
