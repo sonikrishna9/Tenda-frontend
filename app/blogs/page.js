@@ -21,5 +21,5 @@ export async function generateMetadata() {
 }
 
 export default function Page() {
-    return <Allblogs/>;
+    return <Allblogs />;
 }

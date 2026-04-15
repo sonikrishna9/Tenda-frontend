@@ -417,7 +417,7 @@ export default function AboutBanner() {
            hover:-translate-y-2 hover:shadow-xl hover:scale-[1.03]"
             >
               <FaCheckCircle className="text-4xl text-black" />
-              <p className="text-sm font-medium">Available on GEM</p>
+              <p className="text-sm font-medium">Marketing & Technical Support</p>
             </div>
 
           </div>
