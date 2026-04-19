@@ -1,6 +1,7 @@
     "use client";
     import React, { useEffect, useState } from "react";
     import { FiFileText, FiPlay, FiDownload } from "react-icons/fi";
+    import { getAssetFileName, resolveAssetUrl } from "@/lib/media";
 
     const ProductSupport = ({
         videos = [],
@@ -54,8 +55,9 @@
                 const map = {};
 
                 for (const v of videos) {
-                    const img = await getVideoThumbnail(v.url);
-                    map[v.url] = img;
+                    const resolvedUrl = resolveAssetUrl(v.url);
+                    const img = await getVideoThumbnail(resolvedUrl);
+                    map[resolvedUrl] = img;
                 }
 
                 setThumbs(map);
@@ -142,7 +144,7 @@
                                 >
                                     <FiFileText className="text-orange-500 text-5xl mb-4" />
                                     <p className="text-gray-800 font-medium text-sm line-clamp-2">
-                                        {decodeURIComponent(pdf.url.split("/").pop())}
+                                        {getAssetFileName(pdf.url)}
                                     </p>
                                     <span className="text-orange-500 text-sm mt-3">
                                         View Detail →
@@ -160,7 +162,8 @@
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {videos.map((video, i) => {
-                                const fileName = decodeURIComponent(video.url.split("/").pop());
+                                const videoUrl = resolveAssetUrl(video.url);
+                                const fileName = getAssetFileName(video.url);
 
                                 return (
                                     <div
@@ -172,7 +175,7 @@
                                         {/* VIDEO THUMBNAIL */}
                                         <div className="relative h-48 bg-gray-300">
                                             <video
-                                                src={video.url}
+                                                src={videoUrl}
                                                 className="w-full h-full object-cover"
                                                 preload="metadata"
                                                 muted
@@ -214,7 +217,7 @@
 
                                 {/* VIDEO PLAYER */}
                                 <video
-                                    src={activeVideo.url}
+                                    src={resolveAssetUrl(activeVideo.url)}
                                     controls
                                     autoPlay
                                     className="w-full max-h-[70vh] rounded-xl"
@@ -248,9 +251,8 @@
                                     {/* TABLE BODY */}
                                     <tbody>
                                         {downloadpdfs.map((pdf, i) => {
-                                            const fileName = decodeURIComponent(
-                                                pdf.url.split("/").pop()
-                                            );
+                                            const fileName = getAssetFileName(pdf.url);
+                                            const pdfUrl = resolveAssetUrl(pdf.url);
 
                                             return (
                                                 <tr
@@ -260,7 +262,7 @@
                                                     {/* TITLE + ICON */}
                                                     <td className="p-6">
                                                         <div
-                                                            onClick={() => window.open(pdf.url, "_blank")}
+                                                            onClick={() => window.open(pdfUrl, "_blank")}
                                                             className="flex items-center gap-3 text-blue-600 text-sm cursor-pointer hover:underline"
                                                         >
                                                             <FiFileText className="text-blue-500 text-lg flex-shrink-0" />
@@ -271,7 +273,7 @@
                                                     {/* DOWNLOAD ICON (DIRECT DOWNLOAD) */}
                                                     <td className="p-6 text-center">
                                                         <a
-                                                            href={pdf.url}
+                                                            href={pdfUrl}
                                                             download
                                                             className="inline-block"
                                                         >

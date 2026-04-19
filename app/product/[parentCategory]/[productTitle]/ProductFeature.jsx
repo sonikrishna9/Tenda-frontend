@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { resolveAssetUrl } from "@/lib/media";
 
 const ProductFeature = ({ title, featurePictures = [] }) => {
   const [viewMore, setViewMore] = useState(false);
@@ -37,7 +38,7 @@ const ProductFeature = ({ title, featurePictures = [] }) => {
         className="w-full max-w-6xl mx-auto px-4"
       >
         <img
-          src={firstImage.url}
+          src={resolveAssetUrl(firstImage.url)}
           alt="Main Feature"
           className="w-full rounded-2xl shadow-2xl object-cover"
         />
@@ -69,7 +70,7 @@ const ProductFeature = ({ title, featurePictures = [] }) => {
               {remainingImages.map((item, index) => (
                 <motion.img
                   key={item._id || index}
-                  src={item.url}
+                  src={resolveAssetUrl(item.url)}
                   alt={`Feature ${index + 2}`}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}

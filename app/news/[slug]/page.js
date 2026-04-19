@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
+import { normalizeMediaUrlsDeep, resolveAssetUrl } from "@/lib/media";
 
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/";
@@ -31,7 +32,7 @@ export default function NewsDetail() {
         const data = await res.json();
 
         if (data?.success) {
-          setNews(data.data);
+          setNews(normalizeMediaUrlsDeep(data.data));
         } else {
           setError("News not found");
         }
@@ -62,7 +63,7 @@ export default function NewsDetail() {
           {error || "News Not Found"}
         </h2>
         <p className="text-gray-600 mb-6">
-          The article you're looking for doesn't exist or has been removed.
+          The article you&apos;re looking for doesn&apos;t exist or has been removed.
         </p>
         <Link
           href="/news"
@@ -115,7 +116,7 @@ export default function NewsDetail() {
         <div className="max-w-5xl mx-auto px-4 -mt-8 mb-12">
           <div className="rounded-xl overflow-hidden">
             <img
-              src={news.bannerImage.url}
+              src={resolveAssetUrl(news.bannerImage.url)}
               alt={news.title}
               className="w-full h-[400px] object-cover"
             />

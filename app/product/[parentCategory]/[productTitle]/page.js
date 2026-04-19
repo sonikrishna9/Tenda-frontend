@@ -30,6 +30,7 @@ import { SiAmazon, SiFlipkart } from "react-icons/si";
 import { FiGlobe, FiShoppingCart } from "react-icons/fi";
 import FixedContactCard from "@/app/contactus/FixedContactCard";
 import EnquiryForm from "@/app/contactus/EnquiryForm";
+import { normalizeMediaUrlsDeep } from "@/lib/media";
 
 /* ================= LOADING COMPONENT ================= */
 const LoadingState = () => {
@@ -726,7 +727,7 @@ export default function ProductDisplay() {
       .then(data => {
         console.log("API RESPONSE 👉", data);
         if (data.success) {
-          setProduct(data.product);
+          setProduct(normalizeMediaUrlsDeep(data.product));
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
       })

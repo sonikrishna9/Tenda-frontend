@@ -8,6 +8,7 @@ import { IoMdSpeedometer, IoMdWifi } from "react-icons/io";
 import { MdDevices, MdSecurity } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { normalizeMediaUrlsDeep } from "@/lib/media";
 
 // Import Swiper styles
 import "swiper/css";
@@ -93,7 +94,7 @@ export default function ProductSwiper() {
         
         if (data.success && data.allproducts && data.allproducts.length > 0) {
           // Show ALL products
-          setProducts(data.allproducts);
+          setProducts(normalizeMediaUrlsDeep(data.allproducts));
         } else {
           toast.error("No products found");
           setProducts([]);
@@ -154,9 +155,9 @@ export default function ProductSwiper() {
     
     // Default icons based on index
     const defaultIcons = [
-      <FaBolt className="w-4 h-4 text-orange-500 flex-shrink-0" />,
-      <FaWifi className="w-4 h-4 text-orange-500 flex-shrink-0" />,
-      <FaSignal className="w-4 h-4 text-orange-500 flex-shrink-0" />
+      <FaBolt key="bolt" className="w-4 h-4 text-orange-500 flex-shrink-0" />,
+      <FaWifi key="wifi" className="w-4 h-4 text-orange-500 flex-shrink-0" />,
+      <FaSignal key="signal" className="w-4 h-4 text-orange-500 flex-shrink-0" />
     ];
     
     return defaultIcons[index % defaultIcons.length];
@@ -221,7 +222,7 @@ export default function ProductSwiper() {
               All <span className="text-orange-500">Products</span>
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              Browse TENDA's complete range of high-performance networking solutions
+              Browse TENDA&apos;s complete range of high-performance networking solutions
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full mx-auto mt-6"></div>
           </div>

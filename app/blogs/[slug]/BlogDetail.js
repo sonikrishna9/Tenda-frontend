@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { resolveAssetUrl } from "@/lib/media";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
 
@@ -135,7 +136,7 @@ export default function BlogDetail({ blog }) {
         <div className="max-w-4xl mx-auto px-6 -mt-8 md:-mt-12 relative z-10">
           <div className="rounded-2xl overflow-hidden shadow-xl border-4 border-white">
             <img
-              src={blog.featuredImage.url}
+              src={resolveAssetUrl(blog.featuredImage.url)}
               alt={blog.title}
               className="w-full h-[300px] md:h-[400px] object-cover"
               onError={(e) => {

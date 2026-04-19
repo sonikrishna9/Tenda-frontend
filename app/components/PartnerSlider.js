@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import Link from "next/link";
 import { toast } from "react-hot-toast";
+import { normalizeMediaUrlsDeep } from "@/lib/media";
 
 import {
   FaChevronLeft,
@@ -53,7 +54,7 @@ export default function PartnerSlider() {
       const data = await res.json();
 
       if (data?.success) {
-        setSlides(data.data.images);
+        setSlides(normalizeMediaUrlsDeep(data.data.images || []));
       } else {
         toast.error("Failed to load slides");
       }

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { normalizeMediaUrlsDeep } from "@/lib/media";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
@@ -25,7 +26,9 @@ export default function HomeCategoriesSlider() {
         try {
             const res = await fetch(`${API_BASE_URL}api/parentcategory/getall`);
             const data = await res.json();
-            if (data?.success) setSections(data.parentcategory || []);
+            if (data?.success) {
+                setSections(normalizeMediaUrlsDeep(data.parentcategory || []));
+            }
         } catch {
             toast.error("Failed to load categories");
         } finally {

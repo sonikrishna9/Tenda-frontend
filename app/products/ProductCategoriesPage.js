@@ -1,7 +1,6 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import Image from "next/image";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "next/navigation";
@@ -16,6 +15,7 @@ import {
   FaLayerGroup
 } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { normalizeMediaUrlsDeep, resolveAssetUrl } from "@/lib/media";
 
 export default function ProductCategoriesPage() {
 
@@ -164,7 +164,7 @@ export default function ProductCategoriesPage() {
         const data = JSON.parse(text);
 
         if (data?.success && Array.isArray(data.allproducts)) {
-          setProducts(data.allproducts);
+          setProducts(normalizeMediaUrlsDeep(data.allproducts));
         } else {
           console.error("Invalid API structure:", data);
         }
@@ -730,13 +730,11 @@ export default function ProductCategoriesPage() {
                         {/* Main Image */}
                         <div className="absolute inset-0 flex items-center justify-center p-6">
                           <div className="relative w-full h-full">
-                            <Image
-                              src={p.images?.[0]?.url || "/placeholder-product.png"}
+                            <img
+                              src={resolveAssetUrl(p.images?.[0]?.url) || "/placeholder-product.png"}
                               alt={p.title}
-                              fill
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              className="object-contain transition-transform duration-500 group-hover:scale-105"
-                              priority={false}
+                              className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                              loading="lazy"
                             />
                           </div>
                         </div>

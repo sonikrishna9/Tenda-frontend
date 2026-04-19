@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
+import { normalizeMediaUrlsDeep } from "@/lib/media";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/";
 
@@ -25,7 +26,7 @@ export default function Allblogs() {
       const data = await res.json();
 
       if (data?.success) {
-        setBlogs(data.data);
+        setBlogs(normalizeMediaUrlsDeep(data.data || []));
       } else {
         toast.error("Failed to load blogs");
       }

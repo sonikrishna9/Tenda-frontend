@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { normalizeMediaUrlsDeep } from "@/lib/media";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
@@ -32,7 +33,9 @@ export default function HomeFeaturedProducts() {
     try {
       const res = await fetch(`${API_BASE_URL}api/product/featuredproducts`);
       const data = await res.json();
-      if (data?.success) setProducts(data.featuredProducts || []);
+      if (data?.success) {
+        setProducts(normalizeMediaUrlsDeep(data.featuredProducts || []));
+      }
     } catch {
       toast.error("Failed to load featured products");
     } finally {

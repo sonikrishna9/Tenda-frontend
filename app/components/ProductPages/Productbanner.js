@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
 import ProductCategoriesPage from "../../products/ProductCategoriesPage";
+import { normalizeMediaUrlsDeep, resolveAssetUrl } from "@/lib/media";
 
 export default function Productbanner() {
   const params = useParams();
@@ -50,7 +51,7 @@ export default function Productbanner() {
         const data = await res.json();
 
         if (!ignore && data?.success) {
-          setBanner(data.banner);
+          setBanner(normalizeMediaUrlsDeep(data.banner));
         }
       } catch (error) {
         console.error("Banner fetch error:", error);
@@ -70,7 +71,7 @@ export default function Productbanner() {
   /* ================= DERIVED VALUES ================= */
 
   const image =
-    banner?.bannerImage?.url || "/images/carousel/c1.webp";
+    resolveAssetUrl(banner?.bannerImage?.url) || "/images/carousel/c1.webp";
 
   const title =
     banner?.title ||

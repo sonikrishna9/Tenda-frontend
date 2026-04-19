@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { normalizeMediaUrlsDeep, resolveAssetUrl } from "@/lib/media";
 
 /* ------------------ RESPONSIVE ITEMS COUNT ------------------ */
 const getItemsCount = () => {
@@ -40,7 +41,7 @@ export default function Homeproducts() {
         setProducts(
           data.featuredProducts.map((item) => ({
             name: item.title,
-            img: item.images?.[0]?.url || "/images/placeholder.png",
+            img: resolveAssetUrl(item.images?.[0]?.url) || "/images/placeholder.png",
             category: item.parentCategory || "",
             subcategory: item.subCategory || "",
             link: "/products",
@@ -59,7 +60,9 @@ export default function Homeproducts() {
     try {
       const res = await fetch(`${API_BASE_URL}api/parentcategory/getall`);
       const data = await res.json();
-      if (data?.success) setSections(data.parentcategory || []);
+      if (data?.success) {
+        setSections(normalizeMediaUrlsDeep(data.parentcategory || []));
+      }
     } catch {
       toast.error("Failed to load categories");
     }
@@ -155,7 +158,7 @@ export default function Homeproducts() {
               Browse Our <span className="text-orange-500">Categories</span>
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Explore TENDA's comprehensive range of networking solutions
+              Explore TENDA&apos;s comprehensive range of networking solutions
             </p>
           </div>
 

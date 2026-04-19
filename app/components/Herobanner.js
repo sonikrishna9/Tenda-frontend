@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import Image from "next/image";
+import { normalizeMediaUrlsDeep, resolveAssetUrl } from "@/lib/media";
 
 const slidesData = [
   { id: 1, img: "/images/carousel/sliderp1.jpg" },
@@ -29,7 +29,7 @@ export default function Herobanner() {
       const data = await res.json();
 
       if (data?.success) {
-        setslides(data.data.images);
+        setslides(normalizeMediaUrlsDeep(data.data.images || []));
       } else {
         toast.error("Failed to load Slides");
       }
@@ -79,14 +79,10 @@ export default function Herobanner() {
           }}
           transition={{ duration: 1 }}
         >
-          <Image
-            src={slide.url}
+          <img
+            src={resolveAssetUrl(slide.url)}
             alt="Hero Slide"
-            fill
-            priority={index === 0}
-            quality={[100,75]}
-            sizes="100vw"
-            className="object-cover"
+            className="h-full w-full object-cover"
           />
 
           {/* Overlay */}

@@ -1,6 +1,7 @@
 // app/blogs/[slug]/page.js
 
 import BlogDetail from "./BlogDetail";
+import { normalizeMediaUrlsDeep } from "@/lib/media";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/";
@@ -12,7 +13,7 @@ async function getBlog(slug) {
   });
 
   const json = await res.json();
-  return json.data;
+  return normalizeMediaUrlsDeep(json.data);
 }
 
 // ✅ metadata

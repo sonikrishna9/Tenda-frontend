@@ -9,6 +9,7 @@ import {
   FaChevronRight,
   FaArrowRight,
 } from 'react-icons/fa';
+import { normalizeMediaUrlsDeep } from "@/lib/media";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/";
@@ -28,7 +29,7 @@ export default function DealerSlider() {
       const data = await res.json();
 
       if (data?.success) {
-        setSlides(data.data.images);
+        setSlides(normalizeMediaUrlsDeep(data.data.images || []));
       } else {
         toast.error("Failed to load slides");
       }

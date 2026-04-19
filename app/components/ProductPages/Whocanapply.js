@@ -16,6 +16,7 @@ import { MdOutlineRateReview } from "react-icons/md";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { normalizeMediaUrlsDeep } from "@/lib/media";
 
 import "swiper/css";
 
@@ -124,7 +125,7 @@ export default function WhoCanApply() {
       const data = await res.json();
 
       if (data?.success) {
-        setSections(data.parentcategory || []);
+        setSections(normalizeMediaUrlsDeep(data.parentcategory || []));
       }
     } catch (error) {
       toast.error("Failed to load categories");
@@ -446,7 +447,7 @@ export default function WhoCanApply() {
               Browse Our <span className="text-orange-500">Categories</span>
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Explore TENDA's comprehensive range of networking solutions
+              Explore TENDA&apos;s comprehensive range of networking solutions
             </p>
           </div>
 

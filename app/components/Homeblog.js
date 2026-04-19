@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
+import { normalizeMediaUrlsDeep } from "@/lib/media";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -25,7 +26,7 @@ export default function Homeblog() {
       const data = await res.json();
 
       if (data?.success) {
-        setBlogdata(data.data);
+        setBlogdata(normalizeMediaUrlsDeep(data.data || []));
       } else {
         toast.error("Failed to load blogs");
       }
